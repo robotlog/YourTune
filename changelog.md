@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+Pull requests from pear-desktop, thanks to their authors.
+
+Fixes:
+
+- Do Not Track lets non-objects through ([pear-desktop#4781](https://github.com/pear-devs/pear-desktop/pull/4781) by junxiangzhan)
+
 #### v1.0.0
 
 > 26 October 2026

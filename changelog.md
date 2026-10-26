@@ -10,6 +10,7 @@ Pull requests from pear-desktop, thanks to their authors.
 
 New plugins:
 
+- Mini Player, a small always-on-top window with playback controls and synced lyrics ([pear-desktop#4711](https://github.com/pear-devs/pear-desktop/pull/4711) by pumpkinfadly)
 - Blocklist, skips the songs of artists you block ([pear-desktop#4567](https://github.com/pear-devs/pear-desktop/pull/4567) by h0tp-ftw)
 - Seek Shortcuts, seeks 5 seconds with the arrow keys ([pear-desktop#4663](https://github.com/pear-devs/pear-desktop/pull/4663) by bonkedbythonk)
 - Always Show Volume Slider ([pear-desktop#4716](https://github.com/pear-devs/pear-desktop/pull/4716) by aashish254)

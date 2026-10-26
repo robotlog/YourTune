@@ -153,16 +153,3 @@ jobs:
 
             (Note for Windows: `YourTune-Web-Setup-${{ env.VERSION_TAG }}.exe` is an installer, and `YourTune-${{ env.VERSION_TAG }}.exe` is a portable version)
 
-      - name: Update changelog
-        if: ${{ env.VERSION_HASH == '' }}
-        run: |
-          pnpm changelog
-
-      - name: Commit changelog
-        if: ${{ env.VERSION_HASH == '' }}
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9
-        with:
-          commit_message: Update changelog for ${{ env.VERSION_TAG }}
-          file_pattern: "changelog.md"
-          commit_user_name: CI
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com

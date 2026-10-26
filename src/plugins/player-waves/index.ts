@@ -103,12 +103,12 @@ const draw = (time: number) => {
   const { width, height } = canvas;
   const scale = window.devicePixelRatio;
   context.clearRect(0, 0, width, height);
-  context.globalAlpha = 0.7;
+  context.globalAlpha = 0.6;
   LAYERS.forEach((layer, index) => {
-    // solid at the crest, fading out towards the bottom edge (colors are #rrggbb, 33 is 20% alpha)
+    // solid at the bar, fading towards the crests so the page shows through (colors are #rrggbb, 26 is 15% alpha)
     const gradient = context.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, colors[index]);
-    gradient.addColorStop(1, `${colors[index]}33`);
+    gradient.addColorStop(0, `${colors[index]}26`);
+    gradient.addColorStop(1, colors[index]);
     context.beginPath();
     context.moveTo(0, height);
     const step = 4 * scale;

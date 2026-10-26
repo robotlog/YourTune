@@ -5,6 +5,15 @@ import { config } from '../renderer/renderer';
 
 import type { LyricProvider, LyricResult, SearchSongInfo } from '../types';
 
+// lrclib.net answers 503 ServerOverloaded when it's busy, a retry usually goes through
+const fetchWithRetry = async (url: string) => {
+  for (let attempt = 1; ; attempt++) {
+    const response = await fetch(url);
+    if (response.status !== 503 || attempt === 3) return response;
+    await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+  }
+};
+
 export class LRCLib implements LyricProvider {
   name = 'LRCLib';
   baseUrl = 'https://lrclib.net';
@@ -28,7 +37,7 @@ export class LRCLib implements LyricProvider {
     }
 
     let url = `${this.baseUrl}/api/search?${query.toString()}`;
-    let response = await fetch(url);
+    let response = await fetchWithRetry(url);
 
     if (!response.ok) {
       throw new Error(`bad HTTPStatus(${response.statusText})`);
@@ -49,7 +58,7 @@ export class LRCLib implements LyricProvider {
       query = new URLSearchParams({ q: `${trackName}` });
       url = `${this.baseUrl}/api/search?${query.toString()}`;
 
-      response = await fetch(url);
+      response = await fetchWithRetry(url);
       if (!response.ok) {
         throw new Error(`bad HTTPStatus(${response.statusText})`);
       }
@@ -64,7 +73,7 @@ export class LRCLib implements LyricProvider {
         query = new URLSearchParams({ q: title });
         url = `${this.baseUrl}/api/search?${query.toString()}`;
 
-        response = await fetch(url);
+        response = await fetchWithRetry(url);
         if (!response.ok) {
           throw new Error(`bad HTTPStatus(${response.statusText})`);
         }

@@ -305,7 +305,9 @@ class MusixMatchAPI {
     const {
       message: { body },
     } = this.tokenSchema.parse(JSON.parse(json));
-    return body?.user_token ?? '';
+    const token = body?.user_token ?? '';
+    // the anonymous desktop token is all zeroes now, and every lookup with it returns the same decoy lyrics
+    return /^0+$/.test(token) ? '' : token;
   }
 
   private readonly baseUrl = 'https://apic-desktop.musixmatch.com/ws/1.1/';

@@ -23,6 +23,7 @@ Fixes:
 - Amuse sends the full query so songs are recognized ([pear-desktop#4721](https://github.com/pear-devs/pear-desktop/pull/4721) by aashish254)
 - Do Not Track lets non-objects through ([pear-desktop#4781](https://github.com/pear-devs/pear-desktop/pull/4781) by junxiangzhan)
 - A failed download no longer focuses the window ([pear-desktop#4752](https://github.com/pear-devs/pear-desktop/pull/4752) by Pranjalstart679)
+- One plugin's error no longer stops the others from starting ([pear-desktop#4661](https://github.com/pear-devs/pear-desktop/pull/4661) by bonkedbythonk)
 - Navigation clears its buttons when disabled ([pear-desktop#4650](https://github.com/pear-devs/pear-desktop/pull/4650) by Angry3vilbot)
 
 #### v1.0.0

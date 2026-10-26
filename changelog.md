@@ -11,6 +11,7 @@ Pull requests from pear-desktop, thanks to their authors.
 Changes:
 
 - Playback speed changes no longer crackle, and pitch can follow the speed ([pear-desktop#4759](https://github.com/pear-devs/pear-desktop/pull/4759) by gothmiku)
+- Crossfade gets a playable stream again and no longer needs howler ([pear-desktop#4774](https://github.com/pear-devs/pear-desktop/pull/4774) by junxiangzhan)
 - Only the active language is loaded at startup ([pear-desktop#4674](https://github.com/pear-devs/pear-desktop/pull/4674) by nixoletas)
 - The window shows without waiting for the page to paint ([pear-desktop#4673](https://github.com/pear-devs/pear-desktop/pull/4673) by nixoletas)
 - cpu-tamer's frame clock runs on requestAnimationFrame ([pear-desktop#4772](https://github.com/pear-devs/pear-desktop/pull/4772) by junxiangzhan)

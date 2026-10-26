@@ -313,5 +313,8 @@ export const store = new Store({
     // README: 'plugin' uses deepmerge to populate the default values, so it is not necessary to include it here
   },
   clearInvalidConfig: false,
+  // The migrations are keyed by pear-desktop's versions, so they keep its last version instead of YourTune's own numbering.
+  // @ts-expect-error electron-store's types leave projectVersion out, but it passes it on to conf
+  projectVersion: '3.12.0',
   migrations,
 });

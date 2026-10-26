@@ -793,7 +793,8 @@
       },
       "menu": {
         "lastfm": {
-          "api-settings": "Last.fm API Ayarları"
+          "api-settings": "Last.fm API Ayarları",
+          "login": "Last.fm'e giriş yap…"
         },
         "listenbrainz": {
           "token": "ListenBrainz kullanıcı kimliğinizi girin"
@@ -826,9 +827,11 @@
       "prompt": {
         "keybind": {
           "keybind-options": {
-            "next": "İler",
+            "next": "Sonraki",
             "play-pause": "Oynat / Durdur",
-            "previous": "Önceki"
+            "previous": "Önceki",
+            "like": "Beğen",
+            "dislike": "Beğenme"
           },
           "label": "Şarkı Kontrolü için Genel Tuş Atamaları'nı seçin:",
           "title": "Genel Tuş Atamaları"
@@ -925,6 +928,10 @@
         "download": {
           "label": "Sözleri indir",
           "tooltip": "Çalan şarkının sözlerini .lrc dosyası olarak kaydetme düğmesini gösterir."
+        },
+        "big-romanization": {
+          "label": "Büyük romanize sözler",
+          "tooltip": "Romanize sözleri büyütür, kanji, hangul gibi özgün yazıyı küçültür"
         }
       },
       "name": "Senkronize Şarkı Sözleri",
@@ -1095,6 +1102,18 @@
     "dismiss-multidevice-popup": {
       "name": "Çoklu Cihaz Uyarısını Kapat",
       "description": "Çalma başka bir cihazda başlayınca çıkan \"Bu cihazda dinle\" penceresini otomatik kapatır."
+    },
+    "fullscreen-auto-hide": {
+      "name": "Tam Ekranda Otomatik Gizle",
+      "description": "Tam ekranda birkaç saniye hareketsiz kalınca oynatma kontrollerini ve fare imlecini gizler"
+    },
+    "resume-shuffle": {
+      "name": "Karışık Çalmayı Sürdür",
+      "description": "\"Uygulama başlatıldığında son şarkıyı devam ettir\" açıkken sırayı yine karışık getirir"
+    },
+    "toast-autoclose": {
+      "name": "Bildirimleri Otomatik Kapat",
+      "description": "YouTube Music bildirimlerini üç saniye sonra kapatır"
     }
   }
 }

@@ -51,6 +51,7 @@ Fixes:
 - A failed download no longer focuses the window ([pear-desktop#4752](https://github.com/pear-devs/pear-desktop/pull/4752) by Pranjalstart679)
 - One plugin's error no longer stops the others from starting ([pear-desktop#4661](https://github.com/pear-devs/pear-desktop/pull/4661) by bonkedbythonk)
 - Navigation clears its buttons when disabled ([pear-desktop#4650](https://github.com/pear-devs/pear-desktop/pull/4650) by Angry3vilbot)
+- The Windows portable build keeps its data next to the executable ([pear-desktop#4559](https://github.com/pear-devs/pear-desktop/pull/4559) by mouaad-here)
 
 #### v1.0.0
 

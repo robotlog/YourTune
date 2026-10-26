@@ -31,6 +31,7 @@ import { availableLanguages } from 'virtual:i18n';
 import { allPlugins, mainPlugins } from 'virtual:plugins';
 
 import * as config from '@/config';
+import { getWindowsPortableDir } from '@/config/portable';
 import { APPLICATION_NAME, loadI18n, setLanguage, t } from '@/i18n';
 import {
   forceLoadMainPlugin,
@@ -718,6 +719,11 @@ app.whenReady().then(async () => {
     // Check shortcut validity if not in dev mode / running portable app
     if (
       !is.dev() &&
+      !getWindowsPortableDir(
+        process.platform,
+        process.type,
+        process.env.PORTABLE_EXECUTABLE_DIR,
+      ) &&
       !appLocation.startsWith(path.join(appData, '..', 'Local', 'Temp'))
     ) {
       const shortcutPath = path.join(

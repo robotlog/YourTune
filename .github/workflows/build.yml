@@ -143,14 +143,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.get_draft_release.outputs.tag_name }}
         run: |
-          gh release download "$TAG" --dir assets
-          for f in assets/*.blockmap; do
+          dir="$RUNNER_TEMP/release"
+          gh release download "$TAG" --dir "$dir"
+          for f in "$dir"/*.blockmap; do
             [ -e "$f" ] || continue
             gh release delete-asset "$TAG" "$(basename "$f")" --yes
             rm "$f"
           done
-          (cd assets && sha256sum -- $(ls | grep -v '\.yml$') > SHA256SUMS.txt)
-          gh release upload "$TAG" assets/SHA256SUMS.txt --clobber
+          (cd "$dir" && sha256sum -- $(ls | grep -v -E '\.(yml|txt)$') > SHA256SUMS.txt)
+          gh release upload "$TAG" "$dir/SHA256SUMS.txt" --clobber
 
       - name: Publish Release (if it does not exist)
         if: ${{ env.VERSION_HASH == '' }}

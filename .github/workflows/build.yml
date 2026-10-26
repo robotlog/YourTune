@@ -117,6 +117,7 @@ jobs:
 
       - name: Get version
         run: |
+          echo "VERSION=$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
           echo "VERSION_TAG=v$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Check if version already exists in tags
@@ -135,6 +136,22 @@ jobs:
           draft: true
           searchLimit: 1
 
+      # Blockmaps are only for differential downloads, which the app doesn't do
+      - name: Add checksums, drop blockmaps
+        if: ${{ env.VERSION_HASH == '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.get_draft_release.outputs.tag_name }}
+        run: |
+          gh release download "$TAG" --dir assets
+          for f in assets/*.blockmap; do
+            [ -e "$f" ] || continue
+            gh release delete-asset "$TAG" "$(basename "$f")" --yes
+            rm "$f"
+          done
+          (cd assets && sha256sum -- $(ls | grep -v '\.yml$') > SHA256SUMS.txt)
+          gh release upload "$TAG" assets/SHA256SUMS.txt --clobber
+
       - name: Publish Release (if it does not exist)
         if: ${{ env.VERSION_HASH == '' }}
         uses: irongut/EditRelease@ccf529ad26dddf9996e7dd0f24ca5da4ea507cc2
@@ -151,5 +168,5 @@ jobs:
 
             Thanks to all contributors! 🏅
 
-            (Note for Windows: `YourTune-Web-Setup-${{ env.VERSION_TAG }}.exe` is an installer, and `YourTune-${{ env.VERSION_TAG }}.exe` is a portable version)
+            (Note for Windows: `YourTune-Setup-${{ env.VERSION }}.exe` is an installer, and `YourTune-${{ env.VERSION }}-portable.exe` is a portable version)
 

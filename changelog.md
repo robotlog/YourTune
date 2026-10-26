@@ -16,6 +16,7 @@ New plugins:
 
 Changes:
 
+- Synced lyrics can be saved as an .lrc file ([pear-desktop#4655](https://github.com/pear-devs/pear-desktop/pull/4655) by fsalamic)
 - Playback speed changes no longer crackle, and pitch can follow the speed ([pear-desktop#4759](https://github.com/pear-devs/pear-desktop/pull/4759) by gothmiku)
 - Crossfade gets a playable stream again and no longer needs howler ([pear-desktop#4774](https://github.com/pear-devs/pear-desktop/pull/4774) by junxiangzhan)
 - Only the active language is loaded at startup ([pear-desktop#4674](https://github.com/pear-devs/pear-desktop/pull/4674) by nixoletas)

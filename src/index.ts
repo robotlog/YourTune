@@ -55,6 +55,7 @@ import { isTesting } from '@/utils/testing';
 
 import packageJson from '../package.json';
 
+import type { ShortcutsPluginConfig } from '@/plugins/shortcuts';
 import type { PluginConfig } from '@/types/plugins';
 
 // Catch errors and log them
@@ -139,6 +140,23 @@ if (is.linux()) {
   app.setName('com.robotlog.yourtune');
   // for wayland
   app.commandLine.appendSwitch('class', 'com.robotlog.yourtune');
+}
+
+// Windows/macOS: Chromium's HardwareMediaKeyHandling intercepts the hardware
+// media keys before Electron's globalShortcut can receive them, so the shortcuts
+// plugin's "Override media keys" option has no effect. Release the keys to
+// globalShortcut when that option is enabled (Linux uses MPRIS instead).
+//
+// This must stay synchronous: the ESM entry point is loaded asynchronously, so
+// a top-level `await` here would let the `ready` event fire before the
+// `disable-features` switch below is applied, and Chromium would silently
+// ignore it. Read the stored config directly instead of `await isEnabled(...)`.
+if (!is.linux()) {
+  const shortcutsConfig =
+    config.plugins.getOptions<ShortcutsPluginConfig>('shortcuts');
+  if (shortcutsConfig?.enabled && shortcutsConfig?.overrideMediaKeys) {
+    disabledFeatures.push('HardwareMediaKeyHandling');
+  }
 }
 
 if (disableHardwareAcceleration) {

@@ -593,6 +593,10 @@
       "description": "Ses seviyesi kaydırıcısını üstel hale getirir, böylece daha düşük ses seviyelerini seçmek daha kolay olur.",
       "name": "Üstel Ses Seviyesi"
     },
+    "floating-player-bar": {
+      "description": "Oynatıcı çubuğunu pencere kenarlarından ayırır, köşeleri yuvarlak ve gölgeli olur",
+      "name": "Yüzen Oynatıcı Çubuğu"
+    },
     "in-app-menu": {
       "description": "Menü çubuklarına süslü, koyu veya albüm renginde bir görünüm verir",
       "menu": {

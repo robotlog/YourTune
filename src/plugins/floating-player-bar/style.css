@@ -1,0 +1,19 @@
+/* the bar's background is a separate element, so both move together */
+#player-bar-background.ytmusic-app-layout,
+ytmusic-player-bar {
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  width: auto !important;
+  border-radius: 16px !important;
+}
+
+#player-bar-background.ytmusic-app-layout {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* keep the straight progress track inside the rounded corners */
+#progress-bar.ytmusic-player-bar {
+  width: calc(100% - 32px) !important;
+  translate: 16px 0;
+}

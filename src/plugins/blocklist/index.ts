@@ -30,6 +30,7 @@ export const defaultConfig: BlocklistPluginConfig = {
 export default createPlugin({
   name: () => t('plugins.blocklist.name'),
   description: () => t('plugins.blocklist.description'),
+  addedVersion: '1.1.X',
   restartNeeded: true,
   config: defaultConfig,
   stylesheets: [style],

@@ -14,6 +14,7 @@ const isTypingTarget = (target: EventTarget | null): boolean => {
 export default createPlugin({
   name: () => t('plugins.seek-shortcuts.name'),
   description: () => t('plugins.seek-shortcuts.description'),
+  addedVersion: '1.1.X',
   restartNeeded: false,
   config: {
     enabled: false,

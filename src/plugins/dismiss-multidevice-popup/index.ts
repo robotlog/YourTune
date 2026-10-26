@@ -6,7 +6,7 @@ const MULTIDEVICE_RENDERER = 'ytmusic-you-there-renderer';
 export default createPlugin<unknown, unknown, { observer?: MutationObserver }>({
   name: () => t('plugins.dismiss-multidevice-popup.name'),
   description: () => t('plugins.dismiss-multidevice-popup.description'),
-  addedVersion: '3.12.X',
+  addedVersion: '1.1.X',
   restartNeeded: false,
   renderer: {
     start() {

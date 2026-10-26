@@ -6,7 +6,7 @@ import style from './style.css?inline';
 export default createPlugin({
   name: () => t('plugins.always-show-volume-slider.name'),
   description: () => t('plugins.always-show-volume-slider.description'),
-  addedVersion: '3.12.X',
+  addedVersion: '1.1.X',
   restartNeeded: false,
   renderer: {
     styleSheet: null as CSSStyleSheet | null,

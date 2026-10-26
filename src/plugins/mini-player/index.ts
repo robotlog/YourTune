@@ -28,7 +28,7 @@ export default createPlugin<
   description: () => t('plugins.mini-player.description'),
   authors: ['pumpkinfadly'],
   restartNeeded: true,
-  addedVersion: '3.12.X',
+  addedVersion: '1.1.X',
   config: {
     enabled: false,
     visible: false,

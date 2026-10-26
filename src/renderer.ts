@@ -21,6 +21,7 @@ import {
 import { startingPages } from './providers/extracted-data';
 import {
   getLikeStatus,
+  getRepeatMode,
   isShuffled,
   nextTrack,
   previousTrack,
@@ -30,6 +31,7 @@ import {
 } from './providers/player-ui';
 import { setupSongInfo } from './providers/song-info-front';
 
+import type { RepeatMode } from '@/types/datahost-get-state';
 import type { MusicPlayer } from '@/types/music-player';
 import type { MusicPlayerAppElement } from '@/types/music-player-app-element';
 import type { QueueResponse } from '@/types/music-player-desktop-internal';
@@ -132,6 +134,65 @@ async function onApiLoaded() {
     window.ipcRenderer.send('peard:get-shuffle-response', isShuffled());
   });
 
+  const repeatModeOrder: RepeatMode[] = ['NONE', 'ALL', 'ONE'];
+
+  let preferredRepeatMode = getRepeatMode(document);
+
+  const rememberPreferredRepeatMode = () => {
+    preferredRepeatMode = getRepeatMode(document) ?? preferredRepeatMode;
+  };
+
+  const switchRepeatToMode = async (targetMode: RepeatMode) => {
+    const currentMode = getRepeatMode(document);
+    if (!currentMode) {
+      return;
+    }
+
+    const currentIndex = repeatModeOrder.indexOf(currentMode);
+    const targetIndex = repeatModeOrder.indexOf(targetMode);
+    if (currentIndex < 0 || targetIndex < 0) {
+      return;
+    }
+
+    const repeatSwitches =
+      (targetIndex - currentIndex + repeatModeOrder.length) %
+      repeatModeOrder.length;
+    await switchRepeat(document, repeatSwitches);
+  };
+
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          '#right-controls .repeat, ytmusic-miniplayer .ytmusicPlayerControlsMainControls button[aria-pressed]',
+        )
+      ) {
+        window.setTimeout(rememberPreferredRepeatMode, 0);
+      }
+    },
+    { capture: true },
+  );
+
+  document.addEventListener('videodatachange', (event) => {
+    const { detail } = event;
+    if (detail?.name !== 'dataloaded') {
+      return;
+    }
+
+    const modeToRestore = preferredRepeatMode;
+    if (!modeToRestore || modeToRestore === 'NONE') {
+      return;
+    }
+
+    window.setTimeout(() => {
+      if (getRepeatMode() === 'NONE') {
+        switchRepeatToMode(modeToRestore).catch(console.error);
+      }
+    }, 350);
+  });
+
   window.ipcRenderer.on(
     'peard:update-like',
     (_, status: 'LIKE' | 'DISLIKE' = 'LIKE') => {
@@ -142,7 +203,9 @@ async function onApiLoaded() {
     window.ipcRenderer.send('peard:get-like-status-response', getLikeStatus());
   });
   window.ipcRenderer.on('peard:switch-repeat', (_, repeat: number = 1) => {
-    switchRepeat(document, repeat);
+    switchRepeat(document, repeat)
+      .then(rememberPreferredRepeatMode)
+      .catch(console.error);
   });
   window.ipcRenderer.on('peard:update-volume', (_, volume: number) => {
     const value = Math.min(100, Math.max(0, Math.round(volume)));

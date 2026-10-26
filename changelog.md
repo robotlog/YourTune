@@ -15,6 +15,7 @@ Changes:
 
 Fixes:
 
+- Repeat mode stays on when the track changes ([pear-desktop#4357](https://github.com/pear-devs/pear-desktop/pull/4357) by bharatvansh)
 - Precise Volume works with the new player UI ([pear-desktop#4746](https://github.com/pear-devs/pear-desktop/pull/4746) by WoWfff)
 - Volume set through the API reads back the same ([pear-desktop#4672](https://github.com/pear-devs/pear-desktop/pull/4672) by nixoletas)
 - Skip Disliked Songs no longer skips two songs ([pear-desktop#4618](https://github.com/pear-devs/pear-desktop/pull/4618) by jirafey)

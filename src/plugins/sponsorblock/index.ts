@@ -7,7 +7,6 @@ import { sortSegments } from './segments';
 
 import type { Segment, SkipSegment } from './types';
 import type { GetPlayerResponse } from '@/types/get-player-response';
-import type { MusicPlayer } from '@/types/music-player';
 
 export type SponsorBlockPluginConfig = {
   enabled: boolean;

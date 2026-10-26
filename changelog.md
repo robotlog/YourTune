@@ -16,6 +16,7 @@ New plugins:
 - Always Show Volume Slider ([pear-desktop#4716](https://github.com/pear-devs/pear-desktop/pull/4716) by aashish254)
 - Dismiss Multidevice Popup, closes the "Listen on this device" popup ([pear-desktop#4718](https://github.com/pear-devs/pear-desktop/pull/4718) by aashish254)
 - Toast Auto-Close, closes YouTube Music's toasts after three seconds ([pear-desktop#4642](https://github.com/pear-devs/pear-desktop/pull/4642) by kvn1351)
+- Fullscreen Auto-hide, hides the controls and the cursor while idle in fullscreen ([pear-desktop#4664](https://github.com/pear-devs/pear-desktop/pull/4664) by bonkedbythonk)
 
 Changes:
 

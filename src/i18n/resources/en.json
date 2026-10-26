@@ -618,6 +618,10 @@
       "description": "Lifts the player bar off the window edges, with rounded corners and a shadow",
       "name": "Floating Player Bar"
     },
+    "fullscreen-auto-hide": {
+      "description": "Automatically hide the player controls and mouse cursor after a few seconds of inactivity while in fullscreen",
+      "name": "Fullscreen Auto-hide"
+    },
     "in-app-menu": {
       "description": "Gives menu-bars a fancy, dark or album-color look",
       "menu": {

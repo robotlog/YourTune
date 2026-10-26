@@ -14,7 +14,7 @@ YourTune is a continuation of [pear-desktop](https://github.com/pear-devs/pear-d
 Upstream development has slowed down and a lot of fixes are sitting in open pull requests there, so this repo picks them up and keeps shipping releases.
 The full history is kept, every commit still belongs to its original author.
 
-If you used pear-desktop before, your settings and plugin data are copied over the first time you start YourTune. The old app's data is left as it is.
+If you used [pear-desktop](https://github.com/pear-devs/pear-desktop) before, your settings and plugin data are copied over the first time you start YourTune. The old app's data is left as it is.
 
 <!--![Screenshot](web/screenshot.png "Screenshot")-->
 
@@ -37,6 +37,7 @@ If you used pear-desktop before, your settings and plugin data are copied over t
 
 ## Content
 
+- [YourTune and pear-desktop](#yourtune-and-pear-desktop)
 - [Translation](#translation)
 - [Download](#download)
 - [Themes](#themes)
@@ -50,13 +51,23 @@ If you used pear-desktop before, your settings and plugin data are copied over t
 - [License](#license)
 - [FAQ](#faq)
 
+## YourTune and pear-desktop
+
+We love [pear-desktop](https://github.com/pear-devs/pear-desktop). YourTune is built on all of its work, so the plugins and settings you know from it are here too. What's different:
+
+- **Fixes land sooner.** Fixes that are still waiting in [pear-desktop's open pull requests](https://github.com/pear-devs/pear-desktop/pulls) get picked up here, like the previous/next buttons for the new player UI ([pear-desktop#4750](https://github.com/pear-devs/pear-desktop/pull/4750)).
+- **Regular releases.** Every version bump on master ships a release, and the app tells you when a new one is out.
+- **Our own look.** Two new plugins, on by default: Player Waves (colored waves above the player bar that follow the cover and the music) and Floating Player Bar. The app has its own icon too.
+- **A separate app.** YourTune installs next to [pear-desktop](https://github.com/pear-devs/pear-desktop) with its own data folder and url scheme, and copies your pear-desktop settings on its first start.
+- **No Discord status for now.** Rich presence is off until YourTune has its own Discord application.
+
 ## Translation
 
 Translations live in [`src/i18n/resources`](src/i18n/resources). Pull requests are welcome.
 
 ## Download
 
-There are no releases yet. Until the first one, build it yourself (see [Build](#build)).
+Download the latest version from the [releases page](https://github.com/robotlog/YourTune/releases/latest), or build it yourself (see [Build](#build)).
 
 ## Themes
 

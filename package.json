@@ -2,7 +2,7 @@
   "name": "yourtune",
   "desktopName": "com.robotlog.yourtune",
   "productName": "YourTune",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Desktop music player with custom plugins",
   "main": "./dist/main/index.js",
   "type": "module",

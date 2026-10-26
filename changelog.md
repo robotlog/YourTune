@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
-#### Unreleased
+#### v1.1.0
+
+> 27 October 2026
 
 Pull requests from pear-desktop, thanks to their authors.
 
@@ -57,6 +59,13 @@ Fixes:
 - One plugin's error no longer stops the others from starting ([pear-desktop#4661](https://github.com/pear-devs/pear-desktop/pull/4661) by bonkedbythonk)
 - Navigation clears its buttons when disabled ([pear-desktop#4650](https://github.com/pear-devs/pear-desktop/pull/4650) by Angry3vilbot)
 - The Windows portable build keeps its data next to the executable ([pear-desktop#4559](https://github.com/pear-devs/pear-desktop/pull/4559) by mouaad-here)
+
+In YourTune:
+
+- The player no longer stays on an old song while the queue moves on, when YouTube Music sends a song without the timing of its video version.
+- Turkish translations for the new plugins.
+- Security updates for dependencies.
+- Windows gets a full installer (`YourTune-Setup-1.1.0.exe`) instead of the web installer, and releases come with `SHA256SUMS.txt`.
 
 #### v1.0.0
 

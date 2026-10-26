@@ -108,6 +108,25 @@ async function onApiLoaded() {
       window.dispatchEvent(new Event('resize')),
     );
 
+  // YTM's song/video switch throws on a queue item whose counterpart has a
+  // segmentMap without `segment`. When that happens while a new song starts,
+  // its preloaded endpoint is never cleared and the player stays on that song
+  // while the queue moves on. An empty list starts the counterpart at 0.
+  {
+    const store =
+      document.querySelector<QueueElement>('#queue')?.queue.store.store;
+    const fillMissingSegments = () => {
+      for (const item of store?.getState().queue.items ?? []) {
+        for (const { segmentMap } of item.playlistPanelVideoWrapperRenderer
+          ?.counterpart ?? []) {
+          if (segmentMap) segmentMap.segment ??= [];
+        }
+      }
+    };
+    fillMissingSegments();
+    store?.subscribe(fillMissingSegments);
+  }
+
   window.ipcRenderer.on('peard:previous-video', () => {
     previousTrack();
   });

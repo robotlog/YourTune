@@ -1589,7 +1589,7 @@ export interface PlaylistPanelVideoWrapperRenderer {
 
 export interface Counterpart {
   counterpartRenderer: CounterpartRenderer;
-  segmentMap: SegmentMap;
+  segmentMap?: SegmentMap;
 }
 
 export interface CounterpartRenderer {
@@ -1644,7 +1644,8 @@ export interface FluffyServiceEndpoint {
 }
 
 export interface SegmentMap {
-  segment: Segment[];
+  // Sometimes missing from YTM's data
+  segment?: Segment[];
 }
 
 export interface Segment {

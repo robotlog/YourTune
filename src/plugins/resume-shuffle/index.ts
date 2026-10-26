@@ -65,7 +65,7 @@ export default createPlugin<
 >({
   name: () => t('plugins.resume-shuffle.name'),
   description: () => t('plugins.resume-shuffle.description'),
-  addedVersion: '3.13.X',
+  addedVersion: '1.1.X',
   restartNeeded: false,
   config: {
     enabled: false,

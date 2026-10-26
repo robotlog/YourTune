@@ -112,6 +112,7 @@ export default createPlugin<
 >({
   name: () => t('plugins.fullscreen-auto-hide.name'),
   description: () => t('plugins.fullscreen-auto-hide.description'),
+  addedVersion: '1.1.X',
   restartNeeded: false,
   config: {
     enabled: false,

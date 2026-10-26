@@ -8,6 +8,7 @@ type Toast = HTMLElement & { close?: () => void };
 export default createPlugin({
   name: () => t('plugins.toast-autoclose.name'),
   description: () => t('plugins.toast-autoclose.description'),
+  addedVersion: '1.1.X',
   restartNeeded: false,
   config: {
     enabled: false,

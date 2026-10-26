@@ -32,6 +32,7 @@ Changes:
 - The Windows taskbar thumbnail buttons are on by default ([pear-desktop#4675](https://github.com/pear-devs/pear-desktop/pull/4675) by nixoletas)
 - Like and dislike shortcuts ([pear-desktop#4578](https://github.com/pear-devs/pear-desktop/pull/4578) by Chaganti-Reddy)
 - Synced lyrics can show romanized lines bigger than the original ([pear-desktop#4580](https://github.com/pear-devs/pear-desktop/pull/4580) by AARP41298)
+- Scrobbler has a Log in to Last.fm entry, and the Last.fm token never goes over plain http ([pear-desktop#4717](https://github.com/pear-devs/pear-desktop/pull/4717) by aashish254)
 
 Fixes:
 

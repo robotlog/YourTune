@@ -875,7 +875,8 @@
       },
       "menu": {
         "lastfm": {
-          "api-settings": "Last.fm API Settings"
+          "api-settings": "Last.fm API Settings",
+          "login": "Log in to Last.fm…"
         },
         "listenbrainz": {
           "token": "Enter ListenBrainz user token"

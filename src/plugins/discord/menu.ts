@@ -2,7 +2,7 @@ import prompt from 'custom-electron-prompt';
 import { StatusDisplayType } from 'discord-api-types/v10';
 
 import { setMenuOptions } from '@/config/plugins';
-import { APPLICATION_NAME, t } from '@/i18n';
+import { SERVICE_NAME, t } from '@/i18n';
 import { singleton } from '@/providers/decorators';
 import promptOptions from '@/providers/prompt-options';
 
@@ -116,7 +116,7 @@ export const onMenu = async ({
               statusDisplayType as StatusDisplayType
             ],
             {
-              applicationName: APPLICATION_NAME,
+              applicationName: SERVICE_NAME,
             },
           ),
           type: 'radio',

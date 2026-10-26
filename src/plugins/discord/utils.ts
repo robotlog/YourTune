@@ -1,4 +1,4 @@
-import { APPLICATION_NAME } from '@/i18n';
+import { SERVICE_NAME } from '@/i18n';
 
 import { HANGUL_FILLER } from './constants';
 
@@ -61,14 +61,14 @@ export const buildDiscordButtons = (
     songInfo.url
   ) {
     buttons.push({
-      label: `Play on ${APPLICATION_NAME}`,
+      label: `Play on ${SERVICE_NAME}`,
       url: songInfo.url,
     });
   }
   if (!config.hideGitHubButton) {
     buttons.push({
       label: 'View App On GitHub',
-      url: 'https://github.com/pear-devs/pear-desktop',
+      url: 'https://github.com/robotlog/YourTune',
     });
   }
   return buttons.length ? buttons : undefined;

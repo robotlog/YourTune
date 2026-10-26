@@ -1,16 +1,18 @@
 <div align="center">
 
-# :pear: Pear Desktop
+# YourTune
 
-[![GitHub release](https://img.shields.io/github/release/pear-devs/pear-desktop.svg?style=for-the-badge)](https://github.com/pear-devs/pear-desktop/releases/)
-[![GitHub license](https://img.shields.io/github/license/pear-devs/pear-desktop.svg?style=for-the-badge)](https://github.com/pear-devs/pear-desktop/blob/master/license)
-[![eslint code style](https://img.shields.io/badge/code_style-eslint-5ed9c7.svg?style=for-the-badge)](https://github.com/pear-devs/pear-desktop/blob/master/eslint.config.mjs)
-[![Build status](https://img.shields.io/github/actions/workflow/status/pear-devs/pear-desktop/build.yml?branch=master&style=for-the-badge)](https://GitHub.com/pear-devs/pear-desktop/releases/)
-[![GitHub All Releases](https://img.shields.io/github/downloads/pear-devs/pear-desktop/total?style=for-the-badge)](https://GitHub.com/pear-devs/pear-desktop/releases/)
-<!--[![AUR](https://img.shields.io/aur/version/pear-desktop-bin?color=blueviolet&style=for-the-badge)](https://aur.archlinux.org/packages/pear-desktop-bin)-->
-[![Known Vulnerabilities](https://snyk.io/test/github/pear-devs/pear-desktop/badge.svg)](https://snyk.io/test/github/pear-devs/pear-desktop)
+[![GitHub release](https://img.shields.io/github/release/robotlog/YourTune.svg?style=for-the-badge)](https://github.com/robotlog/YourTune/releases/)
+[![GitHub license](https://img.shields.io/github/license/robotlog/YourTune.svg?style=for-the-badge)](https://github.com/robotlog/YourTune/blob/master/license)
+[![Build status](https://img.shields.io/github/actions/workflow/status/robotlog/YourTune/build.yml?branch=master&style=for-the-badge)](https://github.com/robotlog/YourTune/actions)
 
 </div>
+
+YourTune is a continuation of [pear-desktop](https://github.com/pear-devs/pear-desktop) (formerly th-ch/youtube-music): a desktop music player with custom plugins.
+Upstream development has slowed down and a lot of fixes are sitting in open pull requests there, so this repo picks them up and keeps shipping releases.
+The full history is kept, every commit still belongs to its original author.
+
+If you used pear-desktop before, your settings and plugin data are copied over the first time you start YourTune. The old app's data is left as it is.
 
 <!--![Screenshot](web/screenshot.png "Screenshot")-->
 
@@ -21,7 +23,7 @@
 >
 > **No Affiliation**
 >
-> This project, and its contributors, are not affiliated with, authorized by, endorsed by, or in any way officially connected with Google LLC, YouTube, or any of their subsidiaries or affiliates. **This is an independent, non-profit, and unofficial extension developed by a team of volunteers with the goal of providing a desktop experience.**
+> This project, and its contributors, are not affiliated with, authorized by, endorsed by, or in any way officially connected with Google LLC, YouTube, or any of their subsidiaries or affiliates. **This is an independent, non-profit, and unofficial extension developed by volunteers with the goal of providing a desktop experience.**
 >
 > **Trademarks**
 >
@@ -33,14 +35,8 @@
 
 ## Content
 
-- [Features](#features)
 - [Translation](#translation)
 - [Download](#download)
-  - [Arch Linux](#arch-linux)
-  - [Solus](#solus)
-  - [MacOS](#macos)
-  - [Windows](#windows)
-    - [How to install without a network connection? (in Windows)](#how-to-install-without-a-network-connection-in-windows)
 - [Themes](#themes)
 - [Dev](#dev)
 - [Build your own plugins](#build-your-own-plugins)
@@ -54,73 +50,11 @@
 
 ## Translation
 
-You can help with translation on [Hosted Weblate](https://bit.ly/48n5YF7).
-
-<a href="https://bit.ly/48n5YF7">
-  <img src="https://bit.ly/4q83L6S" alt="translation status" />
-  <img src="https://bit.ly/4h3zBxo" alt="translation status 2" />
-</a>
+Translations live in [`src/i18n/resources`](src/i18n/resources). Pull requests are welcome.
 
 ## Download
 
-You can check out the [latest release](https://github.com/pear-devs/pear-desktop/releases/latest) to quickly find the
-latest version.
-
-### Arch Linux
-
-Install the [`pear-desktop`](https://aur.archlinux.org/packages/pear-desktop) package from the AUR. For AUR installation instructions, take a look at
-this [wiki page](https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_packages).
-
-### [Solus](https://getsol.us/)
-
-```bash
-sudo eopkg install pear-desktop
-```
-
-### macOS
-
-You can install the app using Homebrew (see the [cask definition](https://github.com/pear-devs/homebrew-pear)):
-
-```bash
-brew install pear-devs/pear/pear-desktop
-```
-
-If you install the app manually and get an error "is damaged and can’t be opened." when launching the app, run the following in the Terminal:
-
-```bash
-/usr/bin/xattr -cr /Applications/Pear\ Desktop.app
-```
-
-### Windows
-
-You can use the [Scoop package manager](https://scoop.sh) to install the `pear-desktop` package from
-the [`extras` bucket](https://github.com/ScoopInstaller/Extras).
-
-```bash
-scoop bucket add extras
-scoop install extras/pear-desktop
-```
-
-Alternately you can use [Winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/), Windows 11s
-official CLI package manager to install the `pear-devs.pear-desktop` package.
-
-*Note: Microsoft Defender SmartScreen might block the installation since it is from an "unknown publisher". This is also
-true for the manual installation when trying to run the executable(.exe) after a manual download here on github (same
-file).*
-
-```bash
-winget install pear-devs.pear-desktop
-```
-
-#### How to install without a network connection? (in Windows)
-
-- Download the `*.nsis.7z` file for _your device architecture_ in [release page](https://github.com/pear-devs/pear-desktop/releases/latest).
-  - `x64` for 64-bit Windows
-  - `ia32` for 32-bit Windows
-  - `arm64` for ARM64 Windows
-- Download installer in release page. (`*-Setup.exe`)
-- Place them in the **same directory**.
-- Run the installer.
+There are no releases yet. Until the first one, build it yourself (see [Build](#build)).
 
 ## Themes
 
@@ -131,8 +65,8 @@ Some predefined themes are available in https://github.com/kerichdev/themes-for-
 ## Dev
 
 ```bash
-git clone https://github.com/pear-devs/pear-desktop
-cd pear-desktop
+git clone https://github.com/robotlog/YourTune
+cd YourTune
 pnpm install --frozen-lockfile
 pnpm dev
 ```
@@ -230,7 +164,7 @@ import { createPlugin } from '@/utils';
 
 export default createPlugin({
   name: 'Plugin Label',
-  restartNeeded: true, // if value is true, pear-desktop will show a restart dialog
+  restartNeeded: true, // if value is true, YourTune will show a restart dialog
   config: {
     enabled: false,
   }, // your custom config
@@ -264,7 +198,7 @@ export default createPlugin({
 1. Clone the repo
 2. Follow [this guide](https://pnpm.io/installation) to install `pnpm`
 3. Run `pnpm install --frozen-lockfile` to install dependencies
-4. Run `pnpm build:OS`
+4. Run `pnpm dist:OS`
 
 - `pnpm dist:win` - Windows
 - `pnpm dist:linux` - Linux (amd64)
@@ -302,7 +236,7 @@ Uses [Playwright](https://playwright.dev/) to test the app.
 
 ## License
 
-MIT © [pear-devs](https://github.com/pear-devs/pear-desktop)
+MIT © [pear-devs](https://github.com/pear-devs/pear-desktop) and the [YourTune contributors](https://github.com/robotlog/YourTune/graphs/contributors)
 
 ## FAQ
 

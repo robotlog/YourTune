@@ -1,5 +1,5 @@
-appId: "com.github.th-ch.\u0079\u006f\u0075\u0074\u0075\u0062\u0065\u002d\u006d\u0075\u0073\u0069\u0063"
-productName: "\u0059\u006f\u0075\u0054\u0075\u0062\u0065\u0020\u004d\u0075\u0073\u0069\u0063"
+appId: "com.robotlog.yourtune"
+productName: "YourTune"
 files:
   - '!*'
   - dist
@@ -44,7 +44,7 @@ linux:
   syncDesktopName: true
   desktop:
     entry:
-      StartupWMClass: "com.github.th-ch.\u0079\u006f\u0075\u0074\u0075\u0062\u0065\u002d\u006d\u0075\u0073\u0069\u0063"
+      StartupWMClass: "com.robotlog.yourtune"
   target:
     - target: AppImage
       arch:
@@ -77,10 +77,10 @@ linux:
         - arm64
         - armv7l
 appImage:
-  description: "\u0059\u006f\u0075\u0054\u0075\u0062\u0065\u0020\u004d\u0075\u0073\u0069\u0063 Desktop App bundled with custom plugins"
+  description: "Desktop music player with custom plugins"
   category: AudioVideo
 flatpak:
-  description: "\u0059\u006f\u0075\u0054\u0075\u0062\u0065\u0020\u004d\u0075\u0073\u0069\u0063 Desktop App bundled with custom plugins"
+  description: "Desktop music player with custom plugins"
   category: AudioVideo
   runtimeVersion: '24.08'
   baseVersion: '24.08'
@@ -95,7 +95,7 @@ flatpak:
     - '--talk-name=org.freedesktop.Notifications'
     - '--talk-name=org.gnome.SessionManager'
     - '--talk-name=org.kde.StatusNotifierWatcher'
-    - "--own-name=org.mpris.MediaPlayer2.\u0059\u006f\u0075\u0074\u0075\u0062\u0065\u004d\u0075\u0073\u0069\u0063.*"
+    - "--own-name=org.mpris.MediaPlayer2.YourTune.*"
 deb:
   depends:
     - libgtk-3-0

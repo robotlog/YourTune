@@ -1,4 +1,4 @@
-import { APPLICATION_NAME, t } from '@/i18n';
+import { SERVICE_NAME, t } from '@/i18n';
 import { createPlugin } from '@/utils';
 
 import backend from './backend';
@@ -15,7 +15,7 @@ export default createPlugin({
   name: () => t('plugins.amuse.name'),
   description: () =>
     t('plugins.amuse.description', {
-      applicationName: APPLICATION_NAME,
+      applicationName: SERVICE_NAME,
     }),
   addedVersion: '3.7.X',
   restartNeeded: true,

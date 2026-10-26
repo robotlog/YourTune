@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a Pear Desktop bug
+description: Report a YourTune bug
 title: "[Bug]: "
 labels: "bug :beetle:"
 body:
@@ -8,18 +8,18 @@ body:
     label: Preflight Checklist
     description: Please ensure you've completed all of the following.
     options:
-      - label: I use the latest version of Pear Desktop (Application).
+      - label: I use the latest version of YourTune (Application).
         required: true
-      - label: I have searched the [issue tracker](https://github.com/pear-devs/pear-desktop/issues) for a bug report that matches the one I want to file, without success.
+      - label: I have searched the [issue tracker](https://github.com/robotlog/YourTune/issues) for a bug report that matches the one I want to file, without success.
         required: true
-      - label: I understand that **pear-devs/pear-desktop has NO affiliation with Google or YouTube**
+      - label: I understand that **robotlog/YourTune has NO affiliation with Google or YouTube**
         required: true
 - type: input
   id: app-version
   attributes:
-    label: Pear Desktop (Application) Version
+    label: YourTune (Application) Version
     description: |
-      What version of the Pear Desktop Application are you using?
+      What version of the YourTune Application are you using?
 
       Note: Please check if this issue is reproducible with the latest stable release.
     placeholder: 2.0.0
@@ -29,7 +29,7 @@ body:
   attributes:
     label: Checklists
     options:
-      - label: I use the portable version of the Pear Desktop Application.
+      - label: I use the portable version of the YourTune Application.
       - label: I can reproduce this issue in the [official version of (WEB) YTM](https://music.youtube.com).
 - type: dropdown
   id: os
@@ -64,8 +64,8 @@ body:
     required: true
 - type: input
   attributes:
-    label: Last Known Working Pear Desktop (Application) version
-    description: (If applicable) What is the last version of Pear Desktop this worked in?
+    label: Last Known Working YourTune (Application) version
+    description: (If applicable) What is the last version of YourTune this worked in?
     placeholder: 1.20.0
 - type: textarea
   attributes:

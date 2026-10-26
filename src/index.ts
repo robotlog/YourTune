@@ -130,14 +130,9 @@ if (is.linux()) {
   }
 
   // Overrides WM_CLASS for X11 to correspond to icon filename
-  app.setName(
-    'com.github.th-ch.\u0079\u006f\u0075\u0074\u0075\u0062\u0065\u002d\u006d\u0075\u0073\u0069\u0063',
-  );
+  app.setName('com.robotlog.yourtune');
   // for wayland
-  app.commandLine.appendSwitch(
-    'class',
-    'com.github.th-ch.\u0079\u006f\u0075\u0074\u0075\u0062\u0065\u002d\u006d\u0075\u0073\u0069\u0063',
-  );
+  app.commandLine.appendSwitch('class', 'com.robotlog.yourtune');
 }
 
 if (disableHardwareAcceleration) {
@@ -673,8 +668,7 @@ app.whenReady().then(async () => {
 
   // Register appID on windows
   if (is.windows()) {
-    const appID =
-      'com.github.th-ch.\u0079\u006f\u0075\u0074\u0075\u0062\u0065\u002d\u006d\u0075\u0073\u0069\u0063';
+    const appID = 'com.robotlog.yourtune';
     app.setAppUserModelId(appID);
     const appLocation = process.execPath;
     const appData = app.getPath('appData');
@@ -818,7 +812,7 @@ app.whenReady().then(async () => {
     }, 2000);
     electronUpdater.autoUpdater.on('update-available', () => {
       const downloadLink =
-        'https://github.com/pear-devs/pear-desktop/releases/latest';
+        'https://github.com/robotlog/YourTune/releases/latest';
       const dialogOptions: Electron.MessageBoxOptions = {
         type: 'info',
         buttons: [

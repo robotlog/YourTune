@@ -63,7 +63,7 @@ class YTPlayer extends MprisPlayer {
 
 function setupMPRIS() {
   const instance = new YTPlayer({
-    name: '\u0059\u006f\u0075\u0074\u0075\u0062\u0065\u004d\u0075\u0073\u0069\u0063',
+    name: 'YourTune',
     identity: APPLICATION_NAME,
     supportedMimeTypes: ['audio/mpeg'],
     supportedInterfaces: ['player'],

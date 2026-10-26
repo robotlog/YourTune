@@ -27,6 +27,7 @@ Changes:
 - Ambient mode skips a redundant canvas read and write ([pear-desktop#4665](https://github.com/pear-devs/pear-desktop/pull/4665) by bonkedbythonk)
 - Shortcuts are on by default, so Linux gets MPRIS out of the box ([pear-desktop#4571](https://github.com/pear-devs/pear-desktop/pull/4571) by Chaganti-Reddy)
 - The Windows taskbar thumbnail buttons are on by default ([pear-desktop#4675](https://github.com/pear-devs/pear-desktop/pull/4675) by nixoletas)
+- Like and dislike shortcuts ([pear-desktop#4578](https://github.com/pear-devs/pear-desktop/pull/4578) by Chaganti-Reddy)
 
 Fixes:
 

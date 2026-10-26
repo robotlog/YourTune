@@ -730,6 +730,10 @@
       "name": "Oynatma Hızı",
       "templates": {
         "button": "Hız"
+      },
+      "menu": {
+        "allow-extreme-speeds": "Uç hızlara izin ver (ses kesik kesik gelebilir)",
+        "pitch-follows-speed": "Perde hızla değişsin (ses daha akıcı, perde hızla birlikte değişir)"
       }
     },
     "player-waves": {
@@ -917,6 +921,10 @@
         "show-time-codes": {
           "label": "Zaman kodlarını göster",
           "tooltip": "Şarkı sözlerinin yanında zaman kodlarını gösterin"
+        },
+        "download": {
+          "label": "Sözleri indir",
+          "tooltip": "Çalan şarkının sözlerini .lrc dosyası olarak kaydetme düğmesini gösterir."
         }
       },
       "name": "Senkronize Şarkı Sözleri",
@@ -1005,6 +1013,88 @@
         "visualizer-type": "Görselleştirici Tipi"
       },
       "name": "Görselleştirici"
+    },
+    "always-show-volume-slider": {
+      "name": "Ses Çubuğu Hep Görünsün",
+      "description": "Ses çubuğunu yalnız üzerine gelince değil, her zaman görünür ve sürüklenebilir tutar."
+    },
+    "blocklist": {
+      "name": "Engel Listesi",
+      "description": "Engellediğin sanatçıların şarkılarını otomatik atlar",
+      "templates": {
+        "button": "Engelle: {{name}}"
+      },
+      "menu": {
+        "add": {
+          "label": "Engellenecek sanatçı ekle…",
+          "prompt-title": "Sanatçı engelle",
+          "prompt-label": "Sanatçı adı"
+        },
+        "no-artists": "Engellenmiş sanatçı yok",
+        "remove": "Kaldır",
+        "clear": "Hepsini temizle"
+      }
+    },
+    "mini-player": {
+      "name": "Mini Oynatıcı",
+      "description": "Oynatma kontrolleri olan, hep üstte duran küçük oynatıcı penceresi",
+      "menu": {
+        "visible": {
+          "label": "Mini oynatıcıyı göster",
+          "tooltip": "Mini oynatıcı penceresini açar ya da kapatır"
+        },
+        "always-on-top": {
+          "label": "Her zaman üstte",
+          "tooltip": "Mini oynatıcıyı diğer tüm pencerelerin üstünde tutar"
+        },
+        "hide-meta": {
+          "label": "Albüm kapağını ve şarkı bilgisini gizle",
+          "tooltip": "Mini oynatıcıda albüm kapağını, şarkı adını ve sanatçıyı gizler (oynatma düğmeleri kalır)"
+        },
+        "show-lyrics": {
+          "label": "Sözleri göster",
+          "tooltip": "Mini oynatıcıdaki söz alanını gösterir ya da gizler"
+        },
+        "transparent-bg": {
+          "label": "Saydam arka plan",
+          "tooltip": "Mini oynatıcının arka planını gizler, sözler masaüstünün üstünde süzülür"
+        },
+        "lyrics-emphasis": {
+          "label": "Söz vurgusu",
+          "tooltip": "Çalan satırın diğerlerinden ne kadar büyük olacağını seç",
+          "none": "Yok",
+          "subtle": "Hafif",
+          "normal": "Normal",
+          "strong": "Güçlü"
+        },
+        "lyrics-color": {
+          "label": "Söz rengi",
+          "tooltip": "Mini oynatıcıdaki söz yazısının rengini seç",
+          "colors": {
+            "white": "Beyaz",
+            "gold": "Altın",
+            "yellow": "Sarı",
+            "cyan": "Camgöbeği",
+            "light-blue": "Açık mavi",
+            "green": "Yeşil",
+            "red": "Kırmızı",
+            "pink": "Pembe"
+          }
+        }
+      },
+      "templates": {
+        "open": {
+          "title": "Mini oynatıcıyı aç"
+        }
+      }
+    },
+    "seek-shortcuts": {
+      "name": "Sarma Kısayolları",
+      "description": "Sol/sağ ok tuşlarıyla 5 saniye geri/ileri sarar"
+    },
+    "dismiss-multidevice-popup": {
+      "name": "Çoklu Cihaz Uyarısını Kapat",
+      "description": "Çalma başka bir cihazda başlayınca çıkan \"Bu cihazda dinle\" penceresini otomatik kapatır."
     }
   }
 }

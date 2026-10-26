@@ -17,3 +17,8 @@ ytmusic-player-bar {
   width: calc(100% - 32px) !important;
   translate: 16px 0;
 }
+
+/* in-app-menu shortens the page by the title bar's height, the full width bar used to hide the strip it leaves at the bottom */
+body {
+  min-height: 100vh;
+}

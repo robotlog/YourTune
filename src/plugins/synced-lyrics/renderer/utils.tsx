@@ -7,13 +7,13 @@ import Kuroshiro from 'kuroshiro';
 import KuromojiAnalyzer from 'kuroshiro-analyzer-kuromoji';
 import lazyVar from 'lazy-var';
 import { pinyin } from 'pinyin-pro';
+import { createMemo } from 'solid-js';
 import { render } from 'solid-js/web';
 import { detect } from 'tinyld';
 
 import { waitForElement } from '@/utils/wait-for-element';
 
 import { config, LyricsRenderer, setIsVisible } from './renderer';
-import { createMemo } from 'solid-js';
 
 export const selectors = {
   head: '#tabsContent > .tab-header:nth-of-type(2)',
@@ -275,10 +275,10 @@ export const romanize = async (line: string) => {
 
 export const createShowRomanization = (
   text: () => string,
-  romanization: () => string
+  romanization: () => string,
 ) =>
   createMemo(
     () =>
       !!config()?.romanization &&
-      simplifyUnicode(text()) !== simplifyUnicode(romanization())
+      simplifyUnicode(text()) !== simplifyUnicode(romanization()),
   );

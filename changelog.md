@@ -17,6 +17,7 @@ New plugins:
 - Dismiss Multidevice Popup, closes the "Listen on this device" popup ([pear-desktop#4718](https://github.com/pear-devs/pear-desktop/pull/4718) by aashish254)
 - Toast Auto-Close, closes YouTube Music's toasts after three seconds ([pear-desktop#4642](https://github.com/pear-devs/pear-desktop/pull/4642) by kvn1351)
 - Fullscreen Auto-hide, hides the controls and the cursor while idle in fullscreen ([pear-desktop#4664](https://github.com/pear-devs/pear-desktop/pull/4664) by bonkedbythonk)
+- Resume Shuffle, brings the queue back shuffled when the last song is resumed ([pear-desktop#4616](https://github.com/pear-devs/pear-desktop/pull/4616) by danielchalmers)
 
 Changes:
 

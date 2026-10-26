@@ -5,6 +5,14 @@
   width: 100%;
   height: 40px;
   pointer-events: none;
+  /* soft ends instead of a hard cut over the bar's corners */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 48px,
+    #000 calc(100% - 48px),
+    transparent
+  );
   /* stays under the progress bar */
   z-index: -1;
 }

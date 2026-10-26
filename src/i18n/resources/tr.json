@@ -728,6 +728,10 @@
         "button": "Hız"
       }
     },
+    "player-waves": {
+      "description": "Oynatıcı çubuğunun altında kapağın renklerinde dalgalar akar ve müzikle birlikte hareket eder",
+      "name": "Oynatıcı Dalgaları"
+    },
     "precise-volume": {
       "description": "Özel bir HUD ve özelleştirilebilir ses seviyesi adımları ile fare tekerleği / kısayol tuşlarını kullanarak ses seviyesini hassas bir şekilde kontrol edin",
       "menu": {

@@ -728,6 +728,10 @@
         "button": "Speed"
       }
     },
+    "player-waves": {
+      "description": "Waves in the colors of the cover art flow along the bottom of the player bar and move with the music",
+      "name": "Player Waves"
+    },
     "precise-volume": {
       "description": "Control the volume precisely using mousewheel/hotkeys, with a custom HUD and customizable volume steps",
       "menu": {

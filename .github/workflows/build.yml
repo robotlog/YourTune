@@ -64,15 +64,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && (github.repository == 'robotlog/YourTune' && github.event_name != 'pull_request')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          sudo snap install snapcraft --classic
-          sudo apt update
-          sudo apt install -y flatpak flatpak-builder
-          sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install -y flathub org.freedesktop.Platform/x86_64/24.08
-          sudo flatpak install -y flathub org.freedesktop.Sdk/x86_64/24.08
-          sudo flatpak install -y flathub org.electronjs.Electron2.BaseApp/x86_64/24.08
-          pnpm release:linux
+        run: pnpm release:linux
 
       - name: Build and release on Windows
         if: startsWith(matrix.os, 'windows') && (github.repository == 'robotlog/YourTune' && github.event_name != 'pull_request')

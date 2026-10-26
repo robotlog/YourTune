@@ -28,12 +28,10 @@ win:
     - target: nsis-web
       arch:
         - x64
-        - ia32
         - arm64
     - target: portable
       arch:
         - x64
-        - ia32
         - arm64
   compression: maximum
 nsisWeb:
@@ -50,52 +48,20 @@ linux:
       arch:
         - x64
         - arm64
-        - armv7l
-    - target: flatpak
-      arch:
-        - x64
     - target: deb
       arch:
         - x64
         - arm64
-        - armv7l
     - target: rpm
       arch:
         - x64
-        - arm64
-    - target: snap
-      arch:
-        - x64
-    - target: freebsd
-      arch:
-        - x64
-        - arm64
-        - armv7l
     - target: tar.gz
       arch:
         - x64
         - arm64
-        - armv7l
 appImage:
   description: "Desktop music player with custom plugins"
   category: AudioVideo
-flatpak:
-  description: "Desktop music player with custom plugins"
-  category: AudioVideo
-  runtimeVersion: '24.08'
-  baseVersion: '24.08'
-  finishArgs:
-    - '--socket=wayland'
-    - '--socket=x11'
-    - '--share=ipc'
-    - '--device=dri'
-    - '--socket=pulseaudio'
-    - '--share=network'
-    - '--filesystem=xdg-music:rw'
-    - '--talk-name=org.freedesktop.Notifications'
-    - '--talk-name=org.gnome.SessionManager'
-    - '--talk-name=org.kde.StatusNotifierWatcher'
-    - "--own-name=org.mpris.MediaPlayer2.YourTune.*"
 deb:
   depends:
     - libgtk-3-0
@@ -114,9 +80,5 @@ rpm:
   fpm:
     - '--rpm-rpmbuild-define'
     - _build_id_links none
-snap:
-  slots:
-    - mpris:
-        interface: mpris
 directories:
   output: ./pack/

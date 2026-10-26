@@ -1,19 +1,6 @@
 {
   "fill" : {
-    "linear-gradient" : [
-      "display-p3:1.00000,1.00000,1.00000,1.00000",
-      "srgb:0.84314,0.84314,0.84314,1.00000"
-    ],
-    "orientation" : {
-      "start" : {
-        "x" : 0.5,
-        "y" : 0
-      },
-      "stop" : {
-        "x" : 0.5,
-        "y" : 0.7
-      }
-    }
+    "solid" : "srgb:0.03922,0.03922,0.07059,1.00000"
   },
   "groups" : [
     {
@@ -27,7 +14,7 @@
               "value" : "normal"
             }
           ],
-          "image-name" : "SVG Image.svg",
+          "image-name" : "icon.png",
           "name" : "transparent-icon",
           "opacity-specializations" : [
             {

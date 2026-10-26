@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/icon.png" width="128" alt="YourTune icon">
+
 # YourTune
 
 [![GitHub release](https://img.shields.io/github/release/robotlog/YourTune.svg?style=for-the-badge)](https://github.com/robotlog/YourTune/releases/)

@@ -17,6 +17,7 @@ Changes:
 
 Fixes:
 
+- Podcast and RSS episodes are no longer silent ([pear-desktop#4592](https://github.com/pear-devs/pear-desktop/pull/4592) by JonUleis)
 - Repeat mode stays on when the track changes ([pear-desktop#4357](https://github.com/pear-devs/pear-desktop/pull/4357) by bharatvansh)
 - Precise Volume works with the new player UI ([pear-desktop#4746](https://github.com/pear-devs/pear-desktop/pull/4746) by WoWfff)
 - Volume set through the API reads back the same ([pear-desktop#4672](https://github.com/pear-devs/pear-desktop/pull/4672) by nixoletas)

@@ -8,6 +8,10 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 Pull requests from pear-desktop, thanks to their authors.
 
+New plugins:
+
+- Dismiss Multidevice Popup, closes the "Listen on this device" popup ([pear-desktop#4718](https://github.com/pear-devs/pear-desktop/pull/4718) by aashish254)
+
 Changes:
 
 - Playback speed changes no longer crackle, and pitch can follow the speed ([pear-desktop#4759](https://github.com/pear-devs/pear-desktop/pull/4759) by gothmiku)

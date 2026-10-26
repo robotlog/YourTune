@@ -285,22 +285,25 @@ const migrations = {
 };
 
 // Existing installs keep their settings under the app's old name, copy them once before the store opens config.json.
-const oldUserData = path.join(
-  app.getPath('appData'),
-  '\u0059\u006f\u0075\u0054\u0075\u0062\u0065\u0020\u004d\u0075\u0073\u0069\u0063',
-);
-if (
-  fs.existsSync(path.join(oldUserData, 'config.json')) &&
-  !fs.existsSync(path.join(app.getPath('userData'), 'config.json'))
-) {
-  try {
-    fs.cpSync(oldUserData, app.getPath('userData'), {
-      recursive: true,
-      // Chromium's single-instance lock files point at the old app's process.
-      filter: (source) => !path.basename(source).startsWith('Singleton'),
-    });
-  } catch (error) {
-    console.error('Could not copy the old user data:', error);
+// The preload loads this module too, but there it reads the store over IPC and has no `app`.
+if (process.type === 'browser') {
+  const oldUserData = path.join(
+    app.getPath('appData'),
+    '\u0059\u006f\u0075\u0054\u0075\u0062\u0065\u0020\u004d\u0075\u0073\u0069\u0063',
+  );
+  if (
+    fs.existsSync(path.join(oldUserData, 'config.json')) &&
+    !fs.existsSync(path.join(app.getPath('userData'), 'config.json'))
+  ) {
+    try {
+      fs.cpSync(oldUserData, app.getPath('userData'), {
+        recursive: true,
+        // Chromium's single-instance lock files point at the old app's process.
+        filter: (source) => !path.basename(source).startsWith('Singleton'),
+      });
+    } catch (error) {
+      console.error('Could not copy the old user data:', error);
+    }
   }
 }
 

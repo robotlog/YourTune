@@ -8,6 +8,10 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 Pull requests from pear-desktop, thanks to their authors.
 
+Changes:
+
+- cpu-tamer's frame clock runs on requestAnimationFrame ([pear-desktop#4772](https://github.com/pear-devs/pear-desktop/pull/4772) by junxiangzhan)
+
 Fixes:
 
 - In-app menu keeps submenus on screen in narrow windows ([pear-desktop#4779](https://github.com/pear-devs/pear-desktop/pull/4779) by junxiangzhan)

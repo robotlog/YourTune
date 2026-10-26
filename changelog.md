@@ -21,6 +21,7 @@ Fixes:
 - MPRIS reports the position to the sub-second ([pear-desktop#4768](https://github.com/pear-devs/pear-desktop/pull/4768) by bbedward)
 - Skip Disliked Songs no longer skips two songs ([pear-desktop#4618](https://github.com/pear-devs/pear-desktop/pull/4618) by jirafey)
 - Album Color Theme also colors the home page ([pear-desktop#4579](https://github.com/pear-devs/pear-desktop/pull/4579) by Chaganti-Reddy)
+- Song info uses the title shown in the queue ([pear-desktop#4780](https://github.com/pear-devs/pear-desktop/pull/4780) by junxiangzhan)
 - In-app menu keeps submenus on screen in narrow windows ([pear-desktop#4779](https://github.com/pear-devs/pear-desktop/pull/4779) by junxiangzhan)
 - In-app menu keeps the sidebar below the title bar ([pear-desktop#4778](https://github.com/pear-devs/pear-desktop/pull/4778) by junxiangzhan)
 - Amuse sends the full query so songs are recognized ([pear-desktop#4721](https://github.com/pear-devs/pear-desktop/pull/4721) by aashish254)

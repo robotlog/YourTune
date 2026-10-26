@@ -23,6 +23,7 @@ import {
 } from 'solid-js';
 import * as z from 'zod';
 
+import { getSongInfo } from '@/providers/song-info-front';
 import { LitElementWrapper } from '@/solit';
 
 import {
@@ -36,7 +37,6 @@ import { _ytAPI } from '../index';
 import { reactiveOwner } from '../reactive-root';
 import { config } from '../renderer';
 import { currentLyrics, lyricsStore, setLyricsStore } from '../store';
-import { getSongInfo } from '@/providers/song-info-front';
 
 import type { PlayerAPIEvents } from '@/types/player-api-events';
 
@@ -191,9 +191,9 @@ export const LyricsPicker = (props: {
   };
 
   const showToast = (message: string) => {
-    const app = document.querySelector('ytmusic-app') as
-      | ({ toastService?: { show?: (msg: string) => void } } | null)
-      | null;
+    const app = document.querySelector('ytmusic-app') as {
+      toastService?: { show?: (msg: string) => void };
+    } | null;
 
     app?.toastService?.show?.(message);
   };
@@ -205,14 +205,14 @@ export const LyricsPicker = (props: {
     const songInfo = getSongInfo();
     try {
       const plainLyrics = JSON.parse(JSON.stringify(lyrics.data)) as typeof lyrics.data;
-      const result = await window.ipcRenderer.invoke('synced-lyrics:save', {
+      const result: unknown = await window.ipcRenderer.invoke('synced-lyrics:save', {
         lyrics: plainLyrics,
         videoId: String(songInfo.videoId ?? ''),
         title: String(songInfo.title ?? ''),
         artist: String(songInfo.artist ?? ''),
       });
 
-      const filePath = String(result ?? '');
+      const filePath = typeof result === 'string' ? result : '';
       if (filePath) {
         showToast(`Saved lyrics to ${filePath}`);
       }

@@ -1,5 +1,6 @@
+import fs from 'node:fs/promises';
+
 import { dialog, net } from 'electron';
-import fs from 'fs/promises';
 
 import { createBackend } from '@/utils';
 
@@ -22,7 +23,7 @@ function formatAsLRC(
   if (title) lrc += `[ti:${title}]\n`;
   if (artist) lrc += `[ar:${artist}]\n`;
   lrc += '[al:]\n';
-  lrc += '[by:Pear Desktop - Synced Lyrics Plugin]\n\n';
+  lrc += '[by:YourTune]\n\n';
 
   if (data.lines && Array.isArray(data.lines)) {
     for (const line of data.lines) {
@@ -59,7 +60,11 @@ const handlers = {
     artist: string,
   ): Promise<string> {
     const lrcContent = formatAsLRC(lyricsData, title, artist);
-    const fileName = `${title || videoId} - ${artist || 'Unknown'}.lrc`;
+    // a slash in a name (AC/DC) would make the dialog read it as a folder
+    const fileName = `${title || videoId} - ${artist || 'Unknown'}.lrc`.replaceAll(
+      /[/\\:*?"<>|]/g,
+      '_',
+    );
 
     try {
       const result = await dialog.showSaveDialog({
@@ -77,7 +82,9 @@ const handlers = {
       await fs.writeFile(result.filePath, lrcContent, 'utf-8');
       return result.filePath;
     } catch (error) {
-      throw new Error(`Failed to save lyrics: ${(error as Error).message}`);
+      throw new Error(`Failed to save lyrics: ${(error as Error).message}`, {
+        cause: error,
+      });
     }
   },
 };

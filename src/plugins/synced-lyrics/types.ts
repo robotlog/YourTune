@@ -11,6 +11,7 @@ export type SyncedLyricsPluginConfig = {
   lineEffect: LineEffect;
   romanization: boolean;
   enableDownload: boolean;
+  bigRomanization: boolean;
   convertChineseCharacter?:
     | 'simplifiedToTraditional'
     | 'traditionalToSimplified'

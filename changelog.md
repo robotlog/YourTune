@@ -31,6 +31,7 @@ Changes:
 - Shortcuts are on by default, so Linux gets MPRIS out of the box ([pear-desktop#4571](https://github.com/pear-devs/pear-desktop/pull/4571) by Chaganti-Reddy)
 - The Windows taskbar thumbnail buttons are on by default ([pear-desktop#4675](https://github.com/pear-devs/pear-desktop/pull/4675) by nixoletas)
 - Like and dislike shortcuts ([pear-desktop#4578](https://github.com/pear-devs/pear-desktop/pull/4578) by Chaganti-Reddy)
+- Synced lyrics can show romanized lines bigger than the original ([pear-desktop#4580](https://github.com/pear-devs/pear-desktop/pull/4580) by AARP41298)
 
 Fixes:
 

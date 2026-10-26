@@ -28,6 +28,7 @@ export default createPlugin<
     lineEffect: 'fancy',
     romanization: true,
     enableDownload: true,
+    bigRomanization: false,
   },
 
   menu,

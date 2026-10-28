@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+Fixes:
+
+- Synced lyrics apply the LRC `[offset:]` tag to every line and word, so line lengths stay right ([pear-desktop#4789](https://github.com/pear-devs/pear-desktop/pull/4789) by PhotoDotPi)
+
 #### v1.1.0
 
 > 27 October 2026

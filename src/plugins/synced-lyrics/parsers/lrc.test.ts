@@ -142,3 +142,17 @@ test('karaoke', () => {
     tags: [],
   });
 });
+
+test('offset moves every line and word before the durations', () => {
+  const lrc = LRC.parse(`\
+[offset:500]
+[00:01.00]<00:01.00>One <00:01.50>two
+[00:03.00]Three\
+`);
+
+  const [, first, second] = lrc.lines;
+  expect(first.timeInMs).toBe(1500);
+  expect(first.duration).toBe(2000);
+  expect(first.words.map((word) => word.timeInMs)).toEqual([1500, 2000]);
+  expect(second.timeInMs).toBe(3500);
+});

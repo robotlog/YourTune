@@ -11,7 +11,7 @@ export default createPlugin({
   name: () => t('plugins.skip-ai-music.name'),
   description: () => t('plugins.skip-ai-music.description'),
   restartNeeded: false,
-  addedVersion: '1.1.X',
+  addedVersion: '1.2.X',
   config: defaultConfig,
   stylesheets: [style],
   menu: onMenu,

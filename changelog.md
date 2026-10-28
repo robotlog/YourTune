@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+In YourTune:
+
+- Discord Rich Presence is back. It runs under pear-desktop's Discord application, so Discord shows "YouTube Music".
+
 #### v1.2.0
 
 > 28 October 2026

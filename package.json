@@ -1,4 +1,5 @@
 {
+
   "name": "yourtune",
   "desktopName": "com.robotlog.yourtune",
   "productName": "YourTune",
@@ -67,6 +68,7 @@
     "@jellybrick/mpris-service": "2.2.0",
     "@mdui/icons": "1.0.3",
     "@skyra/jaro-winkler": "1.1.1",
+    "@xhayper/discord-rpc": "1.3.4",
     "async-mutex": "0.5.0",
     "bgutils-js": "3.2.0",
     "butterchurn": "3.0.0-beta.5",
@@ -132,6 +134,7 @@
     "builtin-modules": "5.2.0",
     "cross-env": "10.1.0",
     "del-cli": "7.0.0",
+    "discord-api-types": "0.38.49",
     "electron": "42.11.16",
     "electron-builder": "26.15.3",
     "electron-builder-squirrel-windows": "26.15.3",

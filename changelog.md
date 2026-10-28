@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
-#### Unreleased
+#### v1.2.0
+
+> 28 October 2026
+
+Pull requests from pear-desktop, thanks to their authors.
 
 New plugins:
 
@@ -13,6 +17,10 @@ New plugins:
 Fixes:
 
 - Synced lyrics apply the LRC `[offset:]` tag to every line and word, so line lengths stay right ([pear-desktop#4789](https://github.com/pear-devs/pear-desktop/pull/4789) by PhotoDotPi)
+
+In YourTune:
+
+- Turkish translations for Skip AI Music.
 
 #### v1.1.0
 

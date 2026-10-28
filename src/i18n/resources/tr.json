@@ -838,6 +838,78 @@
         }
       }
     },
+    "skip-ai-music": {
+      "description": "Zoundhub listesi, kendi engel listelerin ve başlık kelimeleriyle yapay zekâ sanatçılarını ve şarkılarını atlar",
+      "menu": {
+        "allowed-artists": {
+          "label": "İzin verilen sanatçılar ({{count}})"
+        },
+        "behavior": {
+          "label": "Atlarken"
+        },
+        "blocked-artists": {
+          "label": "Engellenen sanatçılar ({{count}})"
+        },
+        "blocked-songs": {
+          "label": "Engellenen şarkılar ({{count}})"
+        },
+        "dislike-on-skip": "Atlanan şarkıları beğenmedim olarak işaretle",
+        "keywords": {
+          "label": "Başlık kelimeleri ({{count}})"
+        },
+        "skip-common-keywords": "Yaygın yapay zekâ başlık kelimelerini atla",
+        "use-community-list": "Zoundhub sanatçı listesini kullan",
+        "zoundhub": {
+          "label": "Zoundhub",
+          "never": "hiç",
+          "refresh": "Listeyi yenile",
+          "status": "%{{score}} ve üstü {{count}} sanatçı (güncelleme: {{fetched}})",
+          "threshold-value": "SubmitHub eşiği: %{{score}}"
+        }
+      },
+      "name": "Yapay Zekâ Müziğini Atla",
+      "prompt": {
+        "threshold": {
+          "description": "SubmitHub yapay zekâ puanı bu değerde ya da üstünde olan Zoundhub sanatçılarını atla.",
+          "title": "SubmitHub eşiği",
+          "value": "%{score} ve üstü"
+        },
+        "list-editor": {
+          "add": "Ekle",
+          "cancel": "İptal",
+          "duplicate": "{name} zaten listede",
+          "empty": "Henüz bir şey eklenmedi",
+          "remove": "Kaldır",
+          "remove-named": "{name} öğesini kaldır",
+          "save": "Kaydet"
+        },
+        "allowed-artists": {
+          "description": "Bu sanatçılar bir atlama listesinde olsalar da her zaman çalar.",
+          "placeholder": "Sanatçı adı",
+          "title": "İzin verilen sanatçılar"
+        },
+        "blocked-artists": {
+          "description": "Atlanmasını istediğin her sanatçıyı ekle.",
+          "placeholder": "Sanatçı adı",
+          "title": "Engellenen sanatçılar"
+        },
+        "blocked-songs": {
+          "artist-placeholder": "Sanatçı (isteğe bağlı)",
+          "description": "Sanatçıyı ve başlığı ayrı ayrı ekle. Yalnız başlığa göre engellemek için sanatçıyı boş bırak.",
+          "title": "Engellenen şarkılar",
+          "title-placeholder": "Başlık"
+        },
+        "keywords": {
+          "description": "Başlıkta ya da sanatçı adında geçince atlanacak bir ifade ekle.",
+          "placeholder": "İfade",
+          "title": "Başlık kelimeleri"
+        }
+      },
+      "renderer": {
+        "block-artist": "Sanatçıyı engelle",
+        "block-song": "Şarkıyı engelle"
+      }
+    },
     "skip-disliked-songs": {
       "description": "Beğenmediğin şarkıları atlar",
       "name": "Beğenmediklerini Atla"

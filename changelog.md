@@ -6,6 +6,10 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 #### Unreleased
 
+New plugins:
+
+- Skip AI Music, skips songs by AI artists from a community list and from your own artists, songs and keywords ([pear-desktop#4646](https://github.com/pear-devs/pear-desktop/pull/4646) by stranzero)
+
 Fixes:
 
 - Synced lyrics apply the LRC `[offset:]` tag to every line and word, so line lengths stay right ([pear-desktop#4789](https://github.com/pear-devs/pear-desktop/pull/4789) by PhotoDotPi)

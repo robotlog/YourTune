@@ -190,6 +190,10 @@ export const registerCallback = (callback: SongInfoCallback) => {
   };
 };
 
+export const unregisterCallback = (callback: SongInfoCallback) => {
+  callbacks.delete(callback);
+};
+
 const registerProvider = (win: BrowserWindow) => {
   const dataMutex = new Mutex();
   let songInfo: SongInfo | null = null;

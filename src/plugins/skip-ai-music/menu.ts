@@ -10,6 +10,7 @@ import {
   type BlockedSong,
   type SkipAiMusicPluginConfig,
 } from './types';
+
 import type { MenuTemplate } from '@/menu';
 import type { MenuContext } from '@/types/contexts';
 

@@ -85,13 +85,13 @@ export const renderer = {
         <SkipAiMusicMenuItem
           id={ARTIST_ITEM_ID}
           label={t('plugins.skip-ai-music.renderer.block-artist')}
-          pathD={PERSON_ICON}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
             this.blockArtist();
             closeOpenMenu();
           }}
+          pathD={PERSON_ICON}
         />
       ),
       this.artistItem,
@@ -103,13 +103,13 @@ export const renderer = {
         <SkipAiMusicMenuItem
           id={SONG_ITEM_ID}
           label={t('plugins.skip-ai-music.renderer.block-song')}
-          pathD={SONG_ICON}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
             this.blockSong();
             closeOpenMenu();
           }}
+          pathD={SONG_ICON}
         />
       ),
       this.songItem,

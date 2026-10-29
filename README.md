@@ -16,7 +16,7 @@ The full history is kept, every commit still belongs to its original author.
 
 If you used [pear-desktop](https://github.com/pear-devs/pear-desktop) before, your settings and plugin data are copied over the first time you start YourTune. The old app's data is left as it is.
 
-<!--![Screenshot](web/screenshot.png "Screenshot")-->
+![YourTune playing a song with the album color theme, ambient mode and player waves](web/screenshot.png "Screenshot")
 
 - Native look & feel extension
 

@@ -1,5 +1,4 @@
 import { romanize as romanizeThaiFrag } from '@dehoist/romanize-thai';
-import Sanscript from '@indic-transliteration/sanscript';
 import { sify, tify } from 'chinese-conv';
 import { romanize as esHangulRomanize } from 'es-hangul';
 import hanja from 'hanja';
@@ -13,6 +12,7 @@ import { detect } from 'tinyld';
 
 import { waitForElement } from '@/utils/wait-for-element';
 
+import { romanizeBengali, romanizeHindi } from './indic-romanization';
 import { config, LyricsRenderer, setIsVisible } from './renderer';
 
 export const selectors = {
@@ -221,28 +221,6 @@ export const romanizeThai = (line: string) => {
     .trim();
 
   return latin;
-};
-
-export const romanizeBengali = (line: string) => {
-  try {
-    let out = Sanscript.t(line, 'bengali', 'iast');
-    out = out.normalize('NFD');
-    out = out.replace(/[\u0300-\u036f]/g, '');
-    out = out.replace(/[\u09BC\u09BE-\u09CD]/g, '');
-    return out.toLowerCase();
-  } catch {
-    return line;
-  }
-};
-
-export const romanizeHindi = (line: string) => {
-  try {
-    let out = Sanscript.t(line, 'devanagari', 'iast');
-    out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // strip accents
-    return out.replace(/[^a-zA-Z\s]/g, '') || line; // remove any remaining symbols
-  } catch {
-    return line;
-  }
 };
 
 const handlers: Record<string, (line: string) => Promise<string> | string> = {

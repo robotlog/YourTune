@@ -6,6 +6,7 @@ import { createPlugin } from '@/utils';
 import { waitForElement } from '@/utils/wait-for-element';
 
 import { Connection, type ConnectionEventUnion } from './connection';
+import { isSeekProgress } from './progress';
 import { Queue } from './queue';
 import style from './style.css?inline';
 import settingHTML from './templates/setting.html?raw';
@@ -598,7 +599,7 @@ export default createPlugin<
             _update: (...args: unknown[]) => void;
           }
         >('tp-yt-paper-progress'),
-      );
+      ).filter(isSeekProgress);
       const rollbackList = progress.map((progress) => {
         const original = progress._update;
         progress._update = (...args) => {

@@ -18,6 +18,10 @@ const hindi: [string, string][] = [
   ['सड़क पर लड़की', 'sadak par ladki'],
   ['रहते हैं, कहते हैं', 'rahte hain, kahte hain'],
   ['सत्य', 'satya'],
+  ['हंसना', 'hansna'],
+  ['हँसना', 'hansna'],
+  ['ढूँढ़ता', 'dhundhta'],
+  ['ॐ नमः', 'om namah'],
   ['ज्ञान', 'gyaan'],
   ['न', 'na'],
   ['Love you', 'Love you'],
@@ -37,6 +41,7 @@ const bengali: [string, string][] = [
   ['করবো', 'korbo'],
   ['তুমি আমার ১০ বার', 'tumi amar 10 bar'],
   ['হঠাৎ', 'hothat'],
+  ['র\u200d্যাপ', 'ryap'],
   ['কেমন আছো?', 'kemon achho?'],
   ['Love you', 'Love you'],
 ];

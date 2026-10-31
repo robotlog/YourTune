@@ -90,6 +90,7 @@ const devanagari: Script = {
     औ: 'au',
     ऑ: 'o',
     ऍ: 'e',
+    ॐ: 'om',
   },
   matras: {
     'ा': 'ā',
@@ -112,7 +113,7 @@ const devanagari: Script = {
   visarga: 'ः',
   nukta: '़',
   digitZero: 0x966,
-  silent: '।॥ऽ‌‍',
+  silent: '।॥ऽ',
   inherent: 'a',
   anusvaraSound: null,
   doubleLongA: true,
@@ -190,7 +191,7 @@ const bengali: Script = {
   visarga: 'ঃ',
   nukta: '়',
   digitZero: 0x9e6,
-  silent: '।॥‌‍',
+  silent: '।॥',
   inherent: 'o',
   anusvaraSound: 'ng',
   doubleLongA: false,
@@ -210,6 +211,14 @@ const isInherent = (sound?: Sound) =>
 // A final inherent vowel stays after these clusters: "सत्य" is "satya"
 const keepsFinalVowel = new Set(['y', 'r', 'l', 'v']);
 
+// A verb ending after a nasal: "हंसना" is "hansna", while "ज़िंदगी" keeps its vowel
+const isVerbEnding = (word: Sound[], index: number) =>
+  index === word.length - 2 &&
+  ['n', 't'].includes(word[index].text) &&
+  isConsonant(word[index]) &&
+  isVowel(word[index + 1]) &&
+  !isInherent(word[index + 1]);
+
 const dropSilentVowels = (word: Sound[]) => {
   const last = word.length - 1;
   if (isInherent(word[last]) && word.slice(0, last).some(isVowel)) {
@@ -225,7 +234,8 @@ const dropSilentVowels = (word: Sound[]) => {
     if (
       isInherent(word[i]) &&
       isConsonant(word[i - 1]) &&
-      isVowel(word[i - 2]) &&
+      (isVowel(word[i - 2]) ||
+        (word[i - 2].kind !== 'consonant' && isVerbEnding(word, i + 1))) &&
       isConsonant(word[i + 1]) &&
       isVowel(word[i + 2])
     ) {
@@ -261,7 +271,10 @@ const spell = (word: Sound[], script: Script) => {
 
 const romanize = (line: string, script: Script) => {
   // NFC splits the single-character nukta letters, like ज़ into ज and the nukta
-  const chars = Array.from(line.normalize('NFC'));
+  // Joiners only shape the glyphs, and would sit between a letter and its virama
+  const chars = Array.from(
+    line.normalize('NFC').replace(/[\u200c\u200d]/g, ''),
+  );
   let out = '';
   let word: Sound[] = [];
 
@@ -274,8 +287,7 @@ const romanize = (line: string, script: Script) => {
     const char = chars[i];
 
     if (script.silent.includes(char)) {
-      // A joiner sits inside a word, a danda ends it
-      if (char !== '‌' && char !== '‍') flush();
+      flush();
       continue;
     }
 

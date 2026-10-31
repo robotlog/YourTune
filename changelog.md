@@ -4,11 +4,14 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
-#### Unreleased
+#### v1.3.0
+
+> 31 October 2026
 
 Pull requests from pear-desktop, thanks to their authors.
 
 Fixes:
+
 - happy-dom 21, for a code injection fix in its ESM compiler ([pear-desktop#4794](https://github.com/pear-devs/pear-desktop/pull/4794) by renovate)
 - Amuse reports ads, a running position and the media type and playlist of the track ([pear-desktop#4795](https://github.com/pear-devs/pear-desktop/pull/4795) by MaxLikesCode)
 - Hindi and Bengali lyrics romanize the way they are sung, "tum hi ho" instead of "tuma hi ho", "zindagi" instead of "jaimdagi" (from [pear-desktop#4791](https://github.com/pear-devs/pear-desktop/pull/4791) by PhotoDotPi, rewritten)

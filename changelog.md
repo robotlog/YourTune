@@ -9,6 +9,7 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 In YourTune:
 
 - Discord Rich Presence is back. It runs under pear-desktop's Discord application, so Discord shows "YouTube Music".
+- MPRIS and the other now-playing outputs say Paused for a track that loaded but never started, or was paused in its first half second.
 
 #### v1.2.0
 

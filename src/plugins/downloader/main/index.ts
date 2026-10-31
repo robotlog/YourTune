@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { Mutex } from 'async-mutex';
 import { BG, type BgConfig } from 'bgutils-js';
-import { app, type BrowserWindow, dialog, ipcMain } from 'electron';
+import { type BrowserWindow, dialog, ipcMain } from 'electron';
 import is from 'electron-is';
 import filenamify from 'filenamify';
 import lazyVar from 'lazy-var';
@@ -260,8 +260,6 @@ function downloadSongOnFinishSetup({
   let duration: number | undefined;
   let time = 0;
 
-  const defaultDownloadFolder = app.getPath('downloads');
-
   registerCallback((songInfo: SongInfo, event) => {
     if (event === SongInfoEvent.TimeChanged) {
       const elapsedSeconds = songInfo.elapsedSeconds ?? 0;
@@ -280,9 +278,7 @@ function downloadSongOnFinishSetup({
         ) {
           downloadSong(
             currentUrl,
-            config.downloadOnFinish.folder ??
-              config.downloadFolder ??
-              defaultDownloadFolder,
+            getFolder(config.downloadOnFinish.folder ?? config.downloadFolder),
           );
         } else if (
           config.downloadOnFinish.mode === 'percent' &&
@@ -290,9 +286,7 @@ function downloadSongOnFinishSetup({
         ) {
           downloadSong(
             currentUrl,
-            config.downloadOnFinish.folder ??
-              config.downloadFolder ??
-              defaultDownloadFolder,
+            getFolder(config.downloadOnFinish.folder ?? config.downloadFolder),
           );
         }
       }
@@ -362,8 +356,7 @@ async function downloadSongUnsafe(
 
   metadata.trackId = trackId;
 
-  const dir =
-    playlistFolder || config.downloadFolder || app.getPath('downloads');
+  const dir = playlistFolder || getFolder(config.downloadFolder);
   const name = `${metadata.artist ? `${metadata.artist} - ` : ''}${
     metadata.title
   }`;
@@ -567,7 +560,8 @@ async function iterableStreamToProcessedUint8Array(
           }),
           ratio,
         );
-        increasePlaylistProgress(0.15 + (ratio * 0.85));
+        const conversionProgress = ratio * 0.85;
+        increasePlaylistProgress(0.15 + conversionProgress);
       });
 
       const safeVideoNameWithExtension = `${safeVideoName}.${extension}`;
@@ -738,7 +732,7 @@ export async function downloadPlaylist(givenUrl?: string | URL) {
     safePlaylistTitle = safePlaylistTitle.normalize('NFC');
   }
 
-  const folder = getFolder(config.downloadFolder ?? '');
+  const folder = getFolder(config.downloadFolder);
   const playlistFolder = join(folder, safePlaylistTitle);
   if (existsSync(playlistFolder)) {
     if (!config.skipExisting) {
@@ -795,7 +789,8 @@ export async function downloadPlaylist(givenUrl?: string | URL) {
 
   const increaseProgress = (itemPercentage: number) => {
     const currentProgress = (counter - 1) / (items.length ?? 1);
-    const newProgress = currentProgress + (progressStep * itemPercentage);
+    const progressIncrement = progressStep * itemPercentage;
+    const newProgress = currentProgress + progressIncrement;
     win.setProgressBar(newProgress);
   };
 

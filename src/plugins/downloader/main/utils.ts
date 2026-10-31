@@ -3,13 +3,15 @@ import is from 'electron-is';
 
 import { t } from '@/i18n';
 
+import { resolveDownloadFolder } from './folder';
+
 /**
  * Resolves the download destination directory, falling back to system downloads.
  * @param customFolder Optional custom directory path
  * @returns Directory path string
  */
 export const getFolder = (customFolder?: string) =>
-  customFolder ?? app.getPath('downloads');
+  resolveDownloadFolder(customFolder, app.getPath('downloads'));
 
 /**
  * Sends a downloader feedback message to the renderer process.

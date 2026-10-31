@@ -137,6 +137,8 @@ export const onMainLoad = async ({
         width,
         height,
         console,
+        // BotGuard never produces a minter without iframes, which happy-dom 21 turned off
+        settings: { enableIframePageLoading: true },
       });
       const document = window.document;
 

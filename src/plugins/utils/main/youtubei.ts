@@ -49,7 +49,10 @@ const createPoTokenMinter = async (
 ): Promise<PoTokenMinter> => {
   const fetch = getNetFetchAsFetch();
   // BotGuard runs inside happy-dom's own VM context, so the main process globals stay untouched
-  const window = new (await import('happy-dom')).Window();
+  // BotGuard never produces a minter without iframes, which happy-dom 21 turned off
+  const window = new (await import('happy-dom')).Window({
+    settings: { enableIframePageLoading: true },
+  });
 
   try {
     const bgConfig = {

@@ -6,6 +6,11 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 #### Unreleased
 
+Pull requests from pear-desktop, thanks to their authors.
+
+Fixes:
+- happy-dom 21, for a code injection fix in its ESM compiler ([pear-desktop#4794](https://github.com/pear-devs/pear-desktop/pull/4794) by renovate)
+
 In YourTune:
 
 - Discord Rich Presence is back. It runs under pear-desktop's Discord application, so Discord shows "YouTube Music".

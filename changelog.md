@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### v1.3.1
+
+> 31 October 2026
+
+Fixes from [michei69/pear-desktop](https://github.com/michei69/pear-desktop), thanks to its contributors:
+
+- Download folders copied from another OS fall back to the system Downloads folder ([#66](https://github.com/michei69/pear-desktop/issues/66)).
+- Localized "no lyrics" messages no longer show up as song lyrics ([#53](https://github.com/michei69/pear-desktop/issues/53)).
+- The first synced lyric line remains reachable, including after switching tabs ([#52](https://github.com/michei69/pear-desktop/issues/52)).
+- Music Together no longer seeks the song when a guest adjusts the volume slider ([#23](https://github.com/michei69/pear-desktop/issues/23)).
+
 #### v1.3.0
 
 > 31 October 2026

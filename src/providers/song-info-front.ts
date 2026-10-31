@@ -13,6 +13,7 @@ import type {
 import type { VideoDataChanged } from '@/types/video-data-changed';
 
 const DATAUPDATED_FALLBACK_TIMEOUT_MS = 1500;
+const PAUSED_CHECK_DELAY_MS = 1000;
 
 let songInfo: SongInfo = {} as SongInfo;
 export const getSongInfo = () => songInfo;
@@ -300,13 +301,18 @@ export const setupSongInfo = (api: MusicPlayer) => {
     setupSeekedListener(api);
   });
 
+  // What the main process last heard, so a change at 0:00 still gets through
+  let reportedPaused = false;
+  let pausedCheckTimeout: NodeJS.Timeout | undefined;
+
   const playPausedHandler = (e: Event, status: string) => {
-    if (
-      e.target instanceof HTMLVideoElement &&
-      Math.round(e.target.currentTime) > 0
-    ) {
+    if (!(e.target instanceof HTMLVideoElement)) return;
+
+    const isPaused = status === 'pause';
+    if (Math.round(e.target.currentTime) > 0 || isPaused !== reportedPaused) {
+      reportedPaused = isPaused;
       window.ipcRenderer.send('peard:play-or-paused', {
-        isPaused: status === 'pause',
+        isPaused,
         elapsedSeconds: Math.floor(e.target.currentTime),
       });
     }
@@ -435,7 +441,22 @@ export const setupSongInfo = (api: MusicPlayer) => {
     if (queueTitle) data.videoDetails.title = queueTitle;
     data.videoDetails.elapsedSeconds = 0;
     data.videoDetails.isPaused = false;
+    reportedPaused = false;
 
     window.ipcRenderer.send('peard:video-src-changed', data);
+
+    // A track can load without starting (a queue restored on launch), and no
+    // pause event fires then, so check once it had the time to start
+    clearTimeout(pausedCheckTimeout);
+    pausedCheckTimeout = setTimeout(() => {
+      const video = document.querySelector<HTMLVideoElement>('video');
+      if (video?.paused && !reportedPaused) {
+        reportedPaused = true;
+        window.ipcRenderer.send('peard:play-or-paused', {
+          isPaused: true,
+          elapsedSeconds: Math.floor(video.currentTime),
+        });
+      }
+    }, PAUSED_CHECK_DELAY_MS);
   }
 };

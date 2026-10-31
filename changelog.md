@@ -10,6 +10,7 @@ Pull requests from pear-desktop, thanks to their authors.
 
 Fixes:
 - happy-dom 21, for a code injection fix in its ESM compiler ([pear-desktop#4794](https://github.com/pear-devs/pear-desktop/pull/4794) by renovate)
+- Amuse reports ads, a running position and the media type and playlist of the track ([pear-desktop#4795](https://github.com/pear-devs/pear-desktop/pull/4795) by MaxLikesCode)
 
 In YourTune:
 

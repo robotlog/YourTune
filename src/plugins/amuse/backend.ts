@@ -24,7 +24,7 @@ const toHumanTime = (seconds: number) => {
 // 6K Labs clients (e.g. the Amuse app) read every field of the query response
 // and treat missing keys as a malformed provider, so each one must always be
 // present with a non-null default.
-const emptyQuery = (): AmuseSongInfo => ({
+const emptyQuery = (isAdvertisement: boolean): AmuseSongInfo => ({
   apiVersion: 2,
   player: {
     hasSong: false,
@@ -47,7 +47,7 @@ const emptyQuery = (): AmuseSongInfo => ({
     url: '',
     id: '',
     isVideo: false,
-    isAdvertisement: false,
+    isAdvertisement,
     inLibrary: false,
     mediaType: MediaType.Audio,
     playlistId: '',
@@ -60,7 +60,7 @@ const formatSongInfo = (
   positionUpdatedAt: number,
 ): AmuseSongInfo => {
   if (!info.artist || !info.title) {
-    return emptyQuery();
+    return emptyQuery(isAdvertisement);
   }
 
   const elapsedSeconds = Math.floor(info.elapsedSeconds ?? 0);

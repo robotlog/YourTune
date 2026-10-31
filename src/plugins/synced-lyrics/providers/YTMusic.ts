@@ -61,20 +61,17 @@ export class YTMusic implements LyricProvider {
       }))
       : undefined;
 
+    // Only the lyrics shelf contains plain lyrics; messageRenderer holds errors.
     const plain = !synced
       ? syncedLines?.length
         ? syncedLines.map((it) => it.lyricLine).join('\n')
-        : contents?.messageRenderer
-        ? contents?.messageRenderer?.text?.runs?.map((it) => it.text).join('\n')
         : contents?.sectionListRenderer?.contents?.[0]
           ?.musicDescriptionShelfRenderer?.description?.runs?.map((it) =>
             it.text,
           )?.join('\n')
       : undefined;
 
-    if (typeof plain === 'string' && plain === 'Lyrics not available') {
-      return null;
-    }
+    if (!synced?.length && !plain?.trim()) return null;
 
     if (synced?.length && synced[0].timeInMs > 300) {
       synced.unshift({
@@ -97,8 +94,10 @@ export class YTMusic implements LyricProvider {
 
   private millisToTime(millis: number) {
     const minutes = Math.floor(millis / 60000);
-    const seconds = Math.floor((millis - ((minutes * 60) * 1000)) / 1000);
-    const remaining = (millis - ((minutes * 60) * 1000) - (seconds * 1000)) / 10;
+    const minuteStart = minutes * 60000;
+    const seconds = Math.floor((millis - minuteStart) / 1000);
+    const secondStart = seconds * 1000;
+    const remaining = (millis - minuteStart - secondStart) / 10;
     return `${minutes.toString().padStart(2, '0')}:${seconds
       .toString()
       .padStart(2, '0')}.${remaining.toString().padStart(2, '0')}`;
@@ -160,15 +159,15 @@ interface NextData {
 }
 
 interface BrowseData {
-  contents: {
-    elementRenderer: {
-      newElement: {
-        type: {
-          componentType: {
-            model: {
-              timedLyricsModel: {
-                lyricsData: {
-                  timedLyricsData: SyncedLyricLine[];
+  contents?: {
+    elementRenderer?: {
+      newElement?: {
+        type?: {
+          componentType?: {
+            model?: {
+              timedLyricsModel?: {
+                lyricsData?: {
+                  timedLyricsData?: SyncedLyricLine[];
                 };
               };
             };
@@ -176,13 +175,10 @@ interface BrowseData {
         };
       };
     };
-    messageRenderer: {
-      text: PlainLyricsTextRenderer;
-    };
-    sectionListRenderer: {
-      contents: {
-        musicDescriptionShelfRenderer: {
-          description: PlainLyricsTextRenderer;
+    sectionListRenderer?: {
+      contents?: {
+        musicDescriptionShelfRenderer?: {
+          description?: PlainLyricsTextRenderer;
         };
       }[];
     };

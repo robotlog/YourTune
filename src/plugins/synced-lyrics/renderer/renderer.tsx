@@ -18,6 +18,7 @@ import {
 } from './components';
 import { LyricsPicker } from './components/LyricsPicker';
 import { reactiveOwner } from './reactive-root';
+import { scrollToCurrentLine } from './scroll';
 import { currentLyrics } from './store';
 import { selectors } from './utils';
 
@@ -155,13 +156,16 @@ export const LyricsRenderer = () => {
   const tab = document.querySelector<HTMLElement>(selectors.body.tabRenderer)!;
 
   let mouseCoord = 0;
-  const mousemoveListener = (e: Event) => {
-    if ('clientY' in e) {
+  const updatePickerPosition = (e?: Event) => {
+    if (e && 'clientY' in e) {
       mouseCoord = (e as MouseEvent).clientY;
     }
 
+    const picker = stickyRef();
+    if (!picker) return;
+
     const { top } = tab.getBoundingClientRect();
-    const { clientHeight: height } = stickyRef()!;
+    const { clientHeight: height } = picker;
     const scrollOffset = scroller()?.scrollOffset ?? -1;
 
     const isInView = scrollOffset <= height;
@@ -169,26 +173,33 @@ export const LyricsRenderer = () => {
 
     const showPicker = isInView || isMouseOver;
 
-    if (showPicker) {
-      // picker visible
-      stickyRef()!.style.setProperty('--lyrics-picker-top', '0');
-    } else {
-      // picker hidden
-      stickyRef()!.style.setProperty('--lyrics-picker-top', `-${height}px`);
-    }
+    picker.style.setProperty(
+      '--lyrics-picker-top',
+      showPicker ? '0' : `-${height}px`,
+    );
   };
 
   onMount(() => {
-    const vList = document.querySelector<HTMLElement>('.synced-lyrics-vlist');
-
-    tab.addEventListener('mousemove', mousemoveListener);
-    vList?.addEventListener('scroll', mousemoveListener);
-    vList?.addEventListener('scrollend', mousemoveListener);
+    tab.addEventListener('mousemove', updatePickerPosition);
 
     onCleanup(() => {
-      tab.removeEventListener('mousemove', mousemoveListener);
-      vList?.removeEventListener('scroll', mousemoveListener);
-      vList?.removeEventListener('scrollend', mousemoveListener);
+      tab.removeEventListener('mousemove', updatePickerPosition);
+    });
+  });
+
+  // The lyrics list is recreated when the tab is re-entered.
+  createEffect(() => {
+    const handle = scroller();
+    const vList =
+      handle && document.querySelector<HTMLElement>('.synced-lyrics-vlist');
+    if (!vList) return;
+
+    vList.addEventListener('scroll', updatePickerPosition);
+    vList.addEventListener('scrollend', updatePickerPosition);
+
+    onCleanup(() => {
+      vList.removeEventListener('scroll', updatePickerPosition);
+      vList.removeEventListener('scrollend', updatePickerPosition);
     });
   });
 
@@ -266,16 +277,23 @@ export const LyricsRenderer = () => {
   createEffect(() => {
     const current = currentLyrics();
     const idx = currentIndex();
-    const maxIdx = untrack(statuses).length - 1;
+    const handle = scroller();
 
-    if (!scroller() || !current.data?.lines) return;
+    if (!handle || !current.data?.lines) return;
 
-    // hacky way to make the "current" line scroll to the center of the screen
-    const scrollIndex = Math.min(idx + 1, maxIdx);
+    const scrollIndex = Math.min(idx + 1, current.data.lines.length); // picker is at index 0
 
-    scroller()!.scrollToIndex(scrollIndex, {
-      smooth: true,
-      align: 'center',
+    // Wait for virtua to measure the viewport before starting a smooth scroll.
+    let innerFrame = 0;
+    const outerFrame = requestAnimationFrame(() => {
+      innerFrame = requestAnimationFrame(() => {
+        scrollToCurrentLine(handle, scrollIndex);
+      });
+    });
+
+    onCleanup(() => {
+      cancelAnimationFrame(outerFrame);
+      cancelAnimationFrame(innerFrame);
     });
   });
 

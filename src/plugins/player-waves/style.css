@@ -16,3 +16,8 @@
   /* stays under the progress bar */
   z-index: -1;
 }
+
+/* they would cover the video */
+ytmusic-player-bar[player-fullscreened] #player-waves {
+  display: none;
+}

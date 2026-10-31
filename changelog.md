@@ -17,6 +17,7 @@ In YourTune:
 
 - Discord Rich Presence is back. It runs under pear-desktop's Discord application, so Discord shows "YouTube Music".
 - MPRIS and the other now-playing outputs say Paused for a track that loaded but never started, or was paused in its first half second.
+- Player waves hide in fullscreen, so they don't cover the video.
 
 #### v1.2.0
 

@@ -91,11 +91,12 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._animationsChangedId = this._stSettings.connect('notify::enable-animations', () => this._restartMarquees());
 
     this.add_style_class_name('yourtune-panel-button');
-    this.add_child(new St.Icon({
+    this._panelIcon = new St.Icon({
       gicon: this._fileIcon('yourtune-panel.png'),
       style_class: 'yourtune-panel-icon',
       icon_size: 16,
-    }));
+    });
+    this.add_child(this._panelIcon);
 
     this._buildMenu();
 
@@ -430,6 +431,12 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._setArtwork(shown?.imageSrc ?? null);
 
     this._setButtonIcon(this._playButton, playing ? 'pause-symbolic.svg' : 'play-symbolic.svg');
+    // Same rule as YourTune's own tray icon: the pause glyph only while a track is paused.
+    const panelIcon = song && !playing ? 'yourtune-panel-paused.png' : 'yourtune-panel.png';
+    if (this._panelIconName !== panelIcon) {
+      this._panelIconName = panelIcon;
+      this._panelIcon.gicon = this._fileIcon(panelIcon);
+    }
     this._playButton.accessible_name = playing ? 'Pause' : 'Play';
     const connected = this._client.status === 'connected';
     const active = connected && Boolean(song);

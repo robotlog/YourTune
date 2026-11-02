@@ -13,6 +13,8 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as Slider from 'resource:///org/gnome/shell/ui/slider.js';
 
+import {parseQueue} from './queue.js';
+import {SearchView} from './searchView.js';
 
 const ART_SIZE = 128;
 const YOURTUNE_APP_ID = 'com.robotlog.yourtune';
@@ -59,10 +61,11 @@ const EMPTY_STATE = {
 
 export const MiniPlayerIndicator = GObject.registerClass(
 class MiniPlayerIndicator extends PanelMenu.Button {
-  _init({path, client}) {
+  _init({path, client, settings}) {
     super._init(0.0, 'YourTune Mini Player');
     this._extensionPath = path;
     this._client = client;
+    this._settings = settings;
 
     this._state = {...EMPTY_STATE};
     this._localProgress = 0;
@@ -75,6 +78,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._likeOverrideTimer = 0;
     this._likeRefreshTimer = 0;
     this._previousLikeStatus = null;
+    this._queue = null;
+    this._queueSerial = 0;
     this._videoChangedAt = 0;
     this._artUrl = null;
     this._artPath = null;
@@ -103,6 +108,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       if (open) {
         this._restartMarquees();
         this._refreshLikeStatus();
+        this._refreshQueue();
       } else
         this._stopMarquees();
     });
@@ -119,6 +125,14 @@ class MiniPlayerIndicator extends PanelMenu.Button {
 
   _buildMenu() {
     this.menu.box.add_style_class_name('yourtune-menu');
+
+    this._searchView = new SearchView({
+      client: this._client,
+      settings: this._settings,
+      fileIcon: name => this._fileIcon(name),
+      onQueueChanged: () => this._refreshQueue(),
+    });
+    this.menu.box.add_child(this._searchView);
 
     const item = new PopupMenu.PopupBaseMenuItem({reactive: false, can_focus: false});
     this.menu.addMenuItem(item);
@@ -291,6 +305,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     const status = this._client.status;
     const view = STATUS_VIEWS[status];
     this._statusOverlay.visible = Boolean(view);
+    this._searchView.setEnabled(!view);
     if (view) {
       this._statusLabel.text = view.message;
       this._statusButton.visible = Boolean(view.action);
@@ -302,6 +317,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._seekTarget = null;
       this._clearLikeOverride();
       this._clearLikeRefresh();
+      this._queue = null;
       this._updateUi();
     }
   }
@@ -321,6 +337,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._state = {...EMPTY_STATE, ...data, song: data.song ?? null};
       this._syncProgress(this._state.position, true, false);
       this._scheduleLikeRefresh([0, ...LIKE_REFRESH_DELAYS_MS]);
+      this._refreshQueue();
       break;
     case 'VIDEO_CHANGED':
       this._previousLikeStatus = this._state.likeStatus;
@@ -336,6 +353,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._syncProgress(data.position, true, false);
       this._clearLikeOverride();
       this._scheduleLikeRefresh(LIKE_REFRESH_DELAYS_MS);
+      this._refreshQueue();
       break;
     case 'PLAYER_STATE_CHANGED':
     case 'POSITION_CHANGED':
@@ -351,6 +369,33 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       return;
     }
     this._updateUi();
+  }
+
+  // YourTune reports the YouTube video's title and channel ("All In", "오케이션"), while the queue
+  // has what YouTube Music itself shows ("All In (feat. B-Free)", "Ca$h Out"). Prefer the queue's
+  // whenever the track is in it.
+  _displayTrack(song) {
+    if (!song)
+      return song;
+    const index = this._queue?.entries.findIndex(ids => ids.includes(song.videoId)) ?? -1;
+    const track = index >= 0 ? this._queue.tracks[index] : null;
+    return track?.title ? {...song, ...track} : song;
+  }
+
+  async _refreshQueue() {
+    if (this._client?.status !== 'connected')
+      return;
+    const serial = ++this._queueSerial;
+    try {
+      const queue = parseQueue(await this._client.request('GET', '/queue'));
+      if (serial !== this._queueSerial || this._destroyed)
+        return;
+      this._queue = queue;
+      this._updateUi();
+    } catch (error) {
+      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+        console.error(`YourTune queue read failed: ${error.message}`);
+    }
   }
 
   _syncProgress(position, trackChanged, playing) {
@@ -379,9 +424,10 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   _updateUi() {
     const song = this._state.song;
     const playing = this._state.isPlaying;
-    this._setMarqueeText(this._titleMarquee, song?.title || 'Nothing playing');
-    this._setMarqueeText(this._artistMarquee, song?.artist || 'Play something in YourTune');
-    this._setArtwork(song?.imageSrc ?? null);
+    const shown = this._displayTrack(song);
+    this._setMarqueeText(this._titleMarquee, shown?.title || 'Nothing playing');
+    this._setMarqueeText(this._artistMarquee, shown?.artist || 'Play something in YourTune');
+    this._setArtwork(shown?.imageSrc ?? null);
 
     this._setButtonIcon(this._playButton, playing ? 'pause-symbolic.svg' : 'play-symbolic.svg');
     this._playButton.accessible_name = playing ? 'Pause' : 'Play';

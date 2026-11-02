@@ -15,5 +15,13 @@
       <summary>Access token issued by YourTune</summary>
       <description>Cleared when YourTune rejects it, so the panel asks for access again.</description>
     </key>
+    <key name="search-kind" type="s">
+      <choices>
+        <choice value="songs"/>
+        <choice value="videos"/>
+      </choices>
+      <default>'songs'</default>
+      <summary>Whether search looks for songs or videos</summary>
+    </key>
   </schema>
 </schemalist>

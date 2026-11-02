@@ -8,7 +8,7 @@ export default class YourTuneMiniPlayerExtension extends Extension {
   enable() {
     const settings = this.getSettings();
     this._client = new YourTuneClient(settings);
-    this._indicator = new MiniPlayerIndicator({path: this.path, client: this._client});
+    this._indicator = new MiniPlayerIndicator({path: this.path, client: this._client, settings});
     Main.panel.addToStatusArea(this.uuid, this._indicator, 1, 'right');
     this._client.start();
   }

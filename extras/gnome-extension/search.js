@@ -60,16 +60,6 @@ function subtitleFromRuns(runs) {
     .trim();
 }
 
-const COUNT_SCALE = {k: 1e3, m: 1e6, b: 1e9, thousand: 1e3, million: 1e6, billion: 1e9, '만': 1e4, '억': 1e8};
-
-function playCountFrom(renderer) {
-  const text = renderer.flexColumns?.slice(1).map(column => runsText(column.musicResponsiveListItemFlexColumnRenderer?.text?.runs)).join(' ') ?? '';
-  const match = text.match(/([\d,.]+)\s*(K|M|B|thousand|million|billion|만|억)?\s*(?:plays|views|회)/i);
-  if (!match)
-    return null;
-  return Number(match[1].replace(/,/g, '')) * (COUNT_SCALE[match[2]?.toLowerCase()] ?? 1);
-}
-
 export function parseItem(renderer) {
   const watchEndpoint = watchEndpointFrom(renderer);
   const videoId = renderer.playlistItemData?.videoId ?? watchEndpoint?.videoId;
@@ -91,7 +81,6 @@ export function parseItem(renderer) {
     duration,
     artworkUrl: pickArtworkUrl(renderer.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails),
     kind: SONG_VIDEO_TYPES.has(videoType) ? 'song' : VIDEO_VIDEO_TYPES.has(videoType) ? 'video' : 'other',
-    playCount: playCountFrom(renderer),
   };
 }
 
@@ -146,7 +135,7 @@ export function normalized(text) {
 }
 
 // Exact title matches first, then items that contain every query word, then any word. Ties keep
-// the more played item first, then YouTube Music's order.
+// YouTube Music's order, which already reflects the query (an album name, say).
 export function rankResults(items, query) {
   const q = normalized(query);
   const tokens = q.split(/\s+/).filter(Boolean);
@@ -163,6 +152,6 @@ export function rankResults(items, query) {
   };
   return items
     .map((item, index) => ({item, index, rank: rank(item)}))
-    .sort((a, b) => a.rank - b.rank || (b.item.playCount ?? -1) - (a.item.playCount ?? -1) || a.index - b.index)
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
     .map(entry => entry.item);
 }

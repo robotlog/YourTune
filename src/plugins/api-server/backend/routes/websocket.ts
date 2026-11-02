@@ -40,16 +40,22 @@ type PlayerState = {
   shuffle: boolean;
 };
 
+// The routes register again whenever the server restarts (the plugin is turned
+// off and on, or its address changes), while the backend keeps the player
+// state it has seen, so new connections read their snapshot from there.
+export type PlayerStateGetters = {
+  songInfo: () => SongInfo | undefined;
+  volumeState: () => VolumeState | undefined;
+  repeatMode: () => RepeatMode | undefined;
+  shuffle: () => boolean | undefined;
+};
+
 export const register = (
   app: HonoApp,
   { getConfig, ipc }: BackendContext<APIServerConfig>,
   uws: typeof upgradeWebSocket,
+  state: PlayerStateGetters,
 ) => {
-  let volumeState: VolumeState | undefined = undefined;
-  let repeat: RepeatMode = 'NONE';
-  let shuffle = false;
-  let lastSongInfo: SongInfo | undefined = undefined;
-
   const sockets = new Set<WSContext<WebSocketLike>>();
 
   const send = (type: DataTypes, state: Partial<PlayerState>) => {
@@ -81,7 +87,7 @@ export const register = (
   electronApp.once('before-quit', () => {
     send(DataTypes.PlayerStateChanged, {
       isPlaying: false,
-      position: lastSongInfo?.elapsedSeconds ?? 0,
+      position: state.songInfo()?.elapsedSeconds ?? 0,
     });
   });
 
@@ -100,20 +106,16 @@ export const register = (
     if (event === SongInfoEvent.TimeChanged) {
       send(DataTypes.PositionChanged, { position: songInfo.elapsedSeconds });
     }
-
-    lastSongInfo = { ...songInfo };
   });
 
-  ipc.on('peard:volume-changed', (newVolumeState: VolumeState) => {
-    volumeState = newVolumeState;
+  ipc.on('peard:volume-changed', (volumeState: VolumeState) => {
     send(DataTypes.VolumeChanged, {
       volume: volumeState.state,
       muted: volumeState.isMuted,
     });
   });
 
-  ipc.on('peard:repeat-changed', (mode: RepeatMode) => {
-    repeat = mode;
+  ipc.on('peard:repeat-changed', (repeat: RepeatMode) => {
     send(DataTypes.RepeatChanged, { repeat });
   });
 
@@ -121,8 +123,7 @@ export const register = (
     send(DataTypes.PositionChanged, { position: t });
   });
 
-  ipc.on('peard:shuffle-changed', (newShuffle: boolean) => {
-    shuffle = newShuffle;
+  ipc.on('peard:shuffle-changed', (shuffle: boolean) => {
     send(DataTypes.ShuffleChanged, { shuffle });
   });
 
@@ -163,14 +164,22 @@ export const register = (
 
           try {
             const payload = await verify(token, config.secret, 'HS256');
-            const parsedPayload = await JWTPayloadSchema.safeParseAsync(payload);
+            const parsedPayload =
+              await JWTPayloadSchema.safeParseAsync(payload);
 
-            if (!parsedPayload.success || !config.authorizedClients.includes(parsedPayload.data.id)) {
+            if (
+              !parsedPayload.success ||
+              !config.authorizedClients.includes(parsedPayload.data.id)
+            ) {
               ws.close(1008, 'Unauthorized');
               return;
             }
           } catch (err) {
-            console.error(LoggerPrefix, 'WebSocket authentication failed:', err);
+            console.error(
+              LoggerPrefix,
+              'WebSocket authentication failed:',
+              err,
+            );
             ws.close(1008, 'Unauthorized');
             return;
           }
@@ -182,10 +191,10 @@ export const register = (
           JSON.stringify({
             type: DataTypes.PlayerInfo,
             ...createPlayerState({
-              songInfo: lastSongInfo,
-              volumeState,
-              repeat,
-              shuffle,
+              songInfo: state.songInfo(),
+              volumeState: state.volumeState(),
+              repeat: state.repeatMode() ?? 'NONE',
+              shuffle: state.shuffle() ?? false,
             }),
           }),
         );

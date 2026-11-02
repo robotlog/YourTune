@@ -14,6 +14,7 @@ export type BackendType = {
   songInfo?: SongInfo;
   currentRepeatMode?: RepeatMode;
   volumeState?: VolumeState;
+  shuffle?: boolean;
 
   init: (ctx: BackendContext<APIServerConfig>) => void;
   run: (config: APIServerConfig) => void;

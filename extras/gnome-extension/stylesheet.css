@@ -57,7 +57,9 @@
   min-width: 0;
 }
 
+/* The card's menu item is not reactive, so the theme greys its text unless a color is set. */
 .yourtune-title {
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
 }

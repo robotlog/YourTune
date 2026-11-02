@@ -26,6 +26,7 @@ import {
   nextTrack,
   previousTrack,
   switchRepeat,
+  toggleMute,
   toggleShuffle,
   updateLike,
 } from './providers/player-ui';
@@ -278,11 +279,7 @@ async function onApiLoaded() {
   );
 
   window.ipcRenderer.on('peard:toggle-mute', (_) => {
-    document
-      .querySelector<HTMLElement & { onVolumeClick: () => void }>(
-        'ytmusic-player-bar',
-      )
-      ?.onVolumeClick();
+    toggleMute();
   });
 
   window.ipcRenderer.on('peard:get-queue', () => {

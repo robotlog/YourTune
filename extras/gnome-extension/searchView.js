@@ -39,6 +39,7 @@ class SearchView extends St.BoxLayout {
     this._queueMessageTimer = 0;
     this._queuePending = false;
     this._destroyed = false;
+    this.connect('destroy', () => this._onDestroy());
 
     // The popup menu treats arrow keys and letters as navigation; keep them in the entry.
     this.connect('key-press-event', (_actor, event) =>
@@ -411,12 +412,11 @@ class SearchView extends St.BoxLayout {
     return button;
   }
 
-  destroy() {
+  _onDestroy() {
     this._destroyed = true;
     this._serial++;
     this._cancelSearchTimer();
     if (this._queueMessageTimer)
       GLib.source_remove(this._queueMessageTimer);
-    super.destroy();
   }
 });

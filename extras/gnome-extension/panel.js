@@ -817,7 +817,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     }
   }
 
-  destroy() {
+  // Runs on the destroy signal, so it also cleans up when GNOME Shell disposes the panel itself.
+  _onDestroy() {
     this._destroyed = true;
     this._artLoadId++;
     GLib.source_remove(this._tickId);
@@ -835,6 +836,6 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._client.disconnectObject(this);
     this._client = null;
     this._deleteArtFile();
-    super.destroy();
+    super._onDestroy();
   }
 });

@@ -9,6 +9,7 @@ import {
   previousTrack,
   switchRepeat,
   toggleMute,
+  togglePlay,
   toggleShuffle,
   updateLike,
   watchPlayerState,
@@ -307,4 +308,30 @@ test.describe('player-ui: watchPlayerState', () => {
       ),
     ).toBe(false);
   });
+});
+
+test.describe('player-ui: togglePlay', () => {
+  const cases = [
+    [-1, 'api.playVideo'],
+    [0, 'api.playVideo'],
+    [1, 'api.pauseVideo'],
+    [2, 'api.playVideo'],
+    [3, 'api.pauseVideo'],
+    [5, 'api.playVideo'],
+  ] as const;
+
+  for (const [state, call] of cases) {
+    test(`player state ${state} calls ${call}`, () => {
+      const calls: Calls = [];
+      const { document } = new Window();
+      document.body.innerHTML = '<div id="movie_player"></div>';
+      Object.assign(document.querySelector('#movie_player')!, {
+        getPlayerState: () => state,
+        playVideo: () => calls.push('api.playVideo'),
+        pauseVideo: () => calls.push('api.pauseVideo'),
+      });
+      togglePlay(document as unknown as Document);
+      expect(calls).toEqual([call]);
+    });
+  }
 });

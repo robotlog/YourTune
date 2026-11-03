@@ -115,10 +115,20 @@ export const previousTrack = (root: ParentNode = document) => {
   else getPlayerApi(root)?.previousVideo?.();
 };
 
+// Pause only while playing (1) or buffering (3). A track that is loaded but
+// was never started (unstarted -1, cued 5) or has ended (0) is not paused,
+// and pausing it does nothing.
+export const togglePlay = (root: ParentNode = document) => {
+  const api = getPlayerApi(root);
+  const state = api?.getPlayerState?.();
+  if (state === 1 || state === 3) api?.pauseVideo?.();
+  else api?.playVideo?.();
+};
+
 export const toggleMute = (root: ParentNode = document) => {
   const playerBar = getPlayerBar(root);
-  if (playerBar) {
-    playerBar.onVolumeClick?.();
+  if (playerBar?.onVolumeClick) {
+    playerBar.onVolumeClick();
     return;
   }
 

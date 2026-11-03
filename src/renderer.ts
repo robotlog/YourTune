@@ -27,6 +27,7 @@ import {
   previousTrack,
   switchRepeat,
   toggleMute,
+  togglePlay,
   toggleShuffle,
   updateLike,
 } from './providers/player-ui';
@@ -140,13 +141,8 @@ async function onApiLoaded() {
   window.ipcRenderer.on('peard:pause', (_) => {
     api?.pauseVideo();
   });
-  // Pause only while playing (1) or buffering (3). A track that is loaded but
-  // was never started (unstarted -1, cued 5) or has ended (0) is not paused,
-  // and pausing it does nothing.
   window.ipcRenderer.on('peard:toggle-play', (_) => {
-    const state = api?.getPlayerState();
-    if (state === 1 || state === 3) api?.pauseVideo();
-    else api?.playVideo();
+    togglePlay();
   });
   window.ipcRenderer.on('peard:seek-to', (_, t: number) => api!.seekTo(t));
   window.ipcRenderer.on('peard:seek-by', (_, t: number) => api!.seekBy(t));

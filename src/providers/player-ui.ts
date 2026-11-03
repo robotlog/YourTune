@@ -13,6 +13,7 @@ type PlayerBarElement = HTMLElement & {
   queue?: { shuffle: () => void };
   getState?: () => GetState;
   onRepeatButtonClick?: () => void;
+  onVolumeClick?: () => void;
 };
 
 type LikeButtonRendererElement = HTMLElement & {
@@ -112,6 +113,18 @@ export const previousTrack = (root: ParentNode = document) => {
   );
   if (button) button.click();
   else getPlayerApi(root)?.previousVideo?.();
+};
+
+export const toggleMute = (root: ParentNode = document) => {
+  const playerBar = getPlayerBar(root);
+  if (playerBar) {
+    playerBar.onVolumeClick?.();
+    return;
+  }
+
+  const api = getPlayerApi(root);
+  if (api?.isMuted?.()) api.unMute?.();
+  else api?.mute?.();
 };
 
 export const getRepeatMode = (root: ParentNode = document) =>

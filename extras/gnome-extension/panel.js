@@ -30,6 +30,23 @@ const LIKE_REFRESH_DELAYS_MS = [300, 700, 1200, 2000, 4000];
 const LIKE_SETTLE_MS = 1000;
 const LIKE_OVERRIDE_MS = 2000;
 
+// Album art is written here so the card can use it as a CSS background.
+function coverCacheDir() {
+  return GLib.build_filenamev([GLib.get_user_cache_dir(), 'yourtune-miniplayer']);
+}
+
+// Removes covers a crash left behind; the panel deletes each one when the next replaces it.
+function clearCoverCache() {
+  try {
+    const dir = Gio.File.new_for_path(coverCacheDir());
+    const children = dir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
+    let info;
+    while ((info = children.next_file(null)))
+      dir.get_child(info.get_name()).delete(null);
+    children.close(null);
+  } catch {}
+}
+
 function formatTime(seconds) {
   const safeSeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : 0;
   const minutes = Math.floor(safeSeconds / 60);
@@ -64,6 +81,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   _init({path, client, settings}) {
     super._init(0.0, 'YourTune Mini Player');
     this._extensionPath = path;
+    clearCoverCache();
     this._client = client;
     this._settings = settings;
 
@@ -789,6 +807,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   _artFallback() {
     this._art.set_style('');
     this._artPlaceholder.visible = true;
+    this._deleteArtFile();
   }
 
   _applyArtPixbuf(pixbuf) {
@@ -799,7 +818,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     const side = Math.max(1, Math.min(width, height));
     const square = pixbuf.new_subpixbuf(Math.floor((width - side) / 2), Math.floor((height - side) / 2), side, side);
     const scaled = square.scale_simple(px, px, GdkPixbuf.InterpType.BILINEAR);
-    const dir = GLib.build_filenamev([GLib.get_user_cache_dir(), 'yourtune-miniplayer']);
+    const dir = coverCacheDir();
     try {
       Gio.File.new_for_path(dir).make_directory_with_parents(null);
     } catch {}

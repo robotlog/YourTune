@@ -4,6 +4,5 @@
   "description": "A panel mini player for YourTune. It talks to YourTune's API Server plugin.",
   "shell-version": ["50"],
   "settings-schema": "org.gnome.shell.extensions.yourtune-miniplayer",
-  "url": "https://github.com/robotlog/YourTune/tree/master/extras/gnome-extension",
-  "version": 1
+  "url": "https://github.com/robotlog/YourTune/tree/master/extras/gnome-extension"
 }

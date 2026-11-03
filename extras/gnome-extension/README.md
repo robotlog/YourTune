@@ -47,4 +47,5 @@ After changing the list in `tools/generate-icons.mjs`, regenerate the icons with
 ## Credits
 
 The icons are [Material Icons](https://github.com/google/material-design-icons) by Google
-(Apache 2.0), from the `@mdui/icons` package. The panel icons are YourTune's tray icons.
+(Apache 2.0), from the `@mdui/icons` package. The panel icons are YourTune's tray icons. The
+notice and license text in `icons/` ship in the extension zip.

@@ -4,9 +4,6 @@ import Soup from 'gi://Soup?version=3.0';
 
 import {EventEmitter} from 'resource:///org/gnome/shell/misc/signals.js';
 
-Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
-Gio._promisify(Soup.Session.prototype, 'websocket_connect_async');
-
 export const CLIENT_ID = 'yourtune-gnome-miniplayer';
 
 // True for a request to an endpoint this YourTune version doesn't have yet.
@@ -29,6 +26,9 @@ const WS_POLICY_VIOLATION = 1008;
 export class YourTuneClient extends EventEmitter {
   constructor(settings) {
     super();
+    // The client is made in enable(), and extensions must not change anything before that.
+    Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
+    Gio._promisify(Soup.Session.prototype, 'websocket_connect_async');
     this._settings = settings;
     this._session = new Soup.Session({timeout: REQUEST_TIMEOUT_S});
     // POST /auth blocks until the user answers the dialog, so it must not time out.

@@ -1,0 +1,7 @@
+The *-symbolic.svg icons are Material Icons by Google
+(https://github.com/google/material-design-icons), licensed under the Apache License 2.0;
+see LICENSE-APACHE-2.0. They were taken from the @mdui/icons package and saved as standalone
+SVG files by tools/generate-icons.mjs.
+
+yourtune-panel.png and yourtune-panel-paused.png are YourTune's tray icons, under YourTune's
+license.

@@ -6,6 +6,12 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 #### Unreleased
 
+Features:
+
+- GNOME Shell mini player uses the 1.4 endpoints: play now, start a mix from the card or a search result, and live like updates, thanks to @sungyongcho ([#21](https://github.com/robotlog/YourTune/pull/21)).
+- Each release has the GNOME Shell extension as `yourtune-gnome-extension-<version>.zip` ([#25](https://github.com/robotlog/YourTune/pull/25)).
+- The GNOME Shell extension follows the extensions.gnome.org review guidelines, thanks to @sungyongcho ([#26](https://github.com/robotlog/YourTune/pull/26)).
+
 Fixes:
 
 - API Server `LIKE_CHANGED` reports the new track's like state on the new player UI instead of the previous track's, reported by @sungyongcho ([#22](https://github.com/robotlog/YourTune/issues/22)).

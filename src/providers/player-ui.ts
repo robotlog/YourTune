@@ -162,6 +162,38 @@ export const watchPlayerState = <T>(
   return true;
 };
 
+// The queue store changes as the next track starts, before the miniplayer's
+// like buttons update, so the buttons are watched too. Each status is
+// reported once.
+export const watchLikeStatus = (
+  root: ParentNode,
+  onChange: (status: LikeType) => void,
+) => {
+  let last = getLikeStatus(root);
+  const check = () => {
+    const next = getLikeStatus(root);
+    if (next === last) return;
+    last = next;
+    onChange(next);
+  };
+
+  watchPlayerState(root, () => getLikeStatus(root), check);
+
+  const miniplayer = root.querySelector('ytmusic-miniplayer');
+  const doc = (root as Document).defaultView
+    ? (root as Document)
+    : root.ownerDocument;
+  const Observer = doc?.defaultView?.MutationObserver;
+  if (miniplayer && Observer) {
+    new Observer(check).observe(miniplayer, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['aria-pressed'],
+    });
+  }
+};
+
 const REPEAT_STEP_TIMEOUT_MS = 1000;
 
 const waitForRepeatModeChange = async (root: ParentNode, from: unknown) => {

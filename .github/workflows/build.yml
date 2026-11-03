@@ -151,7 +151,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.get_draft_release.outputs.tag_name }}
         run: |
-          command -v glib-compile-schemas >/dev/null || sudo apt-get install -y --no-install-recommends libglib2.0-bin
           zip=$(sh extras/gnome-extension/tools/pack.sh "$RUNNER_TEMP/yourtune-gnome-extension-${{ env.VERSION }}.zip")
           gh release upload "$TAG" "$zip" --clobber
 

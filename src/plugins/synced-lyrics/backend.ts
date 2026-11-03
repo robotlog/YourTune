@@ -14,7 +14,11 @@ function formatTime(ms: number): string {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
 }
 
-function formatAsLRC(data: LyricResult, title: string, artist: string): string {
+function formatAsLRC(
+  data: LyricResult,
+  title: string,
+  artist: string,
+): string {
   let lrc = '';
   if (title) lrc += `[ti:${title}]\n`;
   if (artist) lrc += `[ar:${artist}]\n`;
@@ -57,11 +61,10 @@ const handlers = {
   ): Promise<string> {
     const lrcContent = formatAsLRC(lyricsData, title, artist);
     // a slash in a name (AC/DC) would make the dialog read it as a folder
-    const fileName =
-      `${title || videoId} - ${artist || 'Unknown'}.lrc`.replaceAll(
-        /[/\\:*?"<>|]/g,
-        '_',
-      );
+    const fileName = `${title || videoId} - ${artist || 'Unknown'}.lrc`.replaceAll(
+      /[/\\:*?"<>|]/g,
+      '_',
+    );
 
     try {
       const result = await dialog.showSaveDialog({

@@ -352,7 +352,9 @@ export const backend = createBackend<
 >({
   async start({ getConfig, setConfig, window }) {
     pluginConfig = await getConfig();
-    const clampedScore = clampCommunityMinScore(pluginConfig.communityMinScore);
+    const clampedScore = clampCommunityMinScore(
+      pluginConfig.communityMinScore,
+    );
     if (clampedScore != pluginConfig.communityMinScore) {
       await setConfig({ communityMinScore: clampedScore });
       pluginConfig.communityMinScore = clampedScore;

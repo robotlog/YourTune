@@ -102,7 +102,9 @@ export const shouldSkipTrack = (
 
   const blockedSongs = config.blockedSongs || [];
   const titleFolded = foldName(title);
-  const titleKeys = new Set(foldedTokens.map((token) => songKey(title, token)));
+  const titleKeys = new Set(
+    foldedTokens.map((token) => songKey(title, token)),
+  );
   titleKeys.add(songKey(title, artist));
   for (const song of blockedSongs) {
     if (!song || !song.title) {

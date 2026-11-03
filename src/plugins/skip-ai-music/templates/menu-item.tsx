@@ -25,11 +25,17 @@ export const SkipAiMusicMenuItem = (props: SkipAiMusicMenuItemProps) => (
         viewBox="0 0 24 24"
       >
         <g class="style-scope yt-icon">
-          <path class="style-scope yt-icon" d={props.pathD} fill="#aaaaaa" />
+          <path
+            class="style-scope yt-icon"
+            d={props.pathD}
+            fill="#aaaaaa"
+          />
         </g>
       </svg>
     </div>
-    <div class="text style-scope ytmusic-menu-navigation-item-renderer">
+    <div
+      class="text style-scope ytmusic-menu-navigation-item-renderer"
+    >
       {props.label}
     </div>
   </a>

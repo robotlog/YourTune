@@ -213,9 +213,7 @@ const injectBlockButtons = () => {
   if (!menu) return;
 
   const artists = getMenuArtists(menu);
-  const key = artists
-    .map((artist) => artist.channelId ?? artist.name)
-    .join('|');
+  const key = artists.map((artist) => artist.channelId ?? artist.name).join('|');
   const existing = menu.querySelector<HTMLElement>('.blocklist-injected');
 
   if (!artists.length) {

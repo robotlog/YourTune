@@ -116,11 +116,11 @@ const draw = (time: number) => {
       const position = (x / scale) * layer.width;
       const drift = time * layer.speed;
       const wave =
-        Math.sin(position + drift + layer.phase) * 0.6 +
-        Math.sin(position * 2.3 - drift * 1.7 + layer.phase) * 0.4;
+        (Math.sin(position + drift + layer.phase) * 0.6) +
+        (Math.sin((position * 2.3) - (drift * 1.7) + layer.phase) * 0.4);
       // below zero dips under the edge, which leaves flat gaps between the bumps
-      const rise = 0.3 + 0.7 * wave;
-      context.lineTo(x, height - height * energy * layer.height * rise);
+      const rise = 0.3 + (0.7 * wave);
+      context.lineTo(x, height - (height * energy * layer.height * rise));
     }
     context.lineTo(width, height);
     context.closePath();

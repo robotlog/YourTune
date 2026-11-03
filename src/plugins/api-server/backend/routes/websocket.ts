@@ -58,9 +58,9 @@ export const register = (
 ) => {
   const sockets = new Set<WSContext<WebSocketLike>>();
 
-  const send = (type: DataTypes, state: Partial<PlayerState>) => {
+  const send = (type: DataTypes, playerState: Partial<PlayerState>) => {
     sockets.forEach((socket) =>
-      socket.send(JSON.stringify({ type, ...state })),
+      socket.send(JSON.stringify({ type, ...playerState })),
     );
   };
 

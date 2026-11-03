@@ -10,6 +10,7 @@ Features:
 
 - Tray Settings plugin: opens the settings from the tray menu, also with In-App Menu off ([#13](https://github.com/robotlog/YourTune/pull/13), refs [#2](https://github.com/robotlog/YourTune/issues/2)).
 - KDE Plasma 6 panel widget in `extras/plasma-widget` ([#14](https://github.com/robotlog/YourTune/pull/14)).
+- GNOME Shell mini player in `extras/gnome-extension`, thanks to @sungyongcho ([#3](https://github.com/robotlog/YourTune/pull/3)).
 
 API Server fixes, thanks to @sungyongcho:
 

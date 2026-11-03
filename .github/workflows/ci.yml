@@ -1,0 +1,60 @@
+name: CI
+
+# Runs on every pull request, forks included. `pull_request` gives fork PRs a
+# read-only token and no secrets, so it is safe to run their code here.
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check
+    if: github.event.pull_request.draft != true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: 11
+          run_install: false
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: "24.x"
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # Fails on errors only. No oxfmt check here: oxfmt drops parentheses that
+      # oxlint's no-mixed-operators requires.
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+        with:
+          run: pnpm test
+
+      - name: Extras tests
+        if: hashFiles('extras/*/tests/*.test.js') != ''
+        run: node --test extras/*/tests/*.test.js

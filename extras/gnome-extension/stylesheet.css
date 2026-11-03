@@ -1,0 +1,306 @@
+.yourtune-menu .popup-menu-content {
+  padding: 0;
+}
+
+#panel .panel-button.yourtune-panel-button {
+  -natural-hpadding: 12px;
+  -minimum-hpadding: 6px;
+}
+
+#panel .panel-button.yourtune-panel-button .yourtune-panel-icon {
+  icon-size: 16px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.yourtune-popup {
+  width: 480px;
+  padding: 14px;
+  spacing: 12px;
+}
+
+.yourtune-player-row {
+  spacing: 16px;
+}
+
+.yourtune-art {
+  width: 128px;
+  height: 128px;
+  border-radius: 8px;
+  background-color: #111111;
+}
+
+.yourtune-art-button {
+  padding: 0;
+  border-width: 0;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.yourtune-art-button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.yourtune-art-overlay {
+  color: #ffffff;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.yourtune-details {
+  spacing: 6px;
+}
+
+.yourtune-marquee-clip {
+  min-width: 0;
+}
+
+/* The card's menu item is not reactive, so the theme greys its text unless a color is set. */
+.yourtune-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.yourtune-artist {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+}
+
+/* Tall enough for the theme's slider handle, which is about 16px across. */
+.yourtune-slider {
+  height: 22px;
+}
+
+.yourtune-times {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 10px;
+}
+
+.yourtune-controls {
+  spacing: 4px;
+}
+
+.yourtune-volume-row {
+  spacing: 10px;
+  padding: 2px 0 6px 0;
+}
+
+.yourtune-volume-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.yourtune-volume-slider {
+  height: 22px;
+  -barlevel-height: 4px;
+  -barlevel-background-color: rgba(255, 255, 255, 0.18);
+  -barlevel-active-background-color: #e95420;
+  -barlevel-overdrive-color: #e95420;
+  -barlevel-border-width: 0;
+  color: #ffffff;
+}
+
+.yourtune-like-on {
+  color: #ff5544;
+}
+
+.yourtune-dislike-on {
+  color: #8ab4f8;
+}
+
+.yourtune-icon-button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.92);
+  background-color: transparent;
+  border-radius: 99px;
+}
+
+.yourtune-icon-button:hover,
+.yourtune-icon-button:focus {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.yourtune-play-button {
+  width: 44px;
+  height: 44px;
+  color: #151515;
+  background-color: #ffffff;
+}
+
+.yourtune-play-button:hover,
+.yourtune-play-button:focus {
+  color: #151515;
+  background-color: #f2f2f2;
+}
+
+.yourtune-text-button {
+  padding: 8px 12px;
+  color: #151515;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+.yourtune-text-button:hover,
+.yourtune-text-button:focus {
+  color: #151515;
+  background-color: #f2f2f2;
+}
+
+/* Leaves the artwork uncovered, so it can start or raise YourTune while disconnected:
+   the art's 128px plus the player row's 16px spacing. */
+.yourtune-status-overlay {
+  margin-left: 144px;
+  background-color: rgba(55, 55, 55, 0.88);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.yourtune-status-message {
+  color: #eeeeee;
+  text-align: center;
+  max-width: 280px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.yourtune-search-wrap {
+  width: 480px;
+  padding: 14px 14px 0 14px;
+  spacing: 10px;
+}
+
+.yourtune-search-entry {
+  padding: 6px 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.yourtune-results-box {
+  spacing: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.yourtune-results-header {
+  spacing: 8px;
+  padding: 0 2px;
+}
+
+.yourtune-results-label {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  font-weight: 600;
+  padding-top: 4px;
+}
+
+.yourtune-kind-toggle {
+  spacing: 2px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+}
+
+.yourtune-kind-button {
+  padding: 2px 6px;
+  color: rgba(255, 255, 255, 0.62);
+  background-color: transparent;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.yourtune-kind-button:hover,
+.yourtune-kind-button:focus {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.yourtune-kind-button-selected,
+.yourtune-kind-button-selected:hover,
+.yourtune-kind-button-selected:focus {
+  color: #151515;
+  background-color: #ffffff;
+}
+
+.yourtune-results-scroll {
+  max-height: 240px;
+}
+
+.yourtune-results {
+  padding-right: 16px;
+  spacing: 2px;
+}
+
+.yourtune-results-status {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  padding: 6px 2px;
+}
+
+.yourtune-result-row {
+  spacing: 10px;
+  padding: 6px 2px;
+  border-radius: 10px;
+}
+
+.yourtune-result-art-wrap,
+.yourtune-result-art-overlay,
+.yourtune-result-art {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.yourtune-result-art {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.yourtune-result-art-wrap {
+  padding: 0;
+  border-width: 0;
+  background-color: transparent;
+}
+
+.yourtune-result-art-wrap:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.yourtune-result-art-overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.yourtune-result-details {
+  spacing: 2px;
+}
+
+.yourtune-result-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.yourtune-result-artist {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+}
+
+.yourtune-more-button {
+  margin: 4px 2px;
+  padding: 3px 8px;
+  color: rgba(255, 255, 255, 0.72);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.yourtune-more-button:hover,
+.yourtune-more-button:focus {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.16);
+}

@@ -1,0 +1,592 @@
+{
+ "contents": {
+  "sectionListRenderer": {
+   "contents": [
+    {
+     "itemSectionRenderer": {
+      "contents": [
+       {
+        "messageRenderer": {
+         "button": {
+          "buttonRenderer": {
+           "style": "STYLE_TEXT",
+           "isDisabled": false,
+           "text": {
+            "simpleText": "About these results"
+           },
+           "icon": {
+            "iconType": "INFO_OUTLINE"
+           },
+           "navigationEndpoint": {
+            "urlEndpoint": {
+             "url": "https://www.youtube.com/howyoutubeworks/product-features/search/",
+             "target": "TARGET_NEW_WINDOW"
+            }
+           },
+           "iconPosition": "BUTTON_ICON_POSITION_TYPE_RIGHT_OF_TEXT"
+          }
+         },
+         "style": {
+          "value": "RENDER_STYLE_PANEL"
+         }
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ },
+ "continuationContents": {
+  "musicShelfContinuation": {
+   "contents": [
+    {
+     "musicResponsiveListItemRenderer": {
+      "thumbnail": {
+       "musicThumbnailRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://yt3.googleusercontent.com/lYVgOzNwvDGa2OosE3FUJ5ZEcROXrBnJxgx3i2zhyW6-hXxZ0CZBLBSbLuWAvoVhtWRN14LGhZGCZeWt0w=w60-h60-l90-rj",
+           "width": 60,
+           "height": 60
+          },
+          {
+           "url": "https://yt3.googleusercontent.com/lYVgOzNwvDGa2OosE3FUJ5ZEcROXrBnJxgx3i2zhyW6-hXxZ0CZBLBSbLuWAvoVhtWRN14LGhZGCZeWt0w=w120-h120-l90-rj",
+           "width": 120,
+           "height": 120
+          }
+         ]
+        },
+        "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+        "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+       }
+      },
+      "flexColumns": [
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "Wait (기다려)",
+            "navigationEndpoint": {
+             "watchEndpoint": {
+              "videoId": "1i9ZhJJufiM",
+              "playerParams": "0gcJCTUC0OBS9m0t",
+              "watchEndpointMusicSupportedConfigs": {
+               "watchEndpointMusicConfig": {
+                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+               }
+              }
+             }
+            }
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "IU",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "UCTUR0sVEkD8T5MlSHqgaI_Q",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "Modern Times – Epilogue (Modern Times - Epilogue)",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "MPREb_BZdFfPLotHS",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "2:31"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "686k plays"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       }
+      ],
+      "playlistItemData": {
+       "videoId": "1i9ZhJJufiM"
+      },
+      "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+      "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+     }
+    },
+    {
+     "musicResponsiveListItemRenderer": {
+      "thumbnail": {
+       "musicThumbnailRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://yt3.googleusercontent.com/gGimU9zT_z8oiRGWvcjQnS4_56PST_BGvIuzRB3NwlmgrOroRMMOMiR_KC2VL3WDuJCq9FNBk3wEfaGc=w60-h60-l90-rj",
+           "width": 60,
+           "height": 60
+          },
+          {
+           "url": "https://yt3.googleusercontent.com/gGimU9zT_z8oiRGWvcjQnS4_56PST_BGvIuzRB3NwlmgrOroRMMOMiR_KC2VL3WDuJCq9FNBk3wEfaGc=w120-h120-l90-rj",
+           "width": 120,
+           "height": 120
+          }
+         ]
+        },
+        "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+        "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+       }
+      },
+      "flexColumns": [
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "A Dreamer",
+            "navigationEndpoint": {
+             "watchEndpoint": {
+              "videoId": "28DTbGM5H9I",
+              "watchEndpointMusicSupportedConfigs": {
+               "watchEndpointMusicConfig": {
+                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+               }
+              }
+             }
+            }
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "IU",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "UCTUR0sVEkD8T5MlSHqgaI_Q",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "Growing Up",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "MPREb_7JlwrFlE832",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "4:16"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "2.3m plays"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       }
+      ],
+      "playlistItemData": {
+       "videoId": "28DTbGM5H9I"
+      },
+      "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+      "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+     }
+    },
+    {
+     "musicResponsiveListItemRenderer": {
+      "thumbnail": {
+       "musicThumbnailRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://yt3.googleusercontent.com/2qmOehal_HcoObWgHtmNhi_aSluGxgvUpDOpbEU6gacjM8pLlKGOaw0P09VmTV_vL2N2C2c8acmdfKcW=w60-h60-l90-rj",
+           "width": 60,
+           "height": 60
+          },
+          {
+           "url": "https://yt3.googleusercontent.com/2qmOehal_HcoObWgHtmNhi_aSluGxgvUpDOpbEU6gacjM8pLlKGOaw0P09VmTV_vL2N2C2c8acmdfKcW=w120-h120-l90-rj",
+           "width": 120,
+           "height": 120
+          }
+         ]
+        },
+        "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+        "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+       }
+      },
+      "flexColumns": [
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "少年時代 - Shounen Jidai",
+            "navigationEndpoint": {
+             "watchEndpoint": {
+              "videoId": "xezNmrxp2Xo",
+              "watchEndpointMusicSupportedConfigs": {
+               "watchEndpointMusicConfig": {
+                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+               }
+              }
+             }
+            }
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "IU",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "UCTUR0sVEkD8T5MlSHqgaI_Q",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "You & I (Japanese Version)",
+            "navigationEndpoint": {
+             "browseEndpoint": {
+              "browseId": "MPREb_5QnfiXZ31VK",
+              "browseEndpointContextSupportedConfigs": {
+               "browseEndpointContextMusicConfig": {
+                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+               }
+              }
+             }
+            }
+           },
+           {
+            "text": " • "
+           },
+           {
+            "text": "3:51"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       },
+       {
+        "musicResponsiveListItemFlexColumnRenderer": {
+         "text": {
+          "runs": [
+           {
+            "text": "191k plays"
+           }
+          ]
+         },
+         "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+        }
+       }
+      ],
+      "playlistItemData": {
+       "videoId": "xezNmrxp2Xo"
+      },
+      "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+      "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+     }
+    }
+   ],
+   "continuations": [
+    {
+     "nextContinuationData": {
+      "continuation": "ErADEgtJVSBCbHVlbWluZxqgA0VnV0tBUUlJQVVnb2FoQVFCUkFKRUFNUUJCQUtFQlVRRUJBT2dnRUxNV2s1V21oS1NuVm1hVTJDQVFzeU9FUlVZa2ROTlVnNVNZSUJDM2hsZWs1dGNuaHdNbGh2Z2dFTGVXSnBTVTVXUVY5blRHT0NBUXRzTlZKaU1YQk9jbVUwTUlJQkMwazJZMTlIYW5aeWRYbzRnZ0VMTmpjME5HZHNjVVEyYkd1Q0FRc3hkRlY0TURkRVZVSnVUWUlCQzJobE1rTTBiSGcyTTAwd2dnRUxkVXBqWWtwMU5EaHJRbk9DQVF0NU5WbHRWR280UzBSWFRZSUJDMXBFV1ZWblZqTmhNMVp2Z2dFTFUzWkxVV2wwYnpBMmNtdUNBUXREUjBSUU1EWk9RemRwUllJQkMwcFRUMEpHWDFkb2NVVk5nZ0VMV2tSdlNEVmtVVFU0Y0hPQ0FRdEROVGhOVjFZdE5WbE5hNElCQ3pacVRVOUxlVmRQV2swNGdnRUxRVEZ1TkVoRFlraGtaVy1DQVF0NFlYQjFSV05aTUc1WlJRJTNEJTNEGPHq0C4%3D"
+     }
+    }
+   ],
+   "shelfDivider": {
+    "musicShelfDividerRenderer": {
+     "hidden": true
+    }
+   },
+   "autoReloadWhenEmpty": false
+  }
+ },
+ "header": {
+  "musicHeaderRenderer": {
+   "header": {
+    "chipCloudRenderer": {
+     "chips": [
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_SECONDARY"
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming"
+         }
+        },
+        "icon": {
+         "iconType": "CLOSE"
+        },
+        "isSelected": false,
+        "uniqueId": "Clear filters"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Artists"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQIgAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Artists"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Albums"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQIYAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Albums"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_PRIMARY"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Songs"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQIIAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": true,
+        "uniqueId": "Songs"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Videos"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQIQAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Videos"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Community playlists"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgeKAQQoAEABahAQBRAJEAMQBBAKEBUQEBAO"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Community playlists"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Profiles"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQJYAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Profiles"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Episodes"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgWKAQJIAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Episodes"
+       }
+      },
+      {
+       "chipCloudChipRenderer": {
+        "style": {
+         "styleType": "STYLE_DEFAULT"
+        },
+        "text": {
+         "runs": [
+          {
+           "text": "Featured playlists"
+          }
+         ]
+        },
+        "navigationEndpoint": {
+         "searchEndpoint": {
+          "query": "IU Blueming",
+          "params": "EgeKAQQoADgBahAQBRAJEAMQBBAKEBUQEBAO"
+         }
+        },
+        "isSelected": false,
+        "uniqueId": "Featured playlists"
+       }
+      }
+     ],
+     "collapsedRowCount": 1,
+     "horizontalScrollable": true
+    }
+   }
+  }
+ }
+}

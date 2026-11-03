@@ -1,0 +1,607 @@
+{
+ "contents": {
+  "tabbedSearchResultsRenderer": {
+   "tabs": [
+    {
+     "tabRenderer": {
+      "title": "YT Music",
+      "selected": true,
+      "content": {
+       "sectionListRenderer": {
+        "contents": [
+         {
+          "itemSectionRenderer": {
+           "contents": [
+            {
+             "messageRenderer": {
+              "button": {
+               "buttonRenderer": {
+                "style": "STYLE_TEXT",
+                "isDisabled": false,
+                "text": {
+                 "simpleText": "About these results"
+                },
+                "icon": {
+                 "iconType": "INFO_OUTLINE"
+                },
+                "navigationEndpoint": {
+                 "urlEndpoint": {
+                  "url": "https://www.youtube.com/howyoutubeworks/product-features/search/",
+                  "target": "TARGET_NEW_WINDOW"
+                 }
+                },
+                "iconPosition": "BUTTON_ICON_POSITION_TYPE_RIGHT_OF_TEXT"
+               }
+              },
+              "style": {
+               "value": "RENDER_STYLE_PANEL"
+              }
+             }
+            }
+           ]
+          }
+         },
+         {
+          "musicShelfRenderer": {
+           "title": {
+            "runs": [
+             {
+              "text": "Videos"
+             }
+            ]
+           },
+           "contents": [
+            {
+             "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+               "musicThumbnailRenderer": {
+                "thumbnail": {
+                 "thumbnails": [
+                  {
+                   "url": "https://i.ytimg.com/vi/D1PvIWdJ8xo/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3kA_vkyLzZAdoPrbp3dTpThr6E0jA",
+                   "width": 400,
+                   "height": 225
+                  }
+                 ]
+                },
+                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+               }
+              },
+              "flexColumns": [
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "Blueming",
+                    "navigationEndpoint": {
+                     "watchEndpoint": {
+                      "videoId": "D1PvIWdJ8xo",
+                      "watchEndpointMusicSupportedConfigs": {
+                       "watchEndpointMusicConfig": {
+                        "musicVideoType": "MUSIC_VIDEO_TYPE_OMV"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               },
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "IU",
+                    "navigationEndpoint": {
+                     "browseEndpoint": {
+                      "browseId": "UCTUR0sVEkD8T5MlSHqgaI_Q",
+                      "browseEndpointContextSupportedConfigs": {
+                       "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                       }
+                      }
+                     }
+                    }
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "210m views"
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "3:42"
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               }
+              ],
+              "playlistItemData": {
+               "videoId": "D1PvIWdJ8xo"
+              },
+              "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+              "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+             }
+            },
+            {
+             "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+               "musicThumbnailRenderer": {
+                "thumbnail": {
+                 "thumbnails": [
+                  {
+                   "url": "https://i.ytimg.com/vi/o_nxIQTM_B0/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3nGRLFiovVWafCILEnInkE6dL7Jrw",
+                   "width": 400,
+                   "height": 225
+                  }
+                 ]
+                },
+                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+               }
+              },
+              "flexColumns": [
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "Blueming",
+                    "navigationEndpoint": {
+                     "watchEndpoint": {
+                      "videoId": "o_nxIQTM_B0",
+                      "watchEndpointMusicSupportedConfigs": {
+                       "watchEndpointMusicConfig": {
+                        "musicVideoType": "MUSIC_VIDEO_TYPE_OMV"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               },
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "IU",
+                    "navigationEndpoint": {
+                     "browseEndpoint": {
+                      "browseId": "UCTUR0sVEkD8T5MlSHqgaI_Q",
+                      "browseEndpointContextSupportedConfigs": {
+                       "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                       }
+                      }
+                     }
+                    }
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "97m views"
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "4:40"
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               }
+              ],
+              "playlistItemData": {
+               "videoId": "o_nxIQTM_B0"
+              },
+              "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+              "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+             }
+            },
+            {
+             "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+               "musicThumbnailRenderer": {
+                "thumbnail": {
+                 "thumbnails": [
+                  {
+                   "url": "https://i.ytimg.com/vi/iqRkTGkAs9I/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3ntNDRMMO3N2UnBz9s8i2_X5XsLog",
+                   "width": 400,
+                   "height": 225
+                  }
+                 ]
+                },
+                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+               }
+              },
+              "flexColumns": [
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "IU Blueming Lyrics (아이유 블루밍 가사) [Color Coded Lyrics/Han/Rom/Eng]",
+                    "navigationEndpoint": {
+                     "watchEndpoint": {
+                      "videoId": "iqRkTGkAs9I",
+                      "watchEndpointMusicSupportedConfigs": {
+                       "watchEndpointMusicConfig": {
+                        "musicVideoType": "MUSIC_VIDEO_TYPE_UGC"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               },
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "Lemoring",
+                    "navigationEndpoint": {
+                     "browseEndpoint": {
+                      "browseId": "UC2dAS5opN0op-VkOcRBhoGg",
+                      "browseEndpointContextSupportedConfigs": {
+                       "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_USER_CHANNEL"
+                       }
+                      }
+                     }
+                    }
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "8.8m views"
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "4:09"
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               }
+              ],
+              "playlistItemData": {
+               "videoId": "iqRkTGkAs9I"
+              },
+              "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+              "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+             }
+            },
+            {
+             "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+               "musicThumbnailRenderer": {
+                "thumbnail": {
+                 "thumbnails": [
+                  {
+                   "url": "https://i.ytimg.com/vi/tQhgEYJo8Dc/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3k4fcRiXmansaVDHRvNcsU4zhY2Ig",
+                   "width": 400,
+                   "height": 225
+                  }
+                 ]
+                },
+                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+               }
+              },
+              "flexColumns": [
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "IU (아이유) - Blueming (Color Coded Lyrics Eng/Rom/Han/가사)",
+                    "navigationEndpoint": {
+                     "watchEndpoint": {
+                      "videoId": "tQhgEYJo8Dc",
+                      "watchEndpointMusicSupportedConfigs": {
+                       "watchEndpointMusicConfig": {
+                        "musicVideoType": "MUSIC_VIDEO_TYPE_UGC"
+                       }
+                      }
+                     }
+                    }
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               },
+               {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                 "text": {
+                  "runs": [
+                   {
+                    "text": "Jaeguchi",
+                    "navigationEndpoint": {
+                     "browseEndpoint": {
+                      "browseId": "UCmth4hMyizG-_W9jidBqs_A",
+                      "browseEndpointContextSupportedConfigs": {
+                       "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_USER_CHANNEL"
+                       }
+                      }
+                     }
+                    }
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "5.9m views"
+                   },
+                   {
+                    "text": " • "
+                   },
+                   {
+                    "text": "3:51"
+                   }
+                  ]
+                 },
+                 "displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+                }
+               }
+              ],
+              "playlistItemData": {
+               "videoId": "tQhgEYJo8Dc"
+              },
+              "flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+              "itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_TALL"
+             }
+            }
+           ],
+           "continuations": [
+            {
+             "nextContinuationData": {
+              "continuation": "ErADEgtJVSBCbHVlbWluZxqgA0VnV0tBUUlRQVVnVWFoQVFCUkFKRUFNUUJCQUtFQlVRRUJBT2dnRUxSREZRZGtsWFpFbzRlRy1DQVF0dlgyNTRTVkZVVFY5Q01JSUJDMmx4VW10VVIydEJjemxKZ2dFTGRGRm9aMFZaU204NFJHT0NBUXQwU2swd2VVbGlaemhwVVlJQkMyNU5NSGhFU1RWU05UQkZnZ0VMZGpkaWJrOTRWalJxUVdPQ0FRdFNXbVozUzA1VFp6bDVRWUlCQzFWUU4wMWlRbEl6UTFOamdnRUxTVTFzY1U1UWJXUXhXVy1DQVF0RmJqZDNZVk0wVEd0V1NZSUJDMHN0VDFGS2FuZGlOR2hCZ2dFTGNHcEJWekZqWDNnelFUQ0NBUXRyVWsxTGJGcFRNMWxUUllJQkMzRmZMWGRVYVVkME1saGpnZ0VMUjBKVGFtZEVlbmhrWHpTQ0FRdFdaWFJoZWtSZloySmZWWUlCQzI1SFlVUnVkakpNYlVsTmdnRUxZbGQyYWpOVVluUllWRkdDQVFzdFVUUmtPV2czTVZkak1BJTNEJTNEGPHq0C4%3D"
+             }
+            }
+           ],
+           "shelfDivider": {
+            "musicShelfDividerRenderer": {
+             "hidden": true
+            }
+           }
+          }
+         }
+        ],
+        "header": {
+         "chipCloudRenderer": {
+          "chips": [
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_SECONDARY"
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming"
+              }
+             },
+             "icon": {
+              "iconType": "CLOSE"
+             },
+             "isSelected": false,
+             "uniqueId": "Clear filters"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Artists"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQIgAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Artists"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Albums"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQIYAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Albums"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Songs"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQIIAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Songs"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_PRIMARY"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Videos"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQIQAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": true,
+             "uniqueId": "Videos"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Community playlists"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgeKAQQoAEABahAQBRAJEAMQBBAKEBUQEBAO"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Community playlists"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Profiles"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQJYAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Profiles"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Episodes"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgWKAQJIAWoQEAUQCRADEAQQChAVEBAQDg%3D%3D"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Episodes"
+            }
+           },
+           {
+            "chipCloudChipRenderer": {
+             "style": {
+              "styleType": "STYLE_DEFAULT"
+             },
+             "text": {
+              "runs": [
+               {
+                "text": "Featured playlists"
+               }
+              ]
+             },
+             "navigationEndpoint": {
+              "searchEndpoint": {
+               "query": "IU Blueming",
+               "params": "EgeKAQQoADgBahAQBRAJEAMQBBAKEBUQEBAO"
+              }
+             },
+             "isSelected": false,
+             "uniqueId": "Featured playlists"
+            }
+           }
+          ],
+          "collapsedRowCount": 1,
+          "horizontalScrollable": true
+         }
+        }
+       }
+      },
+      "tabIdentifier": "music_search_catalog"
+     }
+    }
+   ]
+  }
+ }
+}

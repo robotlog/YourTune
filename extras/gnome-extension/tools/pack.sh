@@ -1,6 +1,7 @@
 #!/bin/sh
 # Builds the extension zip like `gnome-extensions pack`, without GNOME Shell:
-# every file except the docs, tests and tools, plus the compiled schema.
+# every file except the docs, tests and tools. GNOME 45+ compiles the schema
+# on install, and extensions.gnome.org rejects a shipped gschemas.compiled.
 # Usage: pack.sh <out.zip>
 set -eu
 
@@ -13,7 +14,6 @@ trap 'rm -rf "$tmp"' EXIT
 cp -r "$src/." "$tmp"
 rm -rf "$tmp/README.md" "$tmp/tests" "$tmp/tools" "$tmp/.gitignore" \
   "$tmp/schemas/gschemas.compiled" "$tmp"/*.shell-extension.zip
-glib-compile-schemas "$tmp/schemas"
 
 rm -f "$out"
 (cd "$tmp" && zip -qr "$out" .)

@@ -433,8 +433,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._scheduleLikeRefresh([0]);
       this._updateUi();
     } catch (error) {
-      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-        console.error(`YourTune song read failed: ${error.message}`);
+      this._logFailure('song read', error);
     }
   }
 
@@ -449,8 +448,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._queue = queue;
       this._updateUi();
     } catch (error) {
-      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-        console.error(`YourTune queue read failed: ${error.message}`);
+      this._logFailure('queue read', error);
     }
   }
 
@@ -634,8 +632,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
         this._clearLikeOverride();
       this._updateLikeButtons();
     } catch (error) {
-      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-        console.error(`YourTune like state failed: ${error.message}`);
+      this._logFailure('like state', error);
     }
   }
 
@@ -666,8 +663,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
 
   _command(method, path, body = null) {
     this._client.request(method, path, body).catch(error => {
-      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-        console.error(`YourTune ${method} ${path} failed: ${error.message}`);
+      this._logFailure(`${method} ${path}`, error);
     });
   }
 
@@ -676,9 +672,14 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._client.request('POST', '/start-radio', {}).catch(error => {
       if (isMissingEndpoint(error))
         this._mixButton.visible = false;
-      else if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-        console.error(`YourTune POST /start-radio failed: ${error.message}`);
+      else
+        this._logFailure('POST /start-radio', error);
     });
+  }
+
+  _logFailure(what, error) {
+    if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+      console.error(`YourTune ${what} failed: ${error.message}`);
   }
 
   _fileIcon(fileName) {
@@ -886,7 +887,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     } catch (error) {
       if (loadId !== this._artLoadId || error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
         return;
-      console.error(`YourTune artwork failed: ${error.message}`);
+      this._logFailure('artwork', error);
       this._artFallback();
     }
   }

@@ -14,6 +14,7 @@ Features:
 
 Fixes:
 
+- The GNOME Shell extension zip passes the `shexli` checks: no compiled schema, and failures log through one helper ([#28](https://github.com/robotlog/YourTune/pull/28)).
 - API Server `LIKE_CHANGED` reports the new track's like state on the new player UI instead of the previous track's, reported by @sungyongcho ([#22](https://github.com/robotlog/YourTune/issues/22)).
 
 #### v1.4.0

@@ -13,6 +13,7 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as Slider from 'resource:///org/gnome/shell/ui/slider.js';
 
+import {isMissingEndpoint} from './client.js';
 import {parseQueue} from './queue.js';
 import {SearchView} from './searchView.js';
 
@@ -266,8 +267,9 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._dislikeButton = this._iconButton('thumb-down-symbolic.svg', 'Dislike', () => this._rate('DISLIKE'));
     this._repeatButton = this._iconButton('repeat-symbolic.svg', 'Repeat', () => this._command('POST', '/switch-repeat', {iteration: 1}));
     this._shuffleButton = this._iconButton('shuffle-symbolic.svg', 'Shuffle', () => this._command('POST', '/shuffle'));
+    this._mixButton = this._iconButton('mix-symbolic.svg', 'Start mix', () => this._startMix());
     for (const button of [this._previousButton, this._playButton, this._nextButton, this._likeButton,
-      this._dislikeButton, this._repeatButton, this._shuffleButton])
+      this._dislikeButton, this._mixButton, this._repeatButton, this._shuffleButton])
       controls.add_child(button);
     details.add_child(controls);
 
@@ -334,6 +336,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._statusButton.label = view.action ?? '';
     }
     if (status !== 'connected') {
+      // The next connection may be to an upgraded YourTune.
+      this._mixButton.visible = true;
       this._state = {...EMPTY_STATE};
       this._localProgress = 0;
       this._seekTarget = null;
@@ -389,6 +393,17 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     case 'SHUFFLE_CHANGED':
       this._state = {...this._state, ...data};
       break;
+    case 'LIKE_CHANGED':
+      // YourTune 1.4 reports likes as they change. On the new player UI it also sends the previous
+      // track's state as the track changes and nothing for the new one, so that stale value is
+      // dropped and the new track's state is still read after VIDEO_CHANGED.
+      if (Date.now() - this._videoChangedAt < LIKE_SETTLE_MS && data.likeStatus === this._previousLikeStatus)
+        return;
+      this._state = {...this._state, likeStatus: data.likeStatus};
+      if (this._likeOverride === data.likeStatus)
+        this._clearLikeOverride();
+      this._updateLikeButtons();
+      return;
     default:
       return;
     }
@@ -480,7 +495,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._playButton.accessible_name = playing ? 'Pause' : 'Play';
     const connected = this._client.status === 'connected';
     const active = connected && Boolean(song);
-    for (const button of [this._previousButton, this._playButton, this._nextButton, this._likeButton, this._dislikeButton])
+    for (const button of [this._previousButton, this._playButton, this._nextButton, this._likeButton,
+      this._dislikeButton, this._mixButton])
       this._setButtonEnabled(button, active);
     for (const button of [this._repeatButton, this._shuffleButton, this._muteButton])
       button.reactive = button.can_focus = connected;
@@ -652,6 +668,16 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._client.request(method, path, body).catch(error => {
       if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
         console.error(`YourTune ${method} ${path} failed: ${error.message}`);
+    });
+  }
+
+  // YourTune before 1.4 has no POST /start-radio, so the button goes away instead of doing nothing.
+  _startMix() {
+    this._client.request('POST', '/start-radio', {}).catch(error => {
+      if (isMissingEndpoint(error))
+        this._mixButton.visible = false;
+      else if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+        console.error(`YourTune POST /start-radio failed: ${error.message}`);
     });
   }
 

@@ -15,6 +15,7 @@ test('parses the songs filter page', () => {
     videoId: 'I0_ZXHzKysc',
     title: 'Blueming',
     artist: 'IU',
+    album: 'Love poem',
     duration: '3:38',
     artworkUrl: items[0].artworkUrl,
     kind: 'song',
@@ -61,4 +62,13 @@ test('ranks exact titles, then all words, then any word, keeping YouTube Music o
   assert.deepEqual(ranked.map(entry => entry.title), ['Blueming (Live)', 'Blueming', 'Blueming cover', 'Celebrity', 'Other']);
   assert.deepEqual(rankResults([item('Blueming (Live)', 'IU'), item('Blueming', 'IU')], 'blueming').map(entry => entry.title),
     ['Blueming', 'Blueming (Live)']);
+});
+
+test('matches the album name, so a query naming the album keeps its tracks first', () => {
+  const ranked = rankResults([
+    {title: 'Voyager', artist: 'Daft Punk', album: 'Discovery'},
+    {title: 'Veridis Quo (Daft Punk - Discovery) (Piano Version)', artist: 'Someone', album: 'Covers'},
+    {title: 'Digital Love', artist: 'Daft Punk', album: 'Discovery'},
+  ], 'daft punk discovery');
+  assert.deepEqual(ranked.map(entry => entry.title), ['Voyager', 'Veridis Quo (Daft Punk - Discovery) (Piano Version)', 'Digital Love']);
 });

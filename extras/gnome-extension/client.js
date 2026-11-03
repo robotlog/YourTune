@@ -9,6 +9,11 @@ Gio._promisify(Soup.Session.prototype, 'websocket_connect_async');
 
 export const CLIENT_ID = 'yourtune-gnome-miniplayer';
 
+// True for a request to an endpoint this YourTune version doesn't have yet.
+export function isMissingEndpoint(error) {
+  return error.status === Soup.Status.NOT_FOUND;
+}
+
 const REQUEST_TIMEOUT_S = 10;
 const RECONNECT_MIN_S = 2;
 const RECONNECT_MAX_S = 30;
@@ -119,8 +124,11 @@ export class YourTuneClient extends EventEmitter {
       this._rejectToken();
       throw new Error('Unauthorized');
     }
-    if (message.status_code < 200 || message.status_code >= 300)
-      throw new Error(`${method} ${path}: HTTP ${message.status_code}`);
+    if (message.status_code < 200 || message.status_code >= 300) {
+      const error = new Error(`${method} ${path}: HTTP ${message.status_code}`);
+      error.status = message.status_code;
+      throw error;
+    }
     const data = bytes.get_data();
     return data?.length ? JSON.parse(new TextDecoder().decode(data)) : null;
   }

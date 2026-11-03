@@ -5,7 +5,7 @@ import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
-import {entryHas, parseQueue} from './queue.js';
+import {insertedIndex, parseQueue} from './queue.js';
 import {SEARCH_PARAMS, parseSearchPage, rankResults} from './search.js';
 
 const VERTICAL = Clutter.Orientation.VERTICAL;
@@ -37,6 +37,8 @@ class SearchView extends St.BoxLayout {
     this._serial = 0;
     this._searchTimer = 0;
     this._queueMessageTimer = 0;
+    this._scrollRestoreId = 0;
+    this._pollWait = null;
     this._queuePending = false;
     this._destroyed = false;
     this.connect('destroy', () => this._onDestroy());
@@ -209,9 +211,11 @@ class SearchView extends St.BoxLayout {
     const adjustment = this._scroll.vadjustment;
     const value = adjustment.value;
     this._render();
-    GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-      if (!this._destroyed)
-        adjustment.value = value;
+    if (this._scrollRestoreId)
+      GLib.source_remove(this._scrollRestoreId);
+    this._scrollRestoreId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      this._scrollRestoreId = 0;
+      adjustment.value = value;
       return GLib.SOURCE_REMOVE;
     });
   }
@@ -335,8 +339,8 @@ class SearchView extends St.BoxLayout {
   // to that entry.
   async _playNow(item) {
     await this._queue(item, async () => {
-      const queue = await this._putNext(item.videoId);
-      await this._client.request('PATCH', '/queue', {index: queue.current + 1});
+      const index = await this._putNext(item.videoId);
+      await this._client.request('PATCH', '/queue', {index});
     }, `Playing “${item.title}”`);
   }
 
@@ -345,25 +349,32 @@ class SearchView extends St.BoxLayout {
   }
 
   // POST /queue answers before YouTube Music has fetched and inserted the item, so read the queue
-  // until the entry after the current one holds it. Resolves to that queue.
+  // until the item is where it goes. Resolves to its index.
   async _putNext(videoId) {
-    let queue = parseQueue(await this._client.request('GET', '/queue'));
-    if (entryHas(queue, queue.current + 1, videoId))
-      return queue;
+    let index = insertedIndex(parseQueue(await this._client.request('GET', '/queue')), videoId);
+    if (index >= 0)
+      return index;
     await this._client.request('POST', '/queue', {videoId, insertPosition: 'INSERT_AFTER_CURRENT_VIDEO'});
     const deadline = Date.now() + QUEUE_CONFIRM_MS;
     while (Date.now() < deadline) {
-      await new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, QUEUE_POLL_MS, () => {
-        resolve();
-        return GLib.SOURCE_REMOVE;
-      }));
-      if (this._destroyed)
-        throw new Gio.IOErrorEnum({code: Gio.IOErrorEnum.CANCELLED, message: 'Search view destroyed'});
-      queue = parseQueue(await this._client.request('GET', '/queue'));
-      if (entryHas(queue, queue.current + 1, videoId))
-        return queue;
+      await this._pollDelay();
+      index = insertedIndex(parseQueue(await this._client.request('GET', '/queue')), videoId);
+      if (index >= 0)
+        return index;
     }
     throw new Error(`${videoId} did not show up in the queue`);
+  }
+
+  // Resolves after QUEUE_POLL_MS, or rejects as cancelled when the view is destroyed first.
+  _pollDelay() {
+    return new Promise((resolve, reject) => {
+      const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, QUEUE_POLL_MS, () => {
+        this._pollWait = null;
+        resolve();
+        return GLib.SOURCE_REMOVE;
+      });
+      this._pollWait = {id, reject};
+    });
   }
 
   async _queue(item, action, doneMessage) {
@@ -418,5 +429,12 @@ class SearchView extends St.BoxLayout {
     this._cancelSearchTimer();
     if (this._queueMessageTimer)
       GLib.source_remove(this._queueMessageTimer);
+    if (this._scrollRestoreId)
+      GLib.source_remove(this._scrollRestoreId);
+    if (this._pollWait) {
+      GLib.source_remove(this._pollWait.id);
+      this._pollWait.reject(new Gio.IOErrorEnum({code: Gio.IOErrorEnum.CANCELLED, message: 'Search view destroyed'}));
+      this._pollWait = null;
+    }
   }
 });

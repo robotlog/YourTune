@@ -60,3 +60,11 @@ export function parseQueue(payload) {
 export function entryHas(queue, index, videoId) {
   return queue.entries[index]?.includes(videoId) ?? false;
 }
+
+// Where POST /queue with INSERT_AFTER_CURRENT_VIDEO puts an item: YourTune inserts at
+// `selected + 1 || length`, so right after the playing entry, or at the end when none is playing.
+// Returns that index if it holds videoId, -1 otherwise.
+export function insertedIndex(queue, videoId) {
+  const index = queue.current >= 0 ? queue.current + 1 : queue.entries.length - 1;
+  return entryHas(queue, index, videoId) ? index : -1;
+}

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 
-import {entryHas, parseQueue} from '../queue.js';
+import {entryHas, insertedIndex, parseQueue} from '../queue.js';
 
 const plain = (videoId, selected = false) => ({playlistPanelVideoRenderer: {videoId, ...(selected ? {selected} : {})}});
 const wrapped = (videoId, counterpartId, selected = false) => ({
@@ -47,4 +47,17 @@ test('reads the details of each entry', () => {
     imageSrc: 'large',
   });
   assert.equal(parseQueue({items: [plain('b')]}).tracks[0].songDuration, 0);
+});
+
+test('finds an inserted item right after the playing entry', () => {
+  const queue = parseQueue({items: [plain('a'), plain('b', true), wrapped('video', 'song'), plain('c')]});
+  assert.equal(insertedIndex(queue, 'song'), 2);
+  assert.equal(insertedIndex(queue, 'c'), -1);
+});
+
+test('finds an inserted item at the end when nothing is playing', () => {
+  assert.equal(insertedIndex(parseQueue({items: [plain('a'), plain('b'), plain('new')]}), 'new'), 2);
+  assert.equal(insertedIndex(parseQueue({items: [plain('new'), plain('b')]}), 'new'), -1);
+  assert.equal(insertedIndex(parseQueue({items: [plain('new')]}), 'new'), 0);
+  assert.equal(insertedIndex(parseQueue({items: []}), 'new'), -1);
 });

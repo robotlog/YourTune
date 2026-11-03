@@ -11,6 +11,7 @@ Features:
 - Tray Settings plugin: opens the settings from the tray menu, also with In-App Menu off ([#13](https://github.com/robotlog/YourTune/pull/13), refs [#2](https://github.com/robotlog/YourTune/issues/2)).
 - KDE Plasma 6 panel widget in `extras/plasma-widget` ([#14](https://github.com/robotlog/YourTune/pull/14)).
 - GNOME Shell mini player in `extras/gnome-extension`, thanks to @sungyongcho ([#3](https://github.com/robotlog/YourTune/pull/3)).
+- API Server: `POST /play-song`, `/play-playlist`, `/start-radio` and `/browse`, from [pear-devs/pear-desktop#4744](https://github.com/pear-devs/pear-desktop/pull/4744) by @SurajBhari, and a `LIKE_CHANGED` WebSocket message ([#17](https://github.com/robotlog/YourTune/pull/17), [#6](https://github.com/robotlog/YourTune/issues/6)).
 
 API Server fixes, thanks to @sungyongcho:
 

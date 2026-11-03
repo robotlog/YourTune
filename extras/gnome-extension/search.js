@@ -41,10 +41,9 @@ function videoTypeFrom(renderer, watchEndpoint) {
     null;
 }
 
-function isArtistRun(run) {
-  const pageType = run.navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs
+function runPageType(run) {
+  return run.navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs
     ?.browseEndpointContextMusicConfig?.pageType;
-  return pageType === 'MUSIC_PAGE_TYPE_ARTIST';
 }
 
 // A mixed search subtitle leads with a type label ("Song", "Video", ...) and a separator run.
@@ -68,7 +67,8 @@ export function parseItem(renderer) {
     return null;
 
   const subtitleRuns = flexRuns(renderer, 1);
-  const artists = subtitleRuns.filter(run => isArtistRun(run) && run.text).map(run => run.text);
+  const artists = subtitleRuns.filter(run => runPageType(run) === 'MUSIC_PAGE_TYPE_ARTIST' && run.text).map(run => run.text);
+  const album = subtitleRuns.find(run => runPageType(run) === 'MUSIC_PAGE_TYPE_ALBUM')?.text ?? null;
   const duration = subtitleRuns.map(run => run.text ?? '').find(text => DURATION.test(text)) ??
     renderer.fixedColumns?.[0]?.musicResponsiveListItemFixedColumnRenderer?.text?.runs?.[0]?.text ??
     null;
@@ -78,6 +78,7 @@ export function parseItem(renderer) {
     videoId,
     title,
     artist: artists.join(', ') || subtitleFromRuns(subtitleRuns),
+    album,
     duration,
     artworkUrl: pickArtworkUrl(renderer.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails),
     kind: SONG_VIDEO_TYPES.has(videoType) ? 'song' : VIDEO_VIDEO_TYPES.has(videoType) ? 'video' : 'other',
@@ -141,7 +142,9 @@ export function rankResults(items, query) {
   const tokens = q.split(/\s+/).filter(Boolean);
   const rank = item => {
     const title = normalized(item.title);
-    const all = normalized(`${item.title} ${item.artist}`);
+    // The album counts too, so a query naming one doesn't rank covers that put it in their title
+    // above the album's own tracks.
+    const all = normalized(`${item.title} ${item.artist} ${item.album ?? ''}`);
     if (title === q)
       return 0;
     if (tokens.length && tokens.every(token => all.includes(token)))

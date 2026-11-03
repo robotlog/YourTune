@@ -5,10 +5,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 
 import promptOptions from '@/providers/prompt-options';
 
-import {
-  editorWebPreferences,
-  serializeEditorPayload,
-} from './editor-utils';
+import { editorWebPreferences, serializeEditorPayload } from './editor-utils';
 
 import type { BlockedSong } from './types';
 

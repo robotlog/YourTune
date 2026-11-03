@@ -50,9 +50,7 @@ const addUniqueSong = (songs: BlockedSong[], song: BlockedSong) => {
 };
 
 const closeOpenMenu = () => {
-  document
-    .querySelector<HTMLElement>('tp-yt-iron-overlay-backdrop')
-    ?.click();
+  document.querySelector<HTMLElement>('tp-yt-iron-overlay-backdrop')?.click();
 };
 
 const createMenuContainer = (id: string) => {

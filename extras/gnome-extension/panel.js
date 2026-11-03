@@ -239,7 +239,10 @@ class MiniPlayerIndicator extends PanelMenu.Button {
 
     const controls = new St.BoxLayout({style_class: 'yourtune-controls', x_align: Clutter.ActorAlign.CENTER});
     this._previousButton = this._iconButton('previous-symbolic.svg', 'Previous', () => this._command('POST', '/previous'));
-    this._playButton = this._iconButton('play-symbolic.svg', 'Play', () => this._command('POST', '/toggle-play'), 'yourtune-play-button');
+    // POST /toggle-play only starts a track that is paused, not one that is loaded but never
+    // started (a queue restored on launch), so send play or pause explicitly.
+    this._playButton = this._iconButton('play-symbolic.svg', 'Play',
+      () => this._command('POST', this._state.isPlaying ? '/pause' : '/play'), 'yourtune-play-button');
     this._nextButton = this._iconButton('next-symbolic.svg', 'Next', () => this._command('POST', '/next'));
     this._likeButton = this._iconButton('thumb-up-symbolic.svg', 'Like', () => this._rate('LIKE'));
     this._dislikeButton = this._iconButton('thumb-down-symbolic.svg', 'Dislike', () => this._rate('DISLIKE'));

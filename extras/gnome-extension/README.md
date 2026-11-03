@@ -10,7 +10,14 @@ Turn on the API Server plugin in YourTune (Plugins → API Server). It listens o
 default, which accepts connections from other devices; `127.0.0.1` is enough for the extension.
 The extension speaks plain HTTP, so leave the plugin's HTTPS option off.
 
-From the repository root:
+Each [release](https://github.com/robotlog/YourTune/releases) has the extension as
+`yourtune-gnome-extension-<version>.zip`:
+
+```sh
+gnome-extensions install --force yourtune-gnome-extension-<version>.zip
+```
+
+Or build it from the repository root:
 
 ```sh
 gnome-extensions pack extras/gnome-extension --force \

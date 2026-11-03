@@ -145,6 +145,16 @@ jobs:
           draft: true
           searchLimit: 1
 
+      - name: Attach the GNOME Shell extension
+        if: ${{ env.VERSION_HASH == '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.get_draft_release.outputs.tag_name }}
+        run: |
+          command -v glib-compile-schemas >/dev/null || sudo apt-get install -y --no-install-recommends libglib2.0-bin
+          zip=$(sh extras/gnome-extension/tools/pack.sh "$RUNNER_TEMP/yourtune-gnome-extension-${{ env.VERSION }}.zip")
+          gh release upload "$TAG" "$zip" --clobber
+
       # Blockmaps are only for differential downloads, which the app doesn't do
       - name: Add checksums, drop blockmaps
         if: ${{ env.VERSION_HASH == '' }}

@@ -15,7 +15,11 @@ import { JWTPayloadSchema } from '../scheme';
 
 import type { HonoApp } from '../types';
 import type { BackendContext } from '@/types/contexts';
-import type { RepeatMode, VolumeState } from '@/types/datahost-get-state';
+import type {
+  LikeType,
+  RepeatMode,
+  VolumeState,
+} from '@/types/datahost-get-state';
 import type { WebSocketLike, upgradeWebSocket } from '@hono/node-server';
 import type { Context, Next } from 'hono';
 import type { WSContext } from 'hono/ws';
@@ -28,6 +32,7 @@ enum DataTypes {
   VolumeChanged = 'VOLUME_CHANGED',
   RepeatChanged = 'REPEAT_CHANGED',
   ShuffleChanged = 'SHUFFLE_CHANGED',
+  LikeChanged = 'LIKE_CHANGED',
 }
 
 type PlayerState = {
@@ -38,6 +43,7 @@ type PlayerState = {
   volume: number;
   repeat: RepeatMode;
   shuffle: boolean;
+  likeStatus?: LikeType;
 };
 
 // The routes register again whenever the server restarts (the plugin is turned
@@ -125,6 +131,10 @@ export const register = (
 
   ipc.on('peard:shuffle-changed', (shuffle: boolean) => {
     send(DataTypes.ShuffleChanged, { shuffle });
+  });
+
+  ipc.on('peard:like-changed', (likeStatus: LikeType) => {
+    send(DataTypes.LikeChanged, { likeStatus });
   });
 
   app.openapi(

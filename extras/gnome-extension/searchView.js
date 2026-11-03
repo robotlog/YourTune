@@ -358,7 +358,7 @@ class SearchView extends St.BoxLayout {
 
   async _startMix(item) {
     await this._queue(item, () => this._client.request('POST', '/start-radio', {videoId: item.videoId}),
-      `Mix started from “${item.title}”`);
+      `Mix started from “${item.title}”`, `Could not start a mix from “${item.title}”`);
   }
 
   async _playNext(item) {
@@ -394,7 +394,7 @@ class SearchView extends St.BoxLayout {
     });
   }
 
-  async _queue(item, action, doneMessage) {
+  async _queue(item, action, doneMessage, failMessage = `Could not queue “${item.title}”`) {
     if (this._queuePending)
       return;
     this._queuePending = true;
@@ -412,7 +412,7 @@ class SearchView extends St.BoxLayout {
         return;
       }
       console.error(`YourTune queue failed: ${error.message}`);
-      this._showQueueMessage(`Could not queue “${item.title}”`, true);
+      this._showQueueMessage(failMessage, true);
     } finally {
       this._queuePending = false;
     }

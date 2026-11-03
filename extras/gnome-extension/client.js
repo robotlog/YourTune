@@ -30,6 +30,7 @@ export class YourTuneClient extends EventEmitter {
     this._authSession = new Soup.Session();
     this._cancellable = new Gio.Cancellable();
     this._connection = null;
+    this._connectCancellable = null;
     this._reconnectId = 0;
     this._backoff = RECONNECT_MIN_S;
     this._status = 'connecting';
@@ -75,9 +76,14 @@ export class YourTuneClient extends EventEmitter {
     this._clearReconnect();
     this._setStatus('authorizing');
 
-    const message = Soup.Message.new('POST', `${this._baseUrl}/auth/${CLIENT_ID}`);
+    // The host or port can change while the user answers the dialog; a token from the old address
+    // is no good for the new one.
+    const baseUrl = this._baseUrl;
+    const message = Soup.Message.new('POST', `${baseUrl}/auth/${CLIENT_ID}`);
     try {
       const bytes = await this._authSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
+      if (this._baseUrl !== baseUrl)
+        return;
       if (message.status_code === Soup.Status.FORBIDDEN) {
         this._setStatus('denied');
         return;
@@ -88,7 +94,7 @@ export class YourTuneClient extends EventEmitter {
       this._settings.set_string('token', accessToken);
       this._connect();
     } catch (error) {
-      if (error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+      if (error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) || this._baseUrl !== baseUrl)
         return;
       if (this._isUnreachable(error)) {
         this._setStatus('offline');
@@ -133,22 +139,32 @@ export class YourTuneClient extends EventEmitter {
     this._clearReconnect();
     this._setStatus('connecting');
 
+    // Each attempt has its own cancellable, which _closeConnection() cancels, so an attempt that a
+    // reconnect or a host change replaced never takes over.
+    const cancellable = new Gio.Cancellable();
+    this._connectCancellable = cancellable;
     const url = `${this._baseUrl.replace(/^http/, 'ws')}/api/v1/ws?token=${encodeURIComponent(this._token)}`;
     const message = Soup.Message.new('GET', url);
     let connection;
     try {
-      connection = await this._session.websocket_connect_async(message, null, [], GLib.PRIORITY_DEFAULT, this._cancellable);
+      connection = await this._session.websocket_connect_async(message, null, [], GLib.PRIORITY_DEFAULT, cancellable);
     } catch (error) {
-      if (error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+      if (error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) || this._connectCancellable !== cancellable)
         return;
+      this._connectCancellable = null;
       this._setStatus('offline');
       this._scheduleReconnect();
       return;
     }
+    if (this._connectCancellable !== cancellable) {
+      connection.close(Soup.WebsocketCloseCode.NORMAL, null);
+      return;
+    }
 
+    this._connectCancellable = null;
     this._connection = connection;
     connection.connect('message', (_connection, type, bytes) => {
-      if (type !== Soup.WebsocketDataType.TEXT)
+      if (this._connection !== connection || type !== Soup.WebsocketDataType.TEXT)
         return;
       try {
         this.emit('message', JSON.parse(new TextDecoder().decode(bytes.get_data())));
@@ -203,6 +219,8 @@ export class YourTuneClient extends EventEmitter {
   }
 
   _closeConnection() {
+    this._connectCancellable?.cancel();
+    this._connectCancellable = null;
     const connection = this._connection;
     this._connection = null;
     if (connection?.get_state() === Soup.WebsocketState.OPEN)

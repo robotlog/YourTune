@@ -339,6 +339,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._syncProgress(this._state.position, true, false);
       this._scheduleLikeRefresh([0, ...LIKE_REFRESH_DELAYS_MS]);
       this._refreshQueue();
+      if (!this._state.song)
+        this._loadCurrentSong();
       break;
     case 'VIDEO_CHANGED':
       this._previousLikeStatus = this._state.likeStatus;
@@ -381,6 +383,23 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     const index = this._queue?.entries.findIndex(ids => ids.includes(song.videoId)) ?? -1;
     const track = index >= 0 ? this._queue.tracks[index] : null;
     return track?.title ? {...song, ...track} : song;
+  }
+
+  // After the API Server plugin is turned off and on, YourTune's first PLAYER_INFO has no song
+  // until the track changes (robotlog/YourTune#5), so ask for it.
+  async _loadCurrentSong() {
+    try {
+      const song = await this._client.request('GET', '/song');
+      if (this._destroyed || !song || this._state.song)
+        return;
+      this._state = {...this._state, song, isPlaying: !song.isPaused};
+      this._syncProgress(song.elapsedSeconds, true, false);
+      this._scheduleLikeRefresh([0]);
+      this._updateUi();
+    } catch (error) {
+      if (!error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+        console.error(`YourTune song read failed: ${error.message}`);
+    }
   }
 
   async _refreshQueue() {

@@ -59,6 +59,11 @@ export const backend = createBackend<BackendType, APIServerConfig>({
       (newVolumeState: VolumeState) => (this.volumeState = newVolumeState),
     );
 
+    ctx.ipc.on(
+      'peard:shuffle-changed',
+      (shuffle: boolean) => (this.shuffle = shuffle),
+    );
+
     this.run(config);
   },
   stop() {
@@ -146,7 +151,12 @@ export const backend = createBackend<BackendType, APIServerConfig>({
       () => this.volumeState,
     );
     registerAuth(this.app, backendCtx);
-    registerWebsocket(this.app, backendCtx, upgradeWebSocket);
+    registerWebsocket(this.app, backendCtx, upgradeWebSocket, {
+      songInfo: () => this.songInfo,
+      volumeState: () => this.volumeState,
+      repeatMode: () => this.currentRepeatMode,
+      shuffle: () => this.shuffle,
+    });
 
     // swagger
     this.app.openAPIRegistry.registerComponent(

@@ -16,7 +16,12 @@ import { createBackend } from '@/utils';
 
 import { API_VERSION } from './api-version';
 import { requestFromRenderer } from './renderer-request';
-import { registerAuth, registerControl, registerWebsocket } from './routes';
+import {
+  registerAuth,
+  registerControl,
+  registerMusic,
+  registerWebsocket,
+} from './routes';
 import { JWTPayloadSchema } from './scheme';
 
 import { type APIServerConfig, AuthStrategy } from '../config';
@@ -150,6 +155,7 @@ export const backend = createBackend<BackendType, APIServerConfig>({
         ),
       () => this.volumeState,
     );
+    registerMusic(this.app, backendCtx, () => this.songInfo);
     registerAuth(this.app, backendCtx);
     registerWebsocket(this.app, backendCtx, upgradeWebSocket, {
       songInfo: () => this.songInfo,

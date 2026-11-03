@@ -1111,6 +1111,13 @@
       "description": "Automatically close YouTube Music toasts after three seconds",
       "name": "Toast Auto-Close"
     },
+    "tray-settings": {
+      "description": "Adds a Settings item to the tray menu that opens the app menu with every option, even when In-App Menu is off",
+      "menu": {
+        "open": "Settings"
+      },
+      "name": "Tray Settings"
+    },
     "touchbar": {
       "description": "Adds a TouchBar widget for macOS users",
       "name": "TouchBar"

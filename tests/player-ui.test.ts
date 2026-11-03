@@ -8,6 +8,8 @@ import {
   nextTrack,
   previousTrack,
   switchRepeat,
+  toggleMute,
+  togglePlay,
   toggleShuffle,
   updateLike,
   watchPlayerState,
@@ -23,11 +25,13 @@ const createNewUi = (
     repeatMode?: string;
     likes?: Record<string, string>;
     pressed?: 'like' | 'dislike';
+    muted?: boolean;
   } = {},
 ) => {
   const calls: Calls = [];
   const listeners: (() => void)[] = [];
   let repeatMode = state.repeatMode ?? 'NONE';
+  let muted = state.muted ?? false;
   const { document } = new Window();
   document.body.innerHTML = `
     <div id="movie_player"></div>
@@ -50,6 +54,15 @@ const createNewUi = (
     getVideoData: () => ({ video_id: 'abc123' }),
     nextVideo: () => calls.push('api.nextVideo'),
     previousVideo: () => calls.push('api.previousVideo'),
+    isMuted: () => muted,
+    mute: () => {
+      calls.push('api.mute');
+      muted = true;
+    },
+    unMute: () => {
+      calls.push('api.unMute');
+      muted = false;
+    },
   });
   Object.assign(document.querySelector('#queue')!, {
     queue: {
@@ -111,6 +124,7 @@ const createOldUi = (
     queue: { shuffle: () => calls.push('playerBar.queue.shuffle') },
     getState: () => ({ queue: { repeatMode: 'ALL' } }),
     onRepeatButtonClick: () => calls.push('onRepeatButtonClick'),
+    onVolumeClick: () => calls.push('onVolumeClick'),
   });
   Object.assign(document.querySelector('#like-button-renderer')!, {
     likeStatus: opts.likeStatus ?? 'INDIFFERENT',
@@ -182,6 +196,13 @@ test.describe('player-ui: new YTM player UI', () => {
     expect(calls).toEqual(['api.nextVideo', 'api.previousVideo']);
   });
 
+  test('toggleMute mutes and unmutes through the player api', () => {
+    const { document, calls } = createNewUi();
+    toggleMute(document);
+    toggleMute(document);
+    expect(calls).toEqual(['api.mute', 'api.unMute']);
+  });
+
   test('getRepeatMode reads queue.repeatMode from the store', () => {
     expect(getRepeatMode(createNewUi({ repeatMode: 'ONE' }).document)).toBe(
       'ONE',
@@ -230,6 +251,12 @@ test.describe('player-ui: legacy player bar UI', () => {
 
   test('getRepeatMode reads the player bar state', () => {
     expect(getRepeatMode(createOldUi().document)).toBe('ALL');
+  });
+
+  test('toggleMute clicks the player bar volume button', () => {
+    const { document, calls } = createOldUi();
+    toggleMute(document);
+    expect(calls).toEqual(['onVolumeClick']);
   });
 });
 
@@ -281,4 +308,30 @@ test.describe('player-ui: watchPlayerState', () => {
       ),
     ).toBe(false);
   });
+});
+
+test.describe('player-ui: togglePlay', () => {
+  const cases = [
+    [-1, 'api.playVideo'],
+    [0, 'api.playVideo'],
+    [1, 'api.pauseVideo'],
+    [2, 'api.playVideo'],
+    [3, 'api.pauseVideo'],
+    [5, 'api.playVideo'],
+  ] as const;
+
+  for (const [state, call] of cases) {
+    test(`player state ${state} calls ${call}`, () => {
+      const calls: Calls = [];
+      const { document } = new Window();
+      document.body.innerHTML = '<div id="movie_player"></div>';
+      Object.assign(document.querySelector('#movie_player')!, {
+        getPlayerState: () => state,
+        playVideo: () => calls.push('api.playVideo'),
+        pauseVideo: () => calls.push('api.pauseVideo'),
+      });
+      togglePlay(document as unknown as Document);
+      expect(calls).toEqual([call]);
+    });
+  }
 });

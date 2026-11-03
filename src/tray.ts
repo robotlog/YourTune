@@ -16,6 +16,14 @@ import type { MenuTemplate } from './menu';
 
 // Prevent tray being garbage collected
 let tray: Electron.Tray | undefined;
+// Items a plugin adds above Restart; the menu is rebuilt when they change.
+let extraItems: MenuTemplate = [];
+let rebuildMenu: (() => void) | undefined;
+
+export const setTrayExtraItems = (items: MenuTemplate) => {
+  extraItems = items;
+  rebuildMenu?.();
+};
 
 type TrayEvent = (
   event: Electron.KeyboardEvent,
@@ -115,6 +123,8 @@ export const setUpTray = (app: Electron.App, win: Electron.BrowserWindow) => {
         app.dock?.show();
       },
     },
+  ];
+  const tail: MenuTemplate = [
     { type: 'separator' },
     {
       label: t('main.tray.restart'),
@@ -127,8 +137,11 @@ export const setUpTray = (app: Electron.App, win: Electron.BrowserWindow) => {
     },
   ];
 
-  const trayMenu = Menu.buildFromTemplate(template);
-  tray.setContextMenu(trayMenu);
+  rebuildMenu = () =>
+    tray?.setContextMenu(
+      Menu.buildFromTemplate([...template, ...extraItems, ...tail]),
+    );
+  rebuildMenu();
 
   registerCallback((songInfo, event) => {
     if (event === SongInfoEvent.TimeChanged) return;

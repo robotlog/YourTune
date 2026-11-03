@@ -26,6 +26,8 @@ import {
   nextTrack,
   previousTrack,
   switchRepeat,
+  toggleMute,
+  togglePlay,
   toggleShuffle,
   updateLike,
 } from './providers/player-ui';
@@ -140,8 +142,7 @@ async function onApiLoaded() {
     api?.pauseVideo();
   });
   window.ipcRenderer.on('peard:toggle-play', (_) => {
-    if (api?.getPlayerState() === 2) api?.playVideo();
-    else api?.pauseVideo();
+    togglePlay();
   });
   window.ipcRenderer.on('peard:seek-to', (_, t: number) => api!.seekTo(t));
   window.ipcRenderer.on('peard:seek-by', (_, t: number) => api!.seekBy(t));
@@ -278,11 +279,7 @@ async function onApiLoaded() {
   );
 
   window.ipcRenderer.on('peard:toggle-mute', (_) => {
-    document
-      .querySelector<HTMLElement & { onVolumeClick: () => void }>(
-        'ytmusic-player-bar',
-      )
-      ?.onVolumeClick();
+    toggleMute();
   });
 
   window.ipcRenderer.on('peard:get-queue', () => {

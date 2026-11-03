@@ -5,6 +5,7 @@ import GObject from 'gi://GObject';
 import Pango from 'gi://Pango';
 import St from 'gi://St';
 
+import {isMissingEndpoint} from './client.js';
 import {insertedIndex, parseQueue} from './queue.js';
 import {SEARCH_PARAMS, parseSearchPage, rankResults} from './search.js';
 
@@ -308,18 +309,23 @@ class SearchView extends St.BoxLayout {
     details.add_child(subtitle);
     row.add_child(details);
 
-    const playNext = new St.Button({
+    row.add_child(this._rowButton('mix-symbolic.svg', `Start mix: ${item.title}`, () => this._startMix(item)));
+    row.add_child(this._rowButton('play-next-symbolic.svg', `Play next: ${item.title}`, () => this._playNext(item)));
+    return row;
+  }
+
+  _rowButton(iconName, accessibleName, callback) {
+    const button = new St.Button({
       style_class: 'yourtune-icon-button',
-      accessible_name: `Play next: ${item.title}`,
+      accessible_name: accessibleName,
       can_focus: true,
       reactive: true,
       track_hover: true,
       y_align: Clutter.ActorAlign.CENTER,
-      child: new St.Icon({gicon: this._fileIcon('play-next-symbolic.svg'), icon_size: 22}),
+      child: new St.Icon({gicon: this._fileIcon(iconName), icon_size: 22}),
     });
-    playNext.connect('clicked', () => this._playNext(item));
-    row.add_child(playNext);
-    return row;
+    button.connect('clicked', callback);
+    return button;
   }
 
   async _loadThumbnail(icon, url) {
@@ -335,13 +341,24 @@ class SearchView extends St.BoxLayout {
     }
   }
 
-  // There is no "play this now" endpoint yet: put the item right after the current one, then jump
-  // to that entry.
+  // YourTune 1.4 plays a result directly. Older versions have no endpoint for it, so the item goes
+  // right after the current one and the queue jumps to it.
   async _playNow(item) {
     await this._queue(item, async () => {
-      const index = await this._putNext(item.videoId);
-      await this._client.request('PATCH', '/queue', {index});
+      try {
+        await this._client.request('POST', '/play-song', {videoId: item.videoId});
+      } catch (error) {
+        if (!isMissingEndpoint(error))
+          throw error;
+        const index = await this._putNext(item.videoId);
+        await this._client.request('PATCH', '/queue', {index});
+      }
     }, `Playing “${item.title}”`);
+  }
+
+  async _startMix(item) {
+    await this._queue(item, () => this._client.request('POST', '/start-radio', {videoId: item.videoId}),
+      `Mix started from “${item.title}”`);
   }
 
   async _playNext(item) {
@@ -390,6 +407,10 @@ class SearchView extends St.BoxLayout {
     } catch (error) {
       if (this._destroyed || isCancelled(error))
         return;
+      if (isMissingEndpoint(error)) {
+        this._showQueueMessage('This needs YourTune 1.4 or newer', true);
+        return;
+      }
       console.error(`YourTune queue failed: ${error.message}`);
       this._showQueueMessage(`Could not queue “${item.title}”`, true);
     } finally {

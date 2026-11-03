@@ -25,6 +25,7 @@ const ICONS = {
   'search': 'search--rounded',
   'play-next': 'queue-play-next--rounded',
   'open-in-new': 'open-in-new--rounded',
+  'mix': 'sensors--rounded',
 };
 
 const require = createRequire(import.meta.url);

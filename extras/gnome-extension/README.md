@@ -1,8 +1,9 @@
 # YourTune Mini Player for GNOME Shell
 
 A panel mini player for GNOME Shell 50. It talks only to YourTune's API Server plugin, so nothing
-extra runs in the app: playback controls, likes, shuffle, repeat, volume, and song or video search
-that can play a result now or next.
+extra runs in the app: playback controls, likes, shuffle, repeat, volume, starting a mix, and song
+or video search that can play a result now or next. Starting a mix needs YourTune 1.4 or newer;
+older versions play results through the queue instead.
 
 ## Install
 

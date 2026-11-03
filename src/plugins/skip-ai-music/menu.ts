@@ -115,7 +115,9 @@ export const onMenu = async ({
             const current = await getConfig();
             const output = await promptThreshold(window, {
               title: t('plugins.skip-ai-music.prompt.threshold.title'),
-              description: t('plugins.skip-ai-music.prompt.threshold.description'),
+              description: t(
+                'plugins.skip-ai-music.prompt.threshold.description',
+              ),
               value: clampCommunityMinScore(current.communityMinScore),
               valueLabel: t('plugins.skip-ai-music.prompt.threshold.value'),
               cancelLabel: t('plugins.skip-ai-music.prompt.list-editor.cancel'),
@@ -189,10 +191,7 @@ export const onMenu = async ({
       async click() {
         const current = await getConfig();
         setConfig({
-          blockedSongs: await promptBlockedSongs(
-            window,
-            current.blockedSongs,
-          ),
+          blockedSongs: await promptBlockedSongs(window, current.blockedSongs),
         });
         await refresh();
       },

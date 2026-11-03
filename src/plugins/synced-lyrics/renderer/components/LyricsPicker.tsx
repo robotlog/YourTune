@@ -204,21 +204,25 @@ export const LyricsPicker = (props: {
 
     const songInfo = getSongInfo();
     try {
-      const plainLyrics = JSON.parse(JSON.stringify(lyrics.data)) as typeof lyrics.data;
-      const result: unknown = await window.ipcRenderer.invoke('synced-lyrics:save', {
-        lyrics: plainLyrics,
-        videoId: String(songInfo.videoId ?? ''),
-        title: String(songInfo.title ?? ''),
-        artist: String(songInfo.artist ?? ''),
-      });
+      const plainLyrics = JSON.parse(
+        JSON.stringify(lyrics.data),
+      ) as typeof lyrics.data;
+      const result: unknown = await window.ipcRenderer.invoke(
+        'synced-lyrics:save',
+        {
+          lyrics: plainLyrics,
+          videoId: String(songInfo.videoId ?? ''),
+          title: String(songInfo.title ?? ''),
+          artist: String(songInfo.artist ?? ''),
+        },
+      );
 
       const filePath = typeof result === 'string' ? result : '';
       if (filePath) {
         showToast(`Saved lyrics to ${filePath}`);
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to save lyrics:', error);
       showToast(
         message.toLowerCase().includes('cancel')

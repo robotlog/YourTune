@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+Features:
+
+- Tray Settings plugin: opens the settings from the tray menu, also with In-App Menu off ([#13](https://github.com/robotlog/YourTune/pull/13), refs [#2](https://github.com/robotlog/YourTune/issues/2)).
+- KDE Plasma 6 panel widget in `extras/plasma-widget` ([#14](https://github.com/robotlog/YourTune/pull/14)).
+- GNOME Shell mini player in `extras/gnome-extension`, thanks to @sungyongcho ([#3](https://github.com/robotlog/YourTune/pull/3)).
+
+API Server fixes, thanks to @sungyongcho:
+
+- `toggle-mute` works on the new player UI ([#7](https://github.com/robotlog/YourTune/pull/7), [#4](https://github.com/robotlog/YourTune/issues/4)).
+- The first WebSocket `PLAYER_INFO` keeps the song, volume, repeat and shuffle after the plugin restarts ([#8](https://github.com/robotlog/YourTune/pull/8), [#5](https://github.com/robotlog/YourTune/issues/5)).
+- `toggle-play` starts a track that is loaded but was never started ([#10](https://github.com/robotlog/YourTune/pull/10), [#9](https://github.com/robotlog/YourTune/issues/9)).
+
 #### v1.3.1
 
 > 31 October 2026

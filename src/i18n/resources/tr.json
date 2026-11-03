@@ -1021,6 +1021,13 @@
       "description": "Windows görev çubuğu üzerinden oynatmayı kontrol edebilmenize olanak sağlar",
       "name": "Görev Çubuğu Medya Kontrolü"
     },
+    "tray-settings": {
+      "description": "Tepsi menüsüne, In-App Menu kapalıyken bile tüm seçenekleri içeren uygulama menüsünü açan bir Ayarlar öğesi ekler",
+      "menu": {
+        "open": "Ayarlar"
+      },
+      "name": "Tepsi Ayarları"
+    },
     "touchbar": {
       "description": "macOS kullanıcıları için bir TouchBar widget'ı ekler",
       "name": "TouchBar"

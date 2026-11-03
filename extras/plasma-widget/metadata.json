@@ -1,0 +1,15 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Authors": [{ "Name": "YourTune contributors" }],
+    "Category": "Multimedia",
+    "Description": "YourTune controls with like, dislike, shuffle and repeat",
+    "Icon": "media-playback-start",
+    "Id": "io.github.robotlog.yourtune",
+    "License": "MIT",
+    "Name": "YourTune",
+    "Version": "1.0",
+    "Website": "https://github.com/robotlog/YourTune"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}

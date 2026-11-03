@@ -19,7 +19,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ macos-26, ubuntu-latest, windows-latest ]
+        # Linux is split by arch so its packages build and upload in parallel.
+        # Naming the targets on the CLI overrides the arch lists in
+        # electron-builder.yml, so keep these in sync with its linux targets.
+        include:
+          - os: macos-26
+          - os: ubuntu-latest
+            linux-targets: AppImage deb rpm tar.gz --x64
+          - os: ubuntu-latest
+            linux-targets: AppImage deb tar.gz --arm64
+          - os: windows-latest
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -64,7 +73,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu') && (github.repository == 'robotlog/YourTune' && github.event_name != 'pull_request')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm release:linux
+        run: pnpm clean && pnpm build && pnpm electron-builder --linux ${{ matrix.linux-targets }} -p always
 
       - name: Build and release on Windows
         if: startsWith(matrix.os, 'windows') && (github.repository == 'robotlog/YourTune' && github.event_name != 'pull_request')

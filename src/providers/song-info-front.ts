@@ -1,7 +1,12 @@
 import { LikeType, type GetState } from '@/types/datahost-get-state';
 
 import { singleton } from './decorators';
-import { getLikeStatus, getRepeatMode, watchPlayerState } from './player-ui';
+import {
+  getLikeStatus,
+  getRepeatMode,
+  watchLikeStatus,
+  watchPlayerState,
+} from './player-ui';
 
 import type { SongInfo } from './song-info';
 import type { MusicPlayer } from '@/types/music-player';
@@ -150,11 +155,9 @@ export const setupLikeChangedListener = singleton(() => {
     return;
   }
 
-  // New player UI: like status lives in the store, keyed by video id.
-  watchPlayerState(
-    document,
-    () => getLikeStatus(),
-    (status) => window.ipcRenderer.send('peard:like-changed', status),
+  // New player UI: like status lives in the store and the miniplayer buttons.
+  watchLikeStatus(document, (status) =>
+    window.ipcRenderer.send('peard:like-changed', status),
   );
   window.ipcRenderer.send('peard:like-changed', getLikeStatus());
 });

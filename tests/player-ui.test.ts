@@ -12,6 +12,7 @@ import {
   togglePlay,
   toggleShuffle,
   updateLike,
+  watchLikeStatus,
   watchPlayerState,
 } from '../src/providers/player-ui';
 
@@ -104,7 +105,7 @@ const createNewUi = (
     }, 10);
   });
 
-  return { document: document as unknown as Document, calls };
+  return { document: document as unknown as Document, calls, listeners };
 };
 
 const createOldUi = (
@@ -334,4 +335,29 @@ test.describe('player-ui: togglePlay', () => {
       expect(calls).toEqual([call]);
     });
   }
+});
+
+test.describe('player-ui: watchLikeStatus', () => {
+  const tick = () => new Promise((resolve) => setTimeout(resolve, 10));
+
+  test('reports the new track once its like button updates', async () => {
+    const { document, listeners } = createNewUi({ pressed: 'like' });
+    const seen: string[] = [];
+    watchLikeStatus(document, (status) => seen.push(status));
+
+    // The queue moves on to a track that isn't liked before the button updates.
+    listeners.forEach((listener) => listener());
+    await tick();
+    expect(seen).toEqual([]);
+
+    document
+      .querySelector('like-button-view-model button')!
+      .setAttribute('aria-pressed', 'false');
+    await tick();
+    expect(seen).toEqual(['INDIFFERENT']);
+
+    listeners.forEach((listener) => listener());
+    await tick();
+    expect(seen).toEqual(['INDIFFERENT']);
+  });
 });

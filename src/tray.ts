@@ -39,6 +39,13 @@ export const setTrayOnClick = (fn: TrayEvent) => {
   tray.on('click', fn);
 };
 
+// A panel mini player (#30) takes the icon's place. Electron on Linux can't make
+// a tray icon again in the same process, so it stays gone until a restart.
+export const removeTray = () => {
+  tray?.destroy();
+  tray = undefined;
+};
+
 // Won't do anything on macOS since its disabled
 export const setTrayOnDoubleClick = (fn: TrayEvent) => {
   if (!tray) {

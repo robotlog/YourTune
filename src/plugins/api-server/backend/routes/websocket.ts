@@ -7,6 +7,7 @@ import {
   type SongInfo,
   SongInfoEvent,
 } from '@/providers/song-info';
+import { removeTray } from '@/tray';
 import { LoggerPrefix } from '@/utils';
 
 import { AuthStrategy, type APIServerConfig } from '../../config';
@@ -23,6 +24,9 @@ import type {
 import type { WebSocketLike, upgradeWebSocket } from '@hono/node-server';
 import type { Context, Next } from 'hono';
 import type { WSContext } from 'hono/ws';
+
+// Clients that are a panel icon of their own, so the tray icon would be a second one.
+const TRAY_REPLACING_CLIENTS = ['yourtune-gnome-miniplayer'];
 
 enum DataTypes {
   PlayerInfo = 'PLAYER_INFO',
@@ -163,39 +167,35 @@ export const register = (
     uws((ctx) => ({
       async onOpen(_, ws) {
         const config = await getConfig();
+        const token = ctx.req.query('token');
 
-        if (config.authStrategy !== AuthStrategy.NONE) {
-          const token = ctx.req.query('token');
-
-          if (!token) {
-            ws.close(1008, 'Unauthorized');
-            return;
-          }
-
+        // Read even without auth: the client id decides whether the tray goes.
+        let clientId: string | undefined;
+        if (token) {
           try {
             const payload = await verify(token, config.secret, 'HS256');
             const parsedPayload =
               await JWTPayloadSchema.safeParseAsync(payload);
-
-            if (
-              !parsedPayload.success ||
-              !config.authorizedClients.includes(parsedPayload.data.id)
-            ) {
-              ws.close(1008, 'Unauthorized');
-              return;
-            }
+            if (parsedPayload.success) clientId = parsedPayload.data.id;
           } catch (err) {
             console.error(
               LoggerPrefix,
               'WebSocket authentication failed:',
               err,
             );
-            ws.close(1008, 'Unauthorized');
-            return;
           }
         }
 
+        if (
+          config.authStrategy !== AuthStrategy.NONE &&
+          (!clientId || !config.authorizedClients.includes(clientId))
+        ) {
+          ws.close(1008, 'Unauthorized');
+          return;
+        }
+
         sockets.add(ws);
+        if (clientId && TRAY_REPLACING_CLIENTS.includes(clientId)) removeTray();
 
         ws.send(
           JSON.stringify({

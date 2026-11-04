@@ -58,7 +58,7 @@ function formatTime(seconds) {
 const STATUS_VIEWS = {
   'connecting': {message: 'Connecting to YourTune…'},
   'offline': {
-    message: 'YourTune is not reachable. Start YourTune and turn on the API Server plugin.',
+    message: "YourTune's API Server is off. Turn it on under Plugins → API Server.",
     action: 'Retry',
   },
   'needs-auth': {message: 'Allow this panel to control YourTune.', action: 'Connect'},
@@ -116,6 +116,9 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       icon_size: 16,
     });
     this.add_child(this._panelIcon);
+    // Shown by setYourTuneRunning() while YourTune runs.
+    this.visible = false;
+    this._yourTuneRunning = false;
 
     this._buildMenu();
 
@@ -290,8 +293,12 @@ class MiniPlayerIndicator extends PanelMenu.Button {
       this._volumeDragging = false;
       this._sendVolume();
     });
+    this._showButton = this._iconButton('open-in-new-symbolic.svg', 'Show YourTune', () => this._showYourTune());
+    this._quitButton = this._iconButton('power-symbolic.svg', 'Quit YourTune', () => this._quitYourTune());
     this._volumeRow.add_child(this._muteButton);
     this._volumeRow.add_child(this._volumeSlider);
+    this._volumeRow.add_child(this._showButton);
+    this._volumeRow.add_child(this._quitButton);
     this._playerContent.add_child(this._volumeRow);
 
     this._statusOverlay = new St.BoxLayout({
@@ -338,6 +345,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     if (status !== 'connected') {
       // The next connection may be to an upgraded YourTune.
       this._mixButton.visible = true;
+      this._quitButton.visible = true;
       this._state = {...EMPTY_STATE};
       this._localProgress = 0;
       this._seekTarget = null;
@@ -496,7 +504,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     for (const button of [this._previousButton, this._playButton, this._nextButton, this._likeButton,
       this._dislikeButton, this._mixButton])
       this._setButtonEnabled(button, active);
-    for (const button of [this._repeatButton, this._shuffleButton, this._muteButton])
+    for (const button of [this._repeatButton, this._shuffleButton, this._muteButton, this._quitButton])
       button.reactive = button.can_focus = connected;
     this._slider.reactive = active && this._duration() > 0;
     this._volumeSlider.reactive = connected;
@@ -648,17 +656,54 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     return app ? {app} : null;
   }
 
-  // With no window to raise, launching the app again makes YourTune show its main window, even
-  // when it is hidden in the tray.
-  _showYourTune() {
-    const target = this._findYourTune();
-    if (!target)
+  // Like YourTune's tray icon, the panel icon is there only while YourTune runs. YourTune drops
+  // its tray icon once the mini player connects, so this one takes its place.
+  setYourTuneRunning(running) {
+    if (running === this._yourTuneRunning)
       return;
+    this._yourTuneRunning = running;
+    if (running) {
+      this.visible = true;
+      this._client.start();
+    } else {
+      this.menu.close();
+      this.visible = false;
+      this._client.stop();
+    }
+  }
+
+  async _showYourTune() {
     this.menu.close();
-    if (target.window)
+    if (this._client.status === 'connected') {
+      try {
+        await this._client.request('POST', '/window/show');
+        return;
+      } catch (error) {
+        // YourTune 1.4.1 and older have no POST /window/show.
+        if (!isMissingEndpoint(error)) {
+          this._logFailure('show window', error);
+          return;
+        }
+      }
+    }
+    // With no window to raise, launching the app again makes YourTune show its main window, even
+    // when it is hidden in the tray.
+    const target = this._findYourTune();
+    if (target?.window)
       Main.activateWindow(target.window);
     else
-      target.app.activate();
+      target?.app.activate();
+  }
+
+  // YourTune 1.4.1 and older have no POST /quit, so the button goes away there, like the mix button.
+  _quitYourTune() {
+    this.menu.close();
+    this._client.request('POST', '/quit').catch(error => {
+      if (isMissingEndpoint(error))
+        this._quitButton.visible = false;
+      else
+        this._logFailure('quit', error);
+    });
   }
 
   _command(method, path, body = null) {

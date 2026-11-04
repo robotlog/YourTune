@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+Features:
+
+- API Server: `POST /window/show` and `POST /quit`, and the tray icon goes away while the GNOME Shell mini player is connected, so the panel shows one icon. It comes back after a restart ([#30](https://github.com/robotlog/YourTune/issues/30)).
+
 #### v1.4.1
 
 > 3 November 2026

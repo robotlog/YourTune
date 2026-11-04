@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { ipcMain } from 'electron';
+import { app as electronApp, ipcMain } from 'electron';
 
 import { getSongControls } from '@/providers/song-controls';
 import {
@@ -539,6 +539,28 @@ const routes = {
       },
     },
   }),
+  showWindow: createRoute({
+    method: 'post',
+    path: `/api/${API_VERSION}/window/show`,
+    summary: 'Show window',
+    description: 'Show and focus the YourTune window',
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  quit: createRoute({
+    method: 'post',
+    path: `/api/${API_VERSION}/quit`,
+    summary: 'Quit',
+    description: 'Quit YourTune',
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
   search: createRoute({
     method: 'post',
     path: `/api/${API_VERSION}/search`,
@@ -587,6 +609,21 @@ export const register = (
   });
   app.openapi(routes.next, (ctx) => {
     controller.next();
+
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.showWindow, (ctx) => {
+    window.show();
+    window.focus();
+    electronApp.dock?.show();
+
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.quit, (ctx) => {
+    // After the response is sent; quitting closes the server.
+    setImmediate(() => electronApp.quit());
 
     ctx.status(204);
     return ctx.body(null);

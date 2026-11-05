@@ -17,8 +17,9 @@ const RECONNECT_MAX_S = 30;
 const WS_POLICY_VIOLATION = 1008;
 
 // Status values the panel renders:
+// 'stopped'     YourTune isn't running; nothing is tried until start()
 // 'connecting'  waiting for the WebSocket
-// 'offline'     YourTune or its API Server plugin is not reachable; retries with backoff
+// 'offline'     YourTune runs but its API Server isn't reachable; retries with backoff
 // 'needs-auth'  no token, or the stored one was rejected; waits for the user
 // 'authorizing' waiting for the user to answer the dialog in YourTune
 // 'denied'      the user declined the dialog; waits for the user
@@ -34,12 +35,16 @@ export class YourTuneClient extends EventEmitter {
     // POST /auth blocks until the user answers the dialog, so it must not time out.
     this._authSession = new Soup.Session();
     this._cancellable = new Gio.Cancellable();
+    this._authCancellable = null;
+    this._active = false;
     this._connection = null;
     this._connectCancellable = null;
     this._reconnectId = 0;
     this._backoff = RECONNECT_MIN_S;
-    this._status = 'connecting';
+    this._status = 'stopped';
     this._settingsChangedId = settings.connect('changed', (_settings, key) => {
+      if (!this._active)
+        return;
       // The preferences window can forget the token while it is in use.
       const tokenForgotten = key === 'token' && !this._token && this._status !== 'needs-auth';
       if (key === 'host' || key === 'port' || tokenForgotten)
@@ -60,11 +65,23 @@ export class YourTuneClient extends EventEmitter {
   }
 
   start() {
+    this._active = true;
     if (!this._token) {
       this._setStatus('needs-auth');
       return;
     }
     this._connect();
+  }
+
+  // YourTune quit: drop the connection and any pending authorization, and wait for start().
+  stop() {
+    this._active = false;
+    this._authCancellable?.cancel();
+    this._authCancellable = null;
+    this._closeConnection();
+    this._clearReconnect();
+    this._backoff = RECONNECT_MIN_S;
+    this._setStatus('stopped');
   }
 
   reconnect() {
@@ -75,7 +92,7 @@ export class YourTuneClient extends EventEmitter {
   }
 
   async authorize() {
-    if (this._status === 'authorizing')
+    if (!this._active || this._status === 'authorizing')
       return;
     this._closeConnection();
     this._clearReconnect();
@@ -85,8 +102,11 @@ export class YourTuneClient extends EventEmitter {
     // is no good for the new one.
     const baseUrl = this._baseUrl;
     const message = Soup.Message.new('POST', `${baseUrl}/auth/${CLIENT_ID}`);
+    // stop() cancels it when YourTune quits while the dialog is open.
+    const cancellable = new Gio.Cancellable();
+    this._authCancellable = cancellable;
     try {
-      const bytes = await this._authSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
+      const bytes = await this._authSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable);
       if (this._baseUrl !== baseUrl)
         return;
       if (message.status_code === Soup.Status.FORBIDDEN) {
@@ -107,6 +127,9 @@ export class YourTuneClient extends EventEmitter {
       }
       console.error(`YourTune authorization failed: ${error.message}`);
       this._setStatus('needs-auth');
+    } finally {
+      if (this._authCancellable === cancellable)
+        this._authCancellable = null;
     }
   }
 
@@ -244,6 +267,7 @@ export class YourTuneClient extends EventEmitter {
 
   destroy() {
     this._cancellable.cancel();
+    this._authCancellable?.cancel();
     this._settings.disconnect(this._settingsChangedId);
     this._clearReconnect();
     this._closeConnection();

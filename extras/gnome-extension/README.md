@@ -5,6 +5,11 @@ extra runs in the app: playback controls, likes, shuffle, repeat, volume, starti
 or video search that can play a result now or next. Starting a mix needs YourTune 1.4 or newer;
 older versions play results through the queue instead.
 
+Like a tray icon, the panel icon is there only while YourTune runs. YourTune then drops its own tray
+icon, so the mini player's menu can also show YourTune's window and quit it. It knows YourTune is
+running from the `org.mpris.MediaPlayer2.YourTune` name on the session bus, which YourTune's
+Shortcuts plugin provides, so keep that plugin on (it is by default).
+
 ## Install
 
 Turn on the API Server plugin in YourTune (Plugins → API Server). It listens on `0.0.0.0` by
@@ -29,7 +34,7 @@ gnome-extensions install --force yourtune-miniplayer@robotlog.github.io.shell-ex
 
 Log out and back in, then run `gnome-extensions enable yourtune-miniplayer@robotlog.github.io`.
 
-Open the panel menu and click **Connect**, then allow `yourtune-gnome-miniplayer` in YourTune. The
+Start YourTune, open the panel menu and click **Connect**, then allow `yourtune-gnome-miniplayer` in YourTune. The
 extension's preferences, in the Extensions app, set the host and port and can forget the token.
 
 ## Development

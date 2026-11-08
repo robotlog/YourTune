@@ -1,10 +1,34 @@
 import path from 'node:path';
 
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 
 import * as config from '@/config';
+import { t } from '@/i18n';
 
 export const restart = () => restartInternal();
+
+export const askToRestart = async (
+  name: string,
+  parent?: BrowserWindow | null,
+) => {
+  const options: Electron.MessageBoxOptions = {
+    type: 'info',
+    buttons: [
+      t('main.dialog.need-to-restart.buttons.restart-now'),
+      t('main.dialog.need-to-restart.buttons.later'),
+    ],
+    title: t('main.dialog.need-to-restart.title'),
+    message: t('main.dialog.need-to-restart.message', { pluginName: name }),
+    detail: t('main.dialog.need-to-restart.detail', { pluginName: name }),
+    defaultId: 0,
+    cancelId: 1,
+  };
+
+  const { response } = await (parent
+    ? dialog.showMessageBox(parent, options)
+    : dialog.showMessageBox(options));
+  if (response === 0) restart();
+};
 
 export const setupAppControls = () => {
   ipcMain.on('peard:restart', restart);

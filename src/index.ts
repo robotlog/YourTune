@@ -43,7 +43,11 @@ import { refreshMenu, setApplicationMenu } from '@/menu';
 import musicPlayerCss from '@/music-player.css?inline';
 import { defaultAuthProxyConfig } from '@/plugins/auth-proxy-adapter/config';
 import { fileExists, injectCSS, injectCSSAsFile } from '@/plugins/utils/main';
-import { restart, setupAppControls } from '@/providers/app-controls';
+import {
+  askToRestart,
+  restart,
+  setupAppControls,
+} from '@/providers/app-controls';
 import {
   APP_PROTOCOL,
   handleProtocol,
@@ -291,43 +295,7 @@ const initHook = async (win: BrowserWindow) => {
 const showNeedToRestartDialog = async (id: string) => {
   const plugin = (await allPlugins())[id];
 
-  const dialogOptions: Electron.MessageBoxOptions = {
-    type: 'info',
-    buttons: [
-      t('main.dialog.need-to-restart.buttons.restart-now'),
-      t('main.dialog.need-to-restart.buttons.later'),
-    ],
-    title: t('main.dialog.need-to-restart.title'),
-    message: t('main.dialog.need-to-restart.message', {
-      pluginName: plugin?.name?.() ?? id,
-    }),
-    detail: t('main.dialog.need-to-restart.detail', {
-      pluginName: plugin?.name?.() ?? id,
-    }),
-    defaultId: 0,
-    cancelId: 1,
-  };
-
-  let dialogPromise: Promise<Electron.MessageBoxReturnValue>;
-  if (mainWindow) {
-    dialogPromise = dialog.showMessageBox(mainWindow, dialogOptions);
-  } else {
-    dialogPromise = dialog.showMessageBox(dialogOptions);
-  }
-
-  dialogPromise.then((dialogOutput) => {
-    switch (dialogOutput.response) {
-      case 0: {
-        restart();
-        break;
-      }
-
-      // Ignore
-      default: {
-        break;
-      }
-    }
-  });
+  await askToRestart(plugin?.name?.() ?? id, mainWindow);
 };
 
 function initTheme(win: BrowserWindow) {
@@ -811,7 +779,7 @@ app.whenReady().then(async () => {
   mainWindow = await createMainWindow();
   await setApplicationMenu(mainWindow);
   await refreshMenu(mainWindow);
-  setUpTray(app, mainWindow);
+  await setUpTray(app, mainWindow);
 
   setupProtocolHandler(mainWindow);
 

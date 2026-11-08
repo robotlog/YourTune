@@ -5,10 +5,11 @@ extra runs in the app: playback controls, likes, shuffle, repeat, volume, starti
 or video search that can play a result now or next. Starting a mix needs YourTune 1.4 or newer;
 older versions play results through the queue instead.
 
-Like a tray icon, the panel icon is there only while YourTune runs. YourTune then drops its own tray
-icon, so the mini player's menu can also show YourTune's window and quit it. It knows YourTune is
-running from the `org.mpris.MediaPlayer2.YourTune` name on the session bus, which YourTune's
-Shortcuts plugin provides, so keep that plugin on (it is by default).
+Like a tray icon, the panel icon is there only while YourTune runs, and the mini player's menu can
+also show YourTune's window and quit it. While the extension is on, YourTune starts without its own
+tray icon; if you turn the extension on while YourTune is running, YourTune asks to restart. The
+extension knows YourTune is running from the `org.mpris.MediaPlayer2.YourTune` name on the session
+bus, which YourTune's Shortcuts plugin provides, so keep that plugin on (it is by default).
 
 ## Install
 

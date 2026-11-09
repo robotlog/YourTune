@@ -11,6 +11,11 @@ Features:
 - API Server: `POST /window/show` and `POST /quit` for the GNOME Shell mini player ([#30](https://github.com/robotlog/YourTune/issues/30)).
 - GNOME Shell mini player shows only while YourTune runs, with show window and quit, by @sungyongcho ([#32](https://github.com/robotlog/YourTune/pull/32)).
 - While the GNOME Shell mini player is on, YourTune starts without its tray icon, so the panel shows one icon. Turning the extension on while YourTune runs asks to restart, by @sungyongcho ([#30](https://github.com/robotlog/YourTune/issues/30)).
+- Start at login on Linux, through an autostart entry, by @sungyongcho ([#36](https://github.com/robotlog/YourTune/issues/36)).
+
+Fixes:
+
+- The reported position starts over with each track during gapless playback on the new player UI, instead of counting on from the previous track, by @sungyongcho ([#33](https://github.com/robotlog/YourTune/issues/33)).
 
 #### v1.4.1
 

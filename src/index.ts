@@ -48,6 +48,7 @@ import {
   restart,
   setupAppControls,
 } from '@/providers/app-controls';
+import { updateLinuxAutostart } from '@/providers/linux-autostart';
 import {
   APP_PROTOCOL,
   handleProtocol,
@@ -818,9 +819,15 @@ app.whenReady().then(async () => {
   });
 
   // Autostart at login
-  app.setLoginItemSettings({
-    openAtLogin: config.get('options.startAtLogin'),
-  });
+  if (is.linux()) {
+    // Refreshes the path. Never removed here: with the option off, an entry in
+    // that folder is one the user added through their desktop's own settings.
+    if (config.get('options.startAtLogin')) updateLinuxAutostart(app, true);
+  } else {
+    app.setLoginItemSettings({
+      openAtLogin: config.get('options.startAtLogin'),
+    });
+  }
 
   if (!is.dev() && config.get('options.autoUpdates')) {
     const updateTimeout = setTimeout(() => {

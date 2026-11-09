@@ -68,8 +68,10 @@ export const setupTimeChangedListener = singleton((api: MusicPlayer) => {
   }
   // New player UI has no #progress-bar; follow the video element instead.
   let lastSecond = -1;
-  video?.addEventListener('timeupdate', (e) => {
-    const second = Math.floor((e.target as HTMLVideoElement).currentTime);
+  // The video element's currentTime keeps counting across gapless tracks; the
+  // player api's starts over with each track.
+  video?.addEventListener('timeupdate', () => {
+    const second = Math.floor(api.getCurrentTime());
     if (second === lastSecond) return;
     lastSecond = second;
     window.ipcRenderer.send('peard:time-changed', second);
@@ -312,11 +314,12 @@ export const setupSongInfo = (api: MusicPlayer) => {
     if (!(e.target instanceof HTMLVideoElement)) return;
 
     const isPaused = status === 'pause';
-    if (Math.round(e.target.currentTime) > 0 || isPaused !== reportedPaused) {
+    const elapsed = api.getCurrentTime();
+    if (Math.round(elapsed) > 0 || isPaused !== reportedPaused) {
       reportedPaused = isPaused;
       window.ipcRenderer.send('peard:play-or-paused', {
         isPaused,
-        elapsedSeconds: Math.floor(e.target.currentTime),
+        elapsedSeconds: Math.floor(elapsed),
       });
     }
   };
@@ -457,7 +460,7 @@ export const setupSongInfo = (api: MusicPlayer) => {
         reportedPaused = true;
         window.ipcRenderer.send('peard:play-or-paused', {
           isPaused: true,
-          elapsedSeconds: Math.floor(video.currentTime),
+          elapsedSeconds: Math.floor(api.getCurrentTime()),
         });
       }
     }, PAUSED_CHECK_DELAY_MS);

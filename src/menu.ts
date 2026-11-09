@@ -19,6 +19,7 @@ import * as config from './config';
 import { getAllMenuTemplate, loadAllMenuPlugins } from './loader/menu';
 import { restart } from './providers/app-controls';
 import { startingPages } from './providers/extracted-data';
+import { updateLinuxAutostart } from './providers/linux-autostart';
 import promptOptions from './providers/prompt-options';
 
 import packageJson from '../package.json';
@@ -408,8 +409,8 @@ export const mainMenuTemplate = async (
               },
             ]
           : []) satisfies Electron.MenuItemConstructorOptions[]),
-        ...((is.windows() || is.macOS()
-          ? // Only works on Win/Mac
+        ...((is.windows() || is.macOS() || is.linux()
+          ? // Electron's login items on Win/Mac, an autostart entry on Linux
             // https://www.electronjs.org/docs/api/app#appsetloginitemsettingssettings-macos-windows
             [
               {
@@ -418,6 +419,7 @@ export const mainMenuTemplate = async (
                 checked: config.get('options.startAtLogin'),
                 click(item) {
                   config.setMenuOption('options.startAtLogin', item.checked);
+                  if (is.linux()) updateLinuxAutostart(app, item.checked);
                 },
               },
             ]

@@ -10,6 +10,7 @@ Features:
 
 - API Server: `POST /window/show` and `POST /quit`, and the tray icon goes away while the GNOME Shell mini player is connected, so the panel shows one icon. It comes back after a restart ([#30](https://github.com/robotlog/YourTune/issues/30)).
 - GNOME Shell mini player shows only while YourTune runs, with show window and quit, by @sungyongcho ([#32](https://github.com/robotlog/YourTune/pull/32)).
+- Start at login on Linux, through an autostart entry, by @sungyongcho ([#36](https://github.com/robotlog/YourTune/issues/36)).
 
 Fixes:
 

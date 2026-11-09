@@ -7,7 +7,7 @@ import {
   type SongInfo,
   SongInfoEvent,
 } from '@/providers/song-info';
-import { removeTray } from '@/tray';
+import { offerRestartForMiniPlayer } from '@/tray';
 import { LoggerPrefix } from '@/utils';
 
 import { AuthStrategy, type APIServerConfig } from '../../config';
@@ -169,7 +169,7 @@ export const register = (
         const config = await getConfig();
         const token = ctx.req.query('token');
 
-        // Read even without auth: the client id decides whether the tray goes.
+        // Read even without auth: the client id decides whether to offer the restart.
         let clientId: string | undefined;
         if (token) {
           try {
@@ -195,7 +195,11 @@ export const register = (
         }
 
         sockets.add(ws);
-        if (clientId && TRAY_REPLACING_CLIENTS.includes(clientId)) removeTray();
+        if (clientId && TRAY_REPLACING_CLIENTS.includes(clientId)) {
+          offerRestartForMiniPlayer().catch((err: unknown) => {
+            console.error(LoggerPrefix, 'Could not offer the restart:', err);
+          });
+        }
 
         ws.send(
           JSON.stringify({

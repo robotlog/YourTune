@@ -1,3 +1,6 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
 import PausedTrayIconWhite from '@assets/tray-paused-white.png?asset&asarUnpack';
 import PausedTrayIcon from '@assets/tray-paused.png?asset&asarUnpack';
 import TrayIconWhite from '@assets/tray-white.png?asset&asarUnpack';
@@ -8,14 +11,23 @@ import is from 'electron-is';
 import { APPLICATION_NAME, t } from '@/i18n';
 
 import * as config from './config';
-import { restart } from './providers/app-controls';
+import { askToRestart, restart } from './providers/app-controls';
 import { getSongControls } from './providers/song-controls';
 import { registerCallback, SongInfoEvent } from './providers/song-info';
 
 import type { MenuTemplate } from './menu';
 
+const execFileAsync = promisify(execFile);
+
+const GNOME_MINI_PLAYER_UUID = 'yourtune-miniplayer@robotlog.github.io';
+const GNOME_MINI_PLAYER_NAME = 'YourTune Mini Player';
+// The shell answers late while it starts up. Without GNOME Shell the call fails at once.
+const GNOME_SHELL_QUERY_TIMEOUT_MS = 3000;
+const GNOME_SHELL_RETRY_DELAY_MS = 1000;
+
 // Prevent tray being garbage collected
 let tray: Electron.Tray | undefined;
+let restartOffered = false;
 // Items a plugin adds above Restart; the menu is rebuilt when they change.
 let extraItems: MenuTemplate = [];
 let rebuildMenu: (() => void) | undefined;
@@ -39,13 +51,6 @@ export const setTrayOnClick = (fn: TrayEvent) => {
   tray.on('click', fn);
 };
 
-// A panel mini player (#30) takes the icon's place. Electron on Linux can't make
-// a tray icon again in the same process, so it stays gone until a restart.
-export const removeTray = () => {
-  tray?.destroy();
-  tray = undefined;
-};
-
 // Won't do anything on macOS since its disabled
 export const setTrayOnDoubleClick = (fn: TrayEvent) => {
   if (!tray) {
@@ -56,8 +61,73 @@ export const setTrayOnDoubleClick = (fn: TrayEvent) => {
   tray.on('double-click', fn);
 };
 
-export const setUpTray = (app: Electron.App, win: Electron.BrowserWindow) => {
-  if (!config.get('options.tray')) {
+const getMiniPlayerInfo = async () => {
+  try {
+    const { stdout } = await execFileAsync(
+      'gdbus',
+      [
+        'call',
+        '--session',
+        '--dest',
+        'org.gnome.Shell',
+        '--object-path',
+        '/org/gnome/Shell',
+        '--method',
+        'org.gnome.Shell.Extensions.GetExtensionInfo',
+        GNOME_MINI_PLAYER_UUID,
+      ],
+      { timeout: GNOME_SHELL_QUERY_TIMEOUT_MS },
+    );
+    return stdout;
+  } catch {
+    // Not GNOME Shell, or gdbus isn't there
+    return '';
+  }
+};
+
+const isMiniPlayerActive = (info: string) => /'state': <1(\.0)?>/.test(info);
+
+// The GNOME mini player is a panel icon of its own (#30). The tray can't make way
+// for it once it exists: after Tray.destroy(), Ubuntu's AppIndicator extension
+// keeps an empty icon for as long as the app runs. So it isn't created at all
+// when the mini player will show up. That only takes the extension and the bus
+// name from the Shortcuts plugin: without a connection the mini player still
+// shows, and asks to be allowed or for the API Server to be turned on.
+const miniPlayerReplacesTray = async () => {
+  if (!is.linux() || !(await config.plugins.isEnabled('shortcuts'))) {
+    return false;
+  }
+
+  let info = await getMiniPlayerInfo();
+  // At login the shell reports ready while it still loads its extensions, so one
+  // that is turned on may not be active yet. Its state can't tell: it reads as an
+  // error while loading, and INITIALIZED is what a turned off extension reports.
+  if (!isMiniPlayerActive(info) && info.includes("'enabled': <true>")) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, GNOME_SHELL_RETRY_DELAY_MS),
+    );
+    info = await getMiniPlayerInfo();
+  }
+
+  return isMiniPlayerActive(info);
+};
+
+// The extension can also be turned on while YourTune runs. The tray is already
+// there then and only a restart can take it away, so ask, once per run.
+export const offerRestartForMiniPlayer = async () => {
+  if (!tray || restartOffered) return;
+  if (!(await miniPlayerReplacesTray()) || restartOffered) return;
+
+  // Only now, so a failed check doesn't use up the one prompt.
+  restartOffered = true;
+  await askToRestart(GNOME_MINI_PLAYER_NAME);
+};
+
+export const setUpTray = async (
+  app: Electron.App,
+  win: Electron.BrowserWindow,
+) => {
+  if (!config.get('options.tray') || (await miniPlayerReplacesTray())) {
     tray = undefined;
     return;
   }

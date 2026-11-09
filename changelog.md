@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
-#### Unreleased
+#### v1.4.2
+
+> 9 November 2026
 
 Features:
 

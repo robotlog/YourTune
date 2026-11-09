@@ -9,6 +9,8 @@ import {
   updateLinuxAutostart,
 } from '../src/providers/linux-autostart';
 
+test.skip(process.platform !== 'linux', 'linux autostart only');
+
 const execLine = (path: string) =>
   createAutostartEntry(path)
     .split('\n')

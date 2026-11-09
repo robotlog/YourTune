@@ -21,7 +21,9 @@ const execFileAsync = promisify(execFile);
 
 const GNOME_MINI_PLAYER_UUID = 'yourtune-miniplayer@robotlog.github.io';
 const GNOME_MINI_PLAYER_NAME = 'YourTune Mini Player';
-const GNOME_SHELL_QUERY_TIMEOUT_MS = 1000;
+// The shell answers late while it starts up. Without GNOME Shell the call fails at once.
+const GNOME_SHELL_QUERY_TIMEOUT_MS = 3000;
+const GNOME_SHELL_RETRY_DELAY_MS = 1000;
 
 // Prevent tray being garbage collected
 let tray: Electron.Tray | undefined;
@@ -59,17 +61,7 @@ export const setTrayOnDoubleClick = (fn: TrayEvent) => {
   tray.on('double-click', fn);
 };
 
-// The GNOME mini player is a panel icon of its own (#30). The tray can't make way
-// for it once it exists: after Tray.destroy(), Ubuntu's AppIndicator extension
-// keeps an empty icon for as long as the app runs. So it isn't created at all
-// when the mini player will show up. That only takes the extension and the bus
-// name from the Shortcuts plugin: without a connection the mini player still
-// shows, and asks to be allowed or for the API Server to be turned on.
-const miniPlayerReplacesTray = async () => {
-  if (!is.linux() || !(await config.plugins.isEnabled('shortcuts'))) {
-    return false;
-  }
-
+const getMiniPlayerInfo = async () => {
   try {
     const { stdout } = await execFileAsync(
       'gdbus',
@@ -86,22 +78,49 @@ const miniPlayerReplacesTray = async () => {
       ],
       { timeout: GNOME_SHELL_QUERY_TIMEOUT_MS },
     );
-    return /'state': <1(\.0)?>/.test(stdout);
+    return stdout;
   } catch {
     // Not GNOME Shell, or gdbus isn't there
+    return '';
+  }
+};
+
+const isMiniPlayerActive = (info: string) => /'state': <1(\.0)?>/.test(info);
+
+// The GNOME mini player is a panel icon of its own (#30). The tray can't make way
+// for it once it exists: after Tray.destroy(), Ubuntu's AppIndicator extension
+// keeps an empty icon for as long as the app runs. So it isn't created at all
+// when the mini player will show up. That only takes the extension and the bus
+// name from the Shortcuts plugin: without a connection the mini player still
+// shows, and asks to be allowed or for the API Server to be turned on.
+const miniPlayerReplacesTray = async () => {
+  if (!is.linux() || !(await config.plugins.isEnabled('shortcuts'))) {
     return false;
   }
+
+  let info = await getMiniPlayerInfo();
+  // At login the shell reports ready while it still loads its extensions, so one
+  // that is turned on may not be active yet. Its state can't tell: it reads as an
+  // error while loading, and INITIALIZED is what a turned off extension reports.
+  if (!isMiniPlayerActive(info) && info.includes("'enabled': <true>")) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, GNOME_SHELL_RETRY_DELAY_MS),
+    );
+    info = await getMiniPlayerInfo();
+  }
+
+  return isMiniPlayerActive(info);
 };
 
 // The extension can also be turned on while YourTune runs. The tray is already
 // there then and only a restart can take it away, so ask, once per run.
 export const offerRestartForMiniPlayer = async () => {
   if (!tray || restartOffered) return;
-  restartOffered = true;
+  if (!(await miniPlayerReplacesTray()) || restartOffered) return;
 
-  if (await miniPlayerReplacesTray()) {
-    await askToRestart(GNOME_MINI_PLAYER_NAME);
-  }
+  // Only now, so a failed check doesn't use up the one prompt.
+  restartOffered = true;
+  await askToRestart(GNOME_MINI_PLAYER_NAME);
 };
 
 export const setUpTray = async (

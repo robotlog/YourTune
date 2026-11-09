@@ -196,7 +196,9 @@ export const register = (
 
         sockets.add(ws);
         if (clientId && TRAY_REPLACING_CLIENTS.includes(clientId)) {
-          offerRestartForMiniPlayer();
+          offerRestartForMiniPlayer().catch((err: unknown) => {
+            console.error(LoggerPrefix, 'Could not offer the restart:', err);
+          });
         }
 
         ws.send(

@@ -47,9 +47,9 @@ export default class YourTuneMiniPlayerExtension extends Extension {
       this._hostChangedId = 0;
     }
     this._settings = null;
-    this._indicator?.destroy();
+    this._indicator.destroy();
     this._indicator = null;
-    this._client?.destroy();
+    this._client.destroy();
     this._client = null;
   }
 }

@@ -28,8 +28,8 @@ function isCancelled(error) {
 
 export const SearchView = GObject.registerClass(
 class SearchView extends St.BoxLayout {
-  _init({client, settings, fileIcon, onQueueChanged}) {
-    super._init({orientation: VERTICAL, style_class: 'yourtune-search-wrap', x_expand: true});
+  constructor({client, settings, fileIcon, onQueueChanged}) {
+    super({orientation: VERTICAL, style_class: 'yourtune-search-wrap', x_expand: true});
     this._client = client;
     this._settings = settings;
     this._fileIcon = fileIcon;
@@ -41,7 +41,7 @@ class SearchView extends St.BoxLayout {
     this._scrollRestoreId = 0;
     this._pollWait = null;
     this._queuePending = false;
-    this._destroyed = false;
+    this._cancellable = new Gio.Cancellable();
     this.connect('destroy', () => this._onDestroy());
 
     // The popup menu treats arrow keys and letters as navigation; keep them in the entry.
@@ -169,13 +169,13 @@ class SearchView extends St.BoxLayout {
     this._search = {query, kind, status: 'loading', items: [], continuation: null, loadingMore: false};
     this._render();
     try {
-      const payload = await this._client.request('POST', '/search', {query, params: SEARCH_PARAMS[kind]});
-      if (serial !== this._serial || this._destroyed)
+      const payload = await this._client.request('POST', '/search', {query, params: SEARCH_PARAMS[kind]}, this._cancellable);
+      if (serial !== this._serial)
         return;
       const page = parseSearchPage(payload, KINDS[kind]);
       this._search = {...this._search, status: 'ready', items: rankResults(page.items, query), continuation: page.continuation};
     } catch (error) {
-      if (serial !== this._serial || this._destroyed || isCancelled(error))
+      if (serial !== this._serial || isCancelled(error))
         return;
       console.error(`YourTune search failed: ${error.message}`);
       this._search = {...this._search, status: 'error'};
@@ -191,15 +191,15 @@ class SearchView extends St.BoxLayout {
     search.loadingMore = true;
     this._renderKeepingScroll();
     try {
-      const payload = await this._client.request('POST', '/search', {query: search.query, continuation: search.continuation});
-      if (serial !== this._serial || this._destroyed)
+      const payload = await this._client.request('POST', '/search', {query: search.query, continuation: search.continuation}, this._cancellable);
+      if (serial !== this._serial)
         return;
       const page = parseSearchPage(payload, KINDS[search.kind]);
       const seen = new Set(search.items.map(item => item.videoId));
       search.items.push(...page.items.filter(item => !seen.has(item.videoId)));
       search.continuation = page.continuation;
     } catch (error) {
-      if (serial !== this._serial || this._destroyed || isCancelled(error))
+      if (serial !== this._serial || isCancelled(error))
         return;
       console.error(`YourTune search page failed: ${error.message}`);
       this._showQueueMessage('Could not load more results', true);
@@ -332,8 +332,8 @@ class SearchView extends St.BoxLayout {
     if (!url)
       return;
     try {
-      const bytes = await this._client.fetchBytes(url);
-      if (!this._destroyed && icon.get_parent())
+      const bytes = await this._client.fetchBytes(url, this._cancellable);
+      if (icon.get_parent())
         icon.gicon = Gio.BytesIcon.new(bytes);
     } catch (error) {
       if (!isCancelled(error))
@@ -346,18 +346,18 @@ class SearchView extends St.BoxLayout {
   async _playNow(item) {
     await this._queue(item, async () => {
       try {
-        await this._client.request('POST', '/play-song', {videoId: item.videoId});
+        await this._client.request('POST', '/play-song', {videoId: item.videoId}, this._cancellable);
       } catch (error) {
         if (!isMissingEndpoint(error))
           throw error;
         const index = await this._putNext(item.videoId);
-        await this._client.request('PATCH', '/queue', {index});
+        await this._client.request('PATCH', '/queue', {index}, this._cancellable);
       }
     }, `Playing “${item.title}”`);
   }
 
   async _startMix(item) {
-    await this._queue(item, () => this._client.request('POST', '/start-radio', {videoId: item.videoId}),
+    await this._queue(item, () => this._client.request('POST', '/start-radio', {videoId: item.videoId}, this._cancellable),
       `Mix started from “${item.title}”`, `Could not start a mix from “${item.title}”`);
   }
 
@@ -368,14 +368,14 @@ class SearchView extends St.BoxLayout {
   // POST /queue answers before YouTube Music has fetched and inserted the item, so read the queue
   // until the item is where it goes. Resolves to its index.
   async _putNext(videoId) {
-    let index = insertedIndex(parseQueue(await this._client.request('GET', '/queue')), videoId);
+    let index = insertedIndex(parseQueue(await this._client.request('GET', '/queue', null, this._cancellable)), videoId);
     if (index >= 0)
       return index;
-    await this._client.request('POST', '/queue', {videoId, insertPosition: 'INSERT_AFTER_CURRENT_VIDEO'});
+    await this._client.request('POST', '/queue', {videoId, insertPosition: 'INSERT_AFTER_CURRENT_VIDEO'}, this._cancellable);
     const deadline = Date.now() + QUEUE_CONFIRM_MS;
     while (Date.now() < deadline) {
       await this._pollDelay();
-      index = insertedIndex(parseQueue(await this._client.request('GET', '/queue')), videoId);
+      index = insertedIndex(parseQueue(await this._client.request('GET', '/queue', null, this._cancellable)), videoId);
       if (index >= 0)
         return index;
     }
@@ -400,12 +400,10 @@ class SearchView extends St.BoxLayout {
     this._queuePending = true;
     try {
       await action();
-      if (!this._destroyed) {
-        this._onQueueChanged();
-        this._showQueueMessage(doneMessage, false);
-      }
+      this._onQueueChanged();
+      this._showQueueMessage(doneMessage, false);
     } catch (error) {
-      if (this._destroyed || isCancelled(error))
+      if (isCancelled(error))
         return;
       if (isMissingEndpoint(error)) {
         this._showQueueMessage('This needs YourTune 1.4 or newer', true);
@@ -445,7 +443,7 @@ class SearchView extends St.BoxLayout {
   }
 
   _onDestroy() {
-    this._destroyed = true;
+    this._cancellable.cancel();
     this._serial++;
     this._cancelSearchTimer();
     if (this._queueMessageTimer)

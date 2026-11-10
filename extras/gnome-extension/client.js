@@ -1,6 +1,6 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Soup from 'gi://Soup?version=3.0';
+import Soup from 'gi://Soup';
 
 import {EventEmitter} from 'resource:///org/gnome/shell/misc/signals.js';
 
@@ -133,8 +133,8 @@ export class YourTuneClient extends EventEmitter {
     }
   }
 
-  // Resolves to the parsed JSON body, or null for an empty one.
-  async request(method, path, body = null) {
+  // Resolves to the parsed JSON body, or null for an empty one. The caller's cancellable aborts the request.
+  async request(method, path, body = null, cancellable = this._cancellable) {
     const message = Soup.Message.new(method, `${this._baseUrl}/api/v1${path}`);
     message.request_headers.append('Authorization', `Bearer ${this._token}`);
     if (body !== null) {
@@ -142,7 +142,7 @@ export class YourTuneClient extends EventEmitter {
       message.set_request_body_from_bytes('application/json', new GLib.Bytes(data));
     }
 
-    const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
+    const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable);
     if (message.status_code === Soup.Status.UNAUTHORIZED) {
       this._rejectToken();
       throw new Error('Unauthorized');
@@ -157,9 +157,9 @@ export class YourTuneClient extends EventEmitter {
   }
 
   // Resolves to the raw bytes of an absolute URL, such as album art.
-  async fetchBytes(url) {
+  async fetchBytes(url, cancellable = this._cancellable) {
     const message = Soup.Message.new('GET', url);
-    const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
+    const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, cancellable);
     if (message.status_code !== Soup.Status.OK)
       throw new Error(`GET ${url}: HTTP ${message.status_code}`);
     return bytes;

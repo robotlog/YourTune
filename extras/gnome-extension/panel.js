@@ -79,8 +79,8 @@ const EMPTY_STATE = {
 
 export const MiniPlayerIndicator = GObject.registerClass(
 class MiniPlayerIndicator extends PanelMenu.Button {
-  _init({path, client, settings}) {
-    super._init(0.0, 'YourTune Mini Player');
+  constructor({path, client, settings}) {
+    super(0.0, 'YourTune Mini Player');
     this._extensionPath = path;
     clearCoverCache();
     this._client = client;
@@ -104,7 +104,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._artPath = null;
     this._artLoadId = 0;
     this._menuIsOpen = false;
-    this._destroyed = false;
+    this._cancellable = new Gio.Cancellable();
     this._marquees = [];
     this._stSettings = St.Settings.get();
     this._animationsChangedId = this._stSettings.connect('notify::enable-animations', () => this._restartMarquees());
@@ -433,8 +433,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   // until the track changes (robotlog/YourTune#5), so ask for it.
   async _loadCurrentSong() {
     try {
-      const song = await this._client.request('GET', '/song');
-      if (this._destroyed || !song || this._state.song)
+      const song = await this._client.request('GET', '/song', null, this._cancellable);
+      if (!song || this._state.song)
         return;
       this._state = {...this._state, song, isPlaying: !song.isPaused};
       this._syncProgress(song.elapsedSeconds, true, false);
@@ -446,12 +446,12 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   }
 
   async _refreshQueue() {
-    if (this._client?.status !== 'connected')
+    if (this._client.status !== 'connected')
       return;
     const serial = ++this._queueSerial;
     try {
-      const queue = parseQueue(await this._client.request('GET', '/queue'));
-      if (serial !== this._queueSerial || this._destroyed)
+      const queue = parseQueue(await this._client.request('GET', '/queue', null, this._cancellable));
+      if (serial !== this._queueSerial)
         return;
       this._queue = queue;
       this._updateUi();
@@ -625,12 +625,12 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   }
 
   async _refreshLikeStatus() {
-    if (this._client?.status !== 'connected' || !this._state.song)
+    if (this._client.status !== 'connected' || !this._state.song)
       return;
     const videoId = this._state.song.videoId;
     try {
-      const result = await this._client.request('GET', '/like-state');
-      if (this._destroyed || this._state.song?.videoId !== videoId)
+      const result = await this._client.request('GET', '/like-state', null, this._cancellable);
+      if (this._state.song?.videoId !== videoId)
         return;
       const likeStatus = result?.state ?? 'INDIFFERENT';
       if (Date.now() - this._videoChangedAt < LIKE_SETTLE_MS && likeStatus === this._previousLikeStatus)
@@ -676,7 +676,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this.menu.close();
     if (this._client.status === 'connected') {
       try {
-        await this._client.request('POST', '/window/show');
+        await this._client.request('POST', '/window/show', null, this._cancellable);
         return;
       } catch (error) {
         // YourTune 1.4.1 and older have no POST /window/show.
@@ -698,7 +698,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   // YourTune 1.4.1 and older have no POST /quit, so the button goes away there, like the mix button.
   _quitYourTune() {
     this.menu.close();
-    this._client.request('POST', '/quit').catch(error => {
+    this._client.request('POST', '/quit', null, this._cancellable).catch(error => {
       if (isMissingEndpoint(error))
         this._quitButton.visible = false;
       else
@@ -707,14 +707,14 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   }
 
   _command(method, path, body = null) {
-    this._client.request(method, path, body).catch(error => {
+    this._client.request(method, path, body, this._cancellable).catch(error => {
       this._logFailure(`${method} ${path}`, error);
     });
   }
 
   // YourTune before 1.4 has no POST /start-radio, so the button goes away instead of doing nothing.
   _startMix() {
-    this._client.request('POST', '/start-radio', {}).catch(error => {
+    this._client.request('POST', '/start-radio', {}, this._cancellable).catch(error => {
       if (isMissingEndpoint(error))
         this._mixButton.visible = false;
       else
@@ -803,8 +803,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
   }
 
   _canRunMarquee(marquee) {
-    return !this._destroyed &&
-      this._menuIsOpen &&
+    return this._menuIsOpen &&
       this._stSettings.enable_animations &&
       marquee.label.mapped &&
       marquee.clip.width > 0;
@@ -924,7 +923,7 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     }
 
     try {
-      const bytes = await this._client.fetchBytes(url);
+      const bytes = await this._client.fetchBytes(url, this._cancellable);
       if (loadId !== this._artLoadId)
         return;
       const stream = Gio.MemoryInputStream.new_from_bytes(bytes);
@@ -937,9 +936,8 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     }
   }
 
-  // Runs on the destroy signal, so it also cleans up when GNOME Shell disposes the panel itself.
-  _onDestroy() {
-    this._destroyed = true;
+  destroy() {
+    this._cancellable.cancel();
     this._artLoadId++;
     GLib.source_remove(this._tickId);
     this._clearLikeOverride();
@@ -956,6 +954,6 @@ class MiniPlayerIndicator extends PanelMenu.Button {
     this._client.disconnectObject(this);
     this._client = null;
     this._deleteArtFile();
-    super._onDestroy();
+    super.destroy();
   }
 });

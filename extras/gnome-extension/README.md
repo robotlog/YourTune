@@ -17,8 +17,12 @@ Turn on the API Server plugin in YourTune (Plugins → API Server). It listens o
 default, which accepts connections from other devices; `127.0.0.1` is enough for the extension.
 The extension speaks plain HTTP, so leave the plugin's HTTPS option off.
 
-Each [release](https://github.com/robotlog/YourTune/releases) has the extension as
-`yourtune-gnome-extension-<version>.zip`:
+Install the extension from extensions.gnome.org:
+
+[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg" height="100" alt="Get it on GNOME Extensions">](https://extensions.gnome.org/extension/11617/yourtune-mini-player/)
+
+Or install it from a release zip. Each [release](https://github.com/robotlog/YourTune/releases) has
+the extension as `yourtune-gnome-extension-<version>.zip`:
 
 ```sh
 gnome-extensions install --force yourtune-gnome-extension-<version>.zip
@@ -33,7 +37,7 @@ gnome-extensions pack extras/gnome-extension --force \
 gnome-extensions install --force yourtune-miniplayer@robotlog.github.io.shell-extension.zip
 ```
 
-Log out and back in, then run `gnome-extensions enable yourtune-miniplayer@robotlog.github.io`.
+For the zip and build paths, log out and back in, then run `gnome-extensions enable yourtune-miniplayer@robotlog.github.io`.
 
 Start YourTune, open the panel menu and click **Connect**, then allow `yourtune-gnome-miniplayer` in YourTune. The
 extension's preferences, in the Extensions app, set the host and port and can forget the token.

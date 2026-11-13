@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
+#### Unreleased
+
+Features:
+
+- The GNOME Shell mini player is on [extensions.gnome.org](https://extensions.gnome.org/extension/11617/yourtune-mini-player/) ([#23](https://github.com/robotlog/YourTune/issues/23)).
+
 #### v1.4.2
 
 > 9 November 2026

@@ -69,6 +69,8 @@ Translations live in [`src/i18n/resources`](src/i18n/resources). Pull requests a
 
 Download the latest version from the [releases page](https://github.com/robotlog/YourTune/releases/latest), or build it yourself (see [Build](#build)).
 
+GNOME Shell users can add the panel mini player from [extensions.gnome.org](https://extensions.gnome.org/extension/11617/yourtune-mini-player/) (see [extras/gnome-extension](extras/gnome-extension/README.md)).
+
 ## Themes
 
 You can load CSS files to change the look of the application (Options > Visual Tweaks > Themes).

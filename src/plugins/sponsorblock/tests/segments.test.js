@@ -42,21 +42,35 @@ test('Segment sorting', () => {
 
 test('Segments that arrive before dataloaded for the same video are kept', () => {
   const state = acceptSegments(emptySegmentState(), 'a', [[0, 5]], 'a');
-  expect(state).toEqual({ videoId: 'a', segments: [[0, 5]] });
+  expect(state).toEqual({ videoId: 'a', segments: [[0, 5]], pending: null });
   expect(segmentsAfterVideoLoad(state, 'a')).toBe(state);
 });
 
 test('dataloaded for a new video clears the set', () => {
-  const state = { videoId: 'a', segments: [[0, 5]] };
+  const state = { videoId: 'a', segments: [[0, 5]], pending: null };
   expect(segmentsAfterVideoLoad(state, 'b')).toEqual(emptySegmentState());
-  expect(segmentsAfterVideoLoad(state, undefined)).toEqual(emptySegmentState());
 });
 
 test('A late result for an old video is ignored', () => {
-  const state = { videoId: 'b', segments: [[1, 2]] };
+  const state = { videoId: 'b', segments: [[1, 2]], pending: null };
   expect(acceptSegments(state, 'a', [[0, 5]], 'b')).toBe(state);
-  // Playing id unknown yet: accept.
-  expect(acceptSegments(emptySegmentState(), 'a', [[0, 5]], undefined)).toEqual(
-    { videoId: 'a', segments: [[0, 5]] },
-  );
+});
+
+test('A missing id at dataloaded keeps the set', () => {
+  const state = { videoId: 'a', segments: [[0, 5]], pending: null };
+  expect(segmentsAfterVideoLoad(state, undefined)).toBe(state);
+  expect(segmentsAfterVideoLoad(state, null)).toBe(state);
+});
+
+test('A result that arrives while the id is unknown waits for dataloaded', () => {
+  const parked = acceptSegments(emptySegmentState(), 'a', [[0, 5]], undefined);
+  expect(parked.segments).toEqual([]);
+  expect(parked.pending).toEqual({ videoId: 'a', segments: [[0, 5]] });
+
+  expect(segmentsAfterVideoLoad(parked, 'a')).toEqual({
+    videoId: 'a',
+    segments: [[0, 5]],
+    pending: null,
+  });
+  expect(segmentsAfterVideoLoad(parked, 'b')).toEqual(emptySegmentState());
 });

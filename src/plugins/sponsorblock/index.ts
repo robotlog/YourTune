@@ -105,14 +105,17 @@ export default createPlugin({
     });
   },
   renderer: {
-    videoDataListener: (name: 'newdata' | 'dataloaded' | 'dataupdated') => {
+    videoDataListener: (
+      name: 'dataloaded' | 'dataupdated',
+      videoData: { videoId?: string },
+    ) => {
       if (name !== 'dataloaded') return;
       // The startup fetch can resolve before the first `dataloaded`, so only
       // drop a set that belongs to another video. The media element's `emptied`
       // event can fire after the next fetch resolved and used to wipe it.
       segmentState = segmentsAfterVideoLoad(
         segmentState,
-        playerApiRef?.getVideoData()?.video_id,
+        videoData?.videoId ?? playerApiRef?.getVideoData()?.video_id,
       );
     },
     timeUpdateListener: (e: Event) => {

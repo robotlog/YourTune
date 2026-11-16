@@ -1,59 +1,30 @@
 // Segments are an array [ [start, end], … ]
 import type { Segment } from './types';
 
-/** Segments fetched for a video id. */
-export type VideoSegments = { videoId: string; segments: Segment[] };
+/** Segment sets kept per video id, oldest first. */
+export type SegmentsByVideo = Map<string, Segment[]>;
 
-/**
- * The active segment set and the video it was fetched for, plus a result that
- * arrived while the playing video was unknown and waits for the next load.
- */
-export type SegmentState = {
-  videoId: string | null;
-  segments: Segment[];
-  pending: VideoSegments | null;
-};
-
-export const emptySegmentState = (): SegmentState => ({
-  videoId: null,
-  segments: [],
-  pending: null,
-});
-
-/**
- * A fetch result replaces the set unless the player already moved to another
- * video: a late result for an old track must not overwrite the current one.
- * While the playing id is unknown the result is parked, not applied.
- */
-export const acceptSegments = (
-  state: SegmentState,
+/** Stores a fetch result under its own video id and drops the oldest ones. */
+export const rememberSegments = (
+  map: SegmentsByVideo,
   videoId: string,
   segments: Segment[],
-  playingVideoId: string | null | undefined,
-): SegmentState => {
-  if (!playingVideoId) return { ...state, pending: { videoId, segments } };
-  if (playingVideoId !== videoId) return state;
-  return { videoId, segments, pending: null };
+  cap = 5,
+) => {
+  map.delete(videoId);
+  map.set(videoId, segments);
+  while (map.size > cap) {
+    const oldest = map.keys().next();
+    if (oldest.done) break;
+    map.delete(oldest.value);
+  }
 };
 
-/**
- * A video load keeps segments that already belong to the loaded video, applies
- * a parked result that matches it, and clears everything else. Without a
- * loaded id nothing can be decided, so the state stays as it is.
- */
-export const segmentsAfterVideoLoad = (
-  state: SegmentState,
-  loadedVideoId: string | null | undefined,
-): SegmentState => {
-  if (!loadedVideoId) return state;
-  if (state.pending?.videoId === loadedVideoId) {
-    return { ...state.pending, pending: null };
-  }
-  if (state.videoId === loadedVideoId) {
-    return state.pending ? { ...state, pending: null } : state;
-  }
-  return emptySegmentState();
-};
+/** Segments for a video id; unknown or missing ids have none. */
+export const segmentsFor = (
+  map: SegmentsByVideo,
+  videoId: string | null | undefined,
+): Segment[] => (videoId ? (map.get(videoId) ?? []) : []);
 
 export const sortSegments = (segments: Segment[]) => {
   segments.sort((segment1, segment2) =>

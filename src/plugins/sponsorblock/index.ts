@@ -4,10 +4,10 @@ import { t } from '@/i18n';
 import { createPlugin } from '@/utils';
 
 import {
-  acceptSegments,
-  emptySegmentState,
-  segmentsAfterVideoLoad,
+  rememberSegments,
+  segmentsFor,
   sortSegments,
+  type SegmentsByVideo,
 } from './segments';
 
 import type { Segment, SkipSegment } from './types';
@@ -27,11 +27,16 @@ export type SponsorBlockPluginConfig = {
   )[];
 };
 
-let segmentState = emptySegmentState();
+const segmentsByVideo: SegmentsByVideo = new Map();
+let playingId: string | null = null;
 let playerApiRef: MusicPlayer | null = null;
 
 const applySegments = (target: HTMLVideoElement) => {
-  for (const segment of segmentState.segments) {
+  const segments = segmentsFor(
+    segmentsByVideo,
+    playingId ?? playerApiRef?.getVideoData()?.video_id,
+  );
+  for (const segment of segments) {
     if (target.currentTime >= segment[0] && target.currentTime < segment[1]) {
       target.currentTime = segment[1];
       if (window.electronIs.dev()) {
@@ -110,13 +115,10 @@ export default createPlugin({
       videoData: { videoId?: string },
     ) => {
       if (name !== 'dataloaded') return;
-      // The startup fetch can resolve before the first `dataloaded`, so only
-      // drop a set that belongs to another video. The media element's `emptied`
-      // event can fire after the next fetch resolved and used to wipe it.
-      segmentState = segmentsAfterVideoLoad(
-        segmentState,
-        videoData?.videoId ?? playerApiRef?.getVideoData()?.video_id,
-      );
+      playingId =
+        videoData?.videoId ??
+        playerApiRef?.getVideoData()?.video_id ??
+        playingId;
     },
     timeUpdateListener: (e: Event) => {
       if (e.target instanceof HTMLVideoElement) {
@@ -127,12 +129,7 @@ export default createPlugin({
       ipc.on(
         'sponsorblock-skip',
         (result: { videoId: string; segments: Segment[] }) => {
-          segmentState = acceptSegments(
-            segmentState,
-            result.videoId,
-            result.segments,
-            playerApiRef?.getVideoData()?.video_id,
-          );
+          rememberSegments(segmentsByVideo, result.videoId, result.segments);
 
           const video = document.querySelector<HTMLVideoElement>('video');
           if (video) {
@@ -151,7 +148,6 @@ export default createPlugin({
       );
       playerApiRef = playerApi;
       video.addEventListener('timeupdate', this.timeUpdateListener);
-      // A new track resets the segment set before its fetch can deliver.
       playerApi.addEventListener('videodatachange', this.videoDataListener);
 
       ipc.send('peard:video-src-changed', playerApi.getPlayerResponse());
@@ -163,6 +159,8 @@ export default createPlugin({
         this.videoDataListener,
       );
       playerApiRef = null;
+      segmentsByVideo.clear();
+      playingId = null;
 
       const video = document.querySelector<HTMLVideoElement>('video');
       if (!video) return;

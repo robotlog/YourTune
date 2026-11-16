@@ -1,11 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import {
-  acceptSegments,
-  emptySegmentState,
-  segmentsAfterVideoLoad,
-  sortSegments,
-} from '../segments';
+import { rememberSegments, segmentsFor, sortSegments } from '../segments';
 
 test('Segment sorting', () => {
   expect(
@@ -40,37 +35,30 @@ test('Segment sorting', () => {
   ]);
 });
 
-test('Segments that arrive before dataloaded for the same video are kept', () => {
-  const state = acceptSegments(emptySegmentState(), 'a', [[0, 5]], 'a');
-  expect(state).toEqual({ videoId: 'a', segments: [[0, 5]], pending: null });
-  expect(segmentsAfterVideoLoad(state, 'a')).toBe(state);
+test('A result stored before dataloaded is used once the id is known', () => {
+  const map = new Map();
+  rememberSegments(map, 'a', [[0, 5]]);
+  expect(segmentsFor(map, 'a')).toEqual([[0, 5]]);
 });
 
-test('dataloaded for a new video clears the set', () => {
-  const state = { videoId: 'a', segments: [[0, 5]], pending: null };
-  expect(segmentsAfterVideoLoad(state, 'b')).toEqual(emptySegmentState());
+test('A late result for A does not affect B', () => {
+  const map = new Map();
+  rememberSegments(map, 'b', [[1, 2]]);
+  rememberSegments(map, 'a', [[0, 5]]);
+  expect(segmentsFor(map, 'b')).toEqual([[1, 2]]);
+  expect(segmentsFor(map, 'a')).toEqual([[0, 5]]);
 });
 
-test('A late result for an old video is ignored', () => {
-  const state = { videoId: 'b', segments: [[1, 2]], pending: null };
-  expect(acceptSegments(state, 'a', [[0, 5]], 'b')).toBe(state);
+test('Unknown or missing ids have no segments', () => {
+  const map = new Map();
+  rememberSegments(map, 'a', [[0, 5]]);
+  expect(segmentsFor(map, 'x')).toEqual([]);
+  expect(segmentsFor(map, undefined)).toEqual([]);
+  expect(segmentsFor(map, null)).toEqual([]);
 });
 
-test('A missing id at dataloaded keeps the set', () => {
-  const state = { videoId: 'a', segments: [[0, 5]], pending: null };
-  expect(segmentsAfterVideoLoad(state, undefined)).toBe(state);
-  expect(segmentsAfterVideoLoad(state, null)).toBe(state);
-});
-
-test('A result that arrives while the id is unknown waits for dataloaded', () => {
-  const parked = acceptSegments(emptySegmentState(), 'a', [[0, 5]], undefined);
-  expect(parked.segments).toEqual([]);
-  expect(parked.pending).toEqual({ videoId: 'a', segments: [[0, 5]] });
-
-  expect(segmentsAfterVideoLoad(parked, 'a')).toEqual({
-    videoId: 'a',
-    segments: [[0, 5]],
-    pending: null,
-  });
-  expect(segmentsAfterVideoLoad(parked, 'b')).toEqual(emptySegmentState());
+test('The cap evicts the oldest entry', () => {
+  const map = new Map();
+  for (const id of ['a', 'b', 'c']) rememberSegments(map, id, [[0, 1]], 2);
+  expect([...map.keys()]).toEqual(['b', 'c']);
 });

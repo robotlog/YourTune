@@ -9,6 +9,7 @@ import {
 } from '@/plugins/utils/renderer/check';
 import { getSongMenu } from '@/providers/dom-elements';
 
+import { takeDoubleClick, type PlayerElement } from './double-click';
 import { PictureInPictureButton } from './templates/picture-in-picture-button';
 
 import type { PictureInPicturePluginConfig } from './index';
@@ -72,10 +73,8 @@ export const onPlayerApiReady = async (
   );
   const fullScreenButton =
     document.querySelector<HTMLButtonElement>('.fullscreen-button');
-  const player = document.querySelector<
-    HTMLVideoElement & { onDoubleClick_: (() => void) | undefined }
-  >('#player');
-  const onPlayerDblClick = player?.onDoubleClick_;
+  const player = document.querySelector<PlayerElement>('#player');
+  let restoreDoubleClick: (() => void) | undefined;
   const mouseLeaveEventListener = () => middleControls?.click();
 
   const titleBar = document.querySelector<HTMLElement>(
@@ -96,7 +95,7 @@ export const onPlayerApiReady = async (
           'click',
           pipClickEventListener,
         );
-        player.onDoubleClick_ = () => {};
+        restoreDoubleClick ??= takeDoubleClick(player);
 
         expandMenu?.addEventListener('mouseleave', mouseLeaveEventListener);
         if (!playerPage?.playerPageOpen_) {
@@ -117,7 +116,8 @@ export const onPlayerApiReady = async (
           'click',
           pipClickEventListener,
         );
-        player.onDoubleClick_ = onPlayerDblClick;
+        restoreDoubleClick?.();
+        restoreDoubleClick = undefined;
         expandMenu?.removeEventListener('mouseleave', mouseLeaveEventListener);
         exitFullScreenButton.click();
         appLayout?.classList.remove('pip');

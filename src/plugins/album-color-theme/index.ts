@@ -101,9 +101,12 @@ export default createPlugin({
       (this as Renderer).onConfigChange(config);
 
       const fastAverageColor = new FastAverageColor();
+      // Only the newest track's fetch may paint; a slow earlier one is dropped.
+      let generation = 0;
 
       document.addEventListener('videodatachange', async (event) => {
         if (event.detail.name !== 'dataloaded') return;
+        const current = ++generation;
 
         const playerResponse = playerApi.getPlayerResponse();
         const thumbnail =
@@ -116,6 +119,7 @@ export default createPlugin({
             console.error(err);
             return null;
           });
+        if (current !== generation) return;
 
         if (albumColor) {
           const target = Color(albumColor.hex);

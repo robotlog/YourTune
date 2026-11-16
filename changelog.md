@@ -10,6 +10,10 @@ Features:
 
 - The GNOME Shell mini player is on [extensions.gnome.org](https://extensions.gnome.org/extension/11617/yourtune-mini-player/) ([#23](https://github.com/robotlog/YourTune/issues/23)).
 
+Fixes:
+
+- Updated dependencies with known vulnerabilities (Dependabot).
+
 #### v1.4.2
 
 > 9 November 2026

@@ -3,10 +3,16 @@ import is from 'electron-is';
 import { t } from '@/i18n';
 import { createPlugin } from '@/utils';
 
-import { sortSegments } from './segments';
+import {
+  rememberSegments,
+  segmentsFor,
+  sortSegments,
+  type SegmentsByVideo,
+} from './segments';
 
 import type { Segment, SkipSegment } from './types';
 import type { GetPlayerResponse } from '@/types/get-player-response';
+import type { MusicPlayer } from '@/types/music-player';
 
 export type SponsorBlockPluginConfig = {
   enabled: boolean;
@@ -21,10 +27,16 @@ export type SponsorBlockPluginConfig = {
   )[];
 };
 
-let currentSegments: Segment[] = [];
+const segmentsByVideo: SegmentsByVideo = new Map();
+let playingId: string | null = null;
+let playerApiRef: MusicPlayer | null = null;
 
 const applySegments = (target: HTMLVideoElement) => {
-  for (const segment of currentSegments) {
+  const segments = segmentsFor(
+    segmentsByVideo,
+    playingId ?? playerApiRef?.getVideoData()?.video_id,
+  );
+  for (const segment of segments) {
     if (target.currentTime >= segment[0] && target.currentTime < segment[1]) {
       target.currentTime = segment[1];
       if (window.electronIs.dev()) {
@@ -94,43 +106,72 @@ export default createPlugin({
       }
 
       const segments = await fetchSegments(apiURL, categories, videoId);
-      ipc.send('sponsorblock-skip', segments);
+      ipc.send('sponsorblock-skip', { videoId, segments });
     });
   },
   renderer: {
+    videoDataListener: (
+      name: 'dataloaded' | 'dataupdated',
+      videoData: { videoId?: string },
+    ) => {
+      if (name !== 'dataloaded') return;
+      playingId =
+        videoData?.videoId ??
+        playerApiRef?.getVideoData()?.video_id ??
+        playingId;
+    },
     timeUpdateListener: (e: Event) => {
       if (e.target instanceof HTMLVideoElement) {
         applySegments(e.target);
       }
     },
-    resetSegments: () => (currentSegments = []),
     start({ ipc }) {
-      ipc.on('sponsorblock-skip', (segments: Segment[]) => {
-        currentSegments = segments;
+      ipc.on(
+        'sponsorblock-skip',
+        (result: { videoId: string; segments: Segment[] }) => {
+          rememberSegments(
+            segmentsByVideo,
+            result.videoId,
+            result.segments,
+            5,
+            playingId ?? playerApiRef?.getVideoData()?.video_id,
+          );
 
-        const video = document.querySelector<HTMLVideoElement>('video');
-        if (video) {
-          applySegments(video);
-        }
-      });
+          const video = document.querySelector<HTMLVideoElement>('video');
+          if (video) {
+            applySegments(video);
+          }
+        },
+      );
     },
     onPlayerApiReady(playerApi, { ipc }) {
       const video = document.querySelector<HTMLVideoElement>('video');
       if (!video) return;
 
+      playerApiRef?.removeEventListener(
+        'videodatachange',
+        this.videoDataListener,
+      );
+      playerApiRef = playerApi;
       video.addEventListener('timeupdate', this.timeUpdateListener);
-      // Reset segments on song end
-      video.addEventListener('emptied', this.resetSegments);
+      playerApi.addEventListener('videodatachange', this.videoDataListener);
 
       ipc.send('peard:video-src-changed', playerApi.getPlayerResponse());
       applySegments(video);
     },
     stop({ ipc }) {
+      playerApiRef?.removeEventListener(
+        'videodatachange',
+        this.videoDataListener,
+      );
+      playerApiRef = null;
+      segmentsByVideo.clear();
+      playingId = null;
+
       const video = document.querySelector<HTMLVideoElement>('video');
       if (!video) return;
 
       video.removeEventListener('timeupdate', this.timeUpdateListener);
-      video.removeEventListener('emptied', this.resetSegments);
       ipc.removeAllListeners('sponsorblock-skip');
     },
   },

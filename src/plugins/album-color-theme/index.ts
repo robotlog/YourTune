@@ -154,7 +154,6 @@ export default createPlugin({
             alpha = value;
           }
         }
-        if (current !== generation) return;
         (this as Renderer).updateColor(alpha ?? 1);
       });
     },

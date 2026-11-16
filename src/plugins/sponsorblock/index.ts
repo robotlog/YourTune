@@ -134,7 +134,7 @@ export default createPlugin({
             result.videoId,
             result.segments,
             5,
-            playingId,
+            playingId ?? playerApiRef?.getVideoData()?.video_id,
           );
 
           const video = document.querySelector<HTMLVideoElement>('video');

@@ -7,6 +7,7 @@ import { sortSegments } from './segments';
 
 import type { Segment, SkipSegment } from './types';
 import type { GetPlayerResponse } from '@/types/get-player-response';
+import type { MusicPlayer } from '@/types/music-player';
 
 export type SponsorBlockPluginConfig = {
   enabled: boolean;
@@ -98,12 +99,19 @@ export default createPlugin({
     });
   },
   renderer: {
+    api: null as MusicPlayer | null,
+    videoDataListener: (name: 'newdata' | 'dataloaded' | 'dataupdated') => {
+      if (name !== 'dataloaded') return;
+      // The next track's segments are only fetched after this event, so
+      // clearing here cannot race them. The media element's `emptied` event can
+      // fire after that fetch has resolved and used to wipe the fresh set.
+      currentSegments = [];
+    },
     timeUpdateListener: (e: Event) => {
       if (e.target instanceof HTMLVideoElement) {
         applySegments(e.target);
       }
     },
-    resetSegments: () => (currentSegments = []),
     start({ ipc }) {
       ipc.on('sponsorblock-skip', (segments: Segment[]) => {
         currentSegments = segments;
@@ -118,19 +126,23 @@ export default createPlugin({
       const video = document.querySelector<HTMLVideoElement>('video');
       if (!video) return;
 
+      this.api?.removeEventListener('videodatachange', this.videoDataListener);
+      this.api = playerApi;
       video.addEventListener('timeupdate', this.timeUpdateListener);
-      // Reset segments on song end
-      video.addEventListener('emptied', this.resetSegments);
+      // A new track resets the segment set before its fetch can deliver.
+      playerApi.addEventListener('videodatachange', this.videoDataListener);
 
       ipc.send('peard:video-src-changed', playerApi.getPlayerResponse());
       applySegments(video);
     },
     stop({ ipc }) {
+      this.api?.removeEventListener('videodatachange', this.videoDataListener);
+      this.api = null;
+
       const video = document.querySelector<HTMLVideoElement>('video');
       if (!video) return;
 
       video.removeEventListener('timeupdate', this.timeUpdateListener);
-      video.removeEventListener('emptied', this.resetSegments);
       ipc.removeAllListeners('sponsorblock-skip');
     },
   },

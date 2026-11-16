@@ -129,7 +129,13 @@ export default createPlugin({
       ipc.on(
         'sponsorblock-skip',
         (result: { videoId: string; segments: Segment[] }) => {
-          rememberSegments(segmentsByVideo, result.videoId, result.segments);
+          rememberSegments(
+            segmentsByVideo,
+            result.videoId,
+            result.segments,
+            5,
+            playingId,
+          );
 
           const video = document.querySelector<HTMLVideoElement>('video');
           if (video) {

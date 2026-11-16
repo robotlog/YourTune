@@ -62,3 +62,13 @@ test('The cap evicts the oldest entry', () => {
   for (const id of ['a', 'b', 'c']) rememberSegments(map, id, [[0, 1]], 2);
   expect([...map.keys()]).toEqual(['b', 'c']);
 });
+
+test('The playing video is never evicted', () => {
+  const map = new Map();
+  rememberSegments(map, 'b', [[0, 1]], 5, 'b');
+  for (const id of ['1', '2', '3', '4', '5']) {
+    rememberSegments(map, id, [[0, 1]], 5, 'b');
+  }
+  expect(map.has('b')).toBe(true);
+  expect([...map.keys()]).toEqual(['b', '2', '3', '4', '5']);
+});

@@ -34,6 +34,21 @@ test.describe('takeDoubleClick', () => {
     expect(player.onDoubleClick_).toBe(original);
   });
 
+  test('falls back to the element when the controller has no handler', () => {
+    const original = () => {};
+    const controller = Object.create({}) as object;
+    const player = {
+      polymerController: controller,
+      onDoubleClick_: original,
+    } as unknown as PlayerElement;
+
+    const undo = takeDoubleClick(player);
+    expect(player.onDoubleClick_).not.toBe(original);
+
+    undo?.();
+    expect(player.onDoubleClick_).toBe(original);
+  });
+
   test('does nothing when the player has no handler yet', () => {
     expect(takeDoubleClick({} as unknown as PlayerElement)).toBeUndefined();
     expect(takeDoubleClick(null)).toBeUndefined();

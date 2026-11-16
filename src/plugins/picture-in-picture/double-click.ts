@@ -18,13 +18,14 @@ export interface PlayerElement extends HTMLElement {
 export function takeDoubleClick(player: PlayerElement | null | undefined) {
   if (!player) return;
   const prototype = player.polymerController
-    ? (Object.getPrototypeOf(player.polymerController) as object | null)
+    ? (Object.getPrototypeOf(player.polymerController) as
+        | (PlayerController & object)
+        | null)
     : undefined;
-  const target = (prototype ?? player) as PlayerElement & PlayerController;
-  const key =
-    typeof target.onDoubleClick === 'function'
-      ? 'onDoubleClick'
-      : 'onDoubleClick_';
+  const onController = typeof prototype?.onDoubleClick === 'function';
+  const target = (onController ? prototype : player) as PlayerElement &
+    PlayerController;
+  const key = onController ? 'onDoubleClick' : 'onDoubleClick_';
   const handler = target[key];
   if (typeof handler !== 'function') return;
   target[key] = () => {};

@@ -80,8 +80,8 @@ importers:
         specifier: 2.2.4
         version: 2.2.4
       '@mdui/icons':
-        specifier: 1.0.4
-        version: 1.0.4
+        specifier: 1.0.3
+        version: 1.0.3
       '@skyra/jaro-winkler':
         specifier: 1.1.1
         version: 1.1.1
@@ -725,11 +725,8 @@ packages:
   '@material/material-color-utilities@0.3.0':
     resolution: {integrity: sha512-ztmtTd6xwnuh2/xu+Vb01btgV8SQWYCaK56CkRK8gEkWe5TuDyBcYJ0wgkMRn+2VcE9KUmhvkz+N9GHrqw/C0g==}
 
-  '@mdui/icons-shared@1.0.1':
-    resolution: {integrity: sha512-AYil8MVSVaubWvt5Ms+0EyCV+4FvpT3jDRexVoO0VaSca0T4p62UVM81/ZHpwKOpZsnWU/HI8mZsRTYVmkxqnQ==}
-
-  '@mdui/icons@1.0.4':
-    resolution: {integrity: sha512-COhD5dwq4FQfMdh/3pSORvvlpL09cjVPcmBpJYwKqsJJZsTdiowsxeTI00n1GSUu2NJyIzphQ64JEoVVwWjKTQ==}
+  '@mdui/icons@1.0.3':
+    resolution: {integrity: sha512-Jq9juUqIJMBvIRSTr0qBKiqnlbY5pVUzUP20EHSN8dT7GcqN7bq0AL8MASL5DxKs09kgcERq+z5bHJOkz/VDlA==}
 
   '@mdui/jq@3.0.3':
     resolution: {integrity: sha512-nI8QK9UPHhiIbECrC1aMdLXNxP6WgUtC9XwRPs/e56FtwduePyxPyloXmgU8VYw85i6TtYdgClHS9tW8JweNZA==}
@@ -4529,14 +4526,9 @@ snapshots:
 
   '@material/material-color-utilities@0.3.0': {}
 
-  '@mdui/icons-shared@1.0.1':
+  '@mdui/icons@1.0.3':
     dependencies:
-      lit: 3.3.3
-      tslib: 2.9.1
-
-  '@mdui/icons@1.0.4':
-    dependencies:
-      '@mdui/icons-shared': 1.0.1
+      '@mdui/shared': 1.0.8
       lit: 3.3.3
       tslib: 2.9.1
 

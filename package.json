@@ -65,7 +65,7 @@
     "@jellybrick/dbus-next": "0.11.4",
     "@jellybrick/electron-better-web-request": "2.0.0",
     "@jellybrick/mpris-service": "2.2.4",
-    "@mdui/icons": "1.0.4",
+    "@mdui/icons": "1.0.3",
     "@skyra/jaro-winkler": "1.1.1",
     "@xhayper/discord-rpc": "1.5.1",
     "async-mutex": "0.5.0",

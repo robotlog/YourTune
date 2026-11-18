@@ -22,6 +22,7 @@ export type VideoTogglePluginConfig = {
 
 let playerApi: MusicPlayer | null = null;
 let onVideoDataChange: ((name: string) => void) | null = null;
+let videoStartedHandler: (() => void) | null = null;
 let startGeneration = 0;
 
 export default createPlugin({
@@ -340,6 +341,7 @@ export default createPlugin({
 
       if (config.mode !== 'native' && config.mode != 'disabled') {
         setTimeout(() => {
+          if (currentGen !== startGeneration) return;
           const playerSelector =
             document.querySelector<HTMLVideoElement>('#player');
           if (!playerSelector) return;
@@ -350,7 +352,8 @@ export default createPlugin({
           if (video) {
             video.style.height = 'auto';
           }
-          video?.addEventListener('peard:src-changed', videoStarted);
+          videoStartedHandler = videoStarted;
+          video?.addEventListener('peard:src-changed', videoStartedHandler);
           observeThumbnail();
           videoStarted();
           switch (config.align) {
@@ -379,6 +382,15 @@ export default createPlugin({
         onVideoDataChange = null;
         playerApi = null;
       }
+      if (videoStartedHandler) {
+        document
+          .querySelector('video')
+          ?.removeEventListener('peard:src-changed', videoStartedHandler);
+        videoStartedHandler = null;
+      }
+      document
+        .getElementById('ytmd-video-toggle-switch-button-container')
+        ?.remove();
     },
     onConfigChange(newConfig) {
       this.config = newConfig;

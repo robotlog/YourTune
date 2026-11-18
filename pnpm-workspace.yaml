@@ -21,6 +21,7 @@ overrides:
   'minimatch@>=7 <11.0.1': 11.0.1
   'mdui@2.1.4>@mdui/shared': 1.0.8
 patchedDependencies:
+  fflate@0.8.3: patches/fflate@0.8.3.patch
   vudio@2.1.1: patches/vudio@2.1.1.patch
   '@malept/flatpak-bundler@0.4.0': patches/@malept__flatpak-bundler@0.4.0.patch
   kuromoji@0.1.2: patches/kuromoji@0.1.2.patch

@@ -22,6 +22,7 @@ overrides:
 patchedDependencies:
   '@malept/flatpak-bundler@0.4.0': c787371eeb2af011ea934e8818a0dad6d7dcb2df31bbb1686babc7231af0183c
   electron-is@3.0.0: 08664a5453f092fe45542f9005ffc07527b1f207447318374cba0f4d30f466a0
+  fflate@0.8.3: 0d2b5700582f71c03f5cb7a829f9958a98b2ff8b118e3e529e2617bf1d1bbef7
   kuromoji@0.1.2: 4a948f1ea45c61779fa371feb020253ccf7a24e1f7c6b2e250b3ce53d86216d4
   mdui@2.1.4: e6f91e8e974b4ccc0903ec27b2c840fa3a84048144098e96671fc9915df47ef1
   vudio@2.1.1: 0e06c2ed11c02bdc490c209fa80070e98517c2735c641f5738b6e15d7dc1959d
@@ -143,7 +144,7 @@ importers:
         version: 6.2.2
       fflate:
         specifier: 0.8.3
-        version: 0.8.3
+        version: 0.8.3(patch_hash=0d2b5700582f71c03f5cb7a829f9958a98b2ff8b118e3e529e2617bf1d1bbef7)
       filenamify:
         specifier: 7.0.3
         version: 7.0.3
@@ -6014,7 +6015,7 @@ snapshots:
       node-domexception: 1.0.0
       web-streams-polyfill: 3.3.3
 
-  fflate@0.8.3: {}
+  fflate@0.8.3(patch_hash=0d2b5700582f71c03f5cb7a829f9958a98b2ff8b118e3e529e2617bf1d1bbef7): {}
 
   file-entry-cache@8.0.0:
     dependencies:
@@ -7605,7 +7606,7 @@ snapshots:
   youtubei.js@18.3.0:
     dependencies:
       '@bufbuild/protobuf': 2.17.0
-      fflate: 0.8.3
+      fflate: 0.8.3(patch_hash=0d2b5700582f71c03f5cb7a829f9958a98b2ff8b118e3e529e2617bf1d1bbef7)
       meriyah: 7.4.2
 
   zigpty@0.2.1: {}

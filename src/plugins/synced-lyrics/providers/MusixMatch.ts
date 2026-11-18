@@ -1,30 +1,57 @@
 import * as z from 'zod';
 
+import { isUnavailableToken } from './musixmatch-token';
+
 import { LRC } from '../parsers/lrc';
 import { netFetch } from '../renderer';
 
 import type { LyricProvider, LyricResult, SearchSongInfo } from '../types';
 
+class AnonymousAccessUnavailable extends Error {}
+class MusixMatchRequestError extends Error {}
+
 export class MusixMatch implements LyricProvider {
   name = 'MusixMatch';
   baseUrl = 'https://www.musixmatch.com/';
 
-  private api: MusixMatchAPI | undefined;
+  private api: Promise<MusixMatchAPI | null> | undefined;
+  private retryAt = 0;
+
+  private fail(error: unknown) {
+    if (Date.now() < this.retryAt) return;
+    const unavailable = error instanceof AnonymousAccessUnavailable;
+    this.retryAt = Date.now() + (unavailable ? 3_600_000 : 600_000);
+    this.api = undefined;
+    console.warn('MusixMatch request failed; retrying after cooldown');
+  }
 
   async search(info: SearchSongInfo): Promise<LyricResult | null> {
-    // late-init the API, to avoid an electron IPC issue
-    // an added benefit is that if it has an error during init, the user can hit the retry button
-    this.api ??= await MusixMatchAPI.new();
-    await this.api.reinit();
+    if (Date.now() < this.retryAt) return null;
 
-    const data = await this.api.query(Endpoint.getMacroSubtitles, {
-      q_track: info.alternativeTitle || info.title,
-      q_artist: info.artist,
-      q_duration: info.songDuration.toString(),
-      ...(info.album ? { q_album: info.album } : {}),
-      namespace: 'lyrics_richsynched',
-      subtitle_format: 'lrc',
+    // Late-init after IPC is available and share the result across songs.
+    this.api ??= MusixMatchAPI.new().catch((error: unknown) => {
+      this.fail(error);
+      return null;
     });
+    const api = await this.api;
+    if (!api) return null;
+    await api.reinit();
+
+    const data = await api
+      .query(Endpoint.getMacroSubtitles, {
+        q_track: info.alternativeTitle || info.title,
+        q_artist: info.artist,
+        q_duration: info.songDuration.toString(),
+        ...(info.album ? { q_album: info.album } : {}),
+        namespace: 'lyrics_richsynched',
+        subtitle_format: 'lrc',
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof MusixMatchRequestError)) throw error;
+        this.fail(error);
+        return null;
+      });
+    if (!data) return null;
 
     const { macro_calls: macroCalls } = data.body;
 
@@ -206,9 +233,14 @@ class MusixMatchAPI {
       ),
     );
 
-    const [, json, headers] = await netFetch(`${url}?${clonedParams}`, {
+    const [status, json, headers] = await netFetch(`${url}?${clonedParams}`, {
       headers: { Cookie: this.cookie },
+    }).catch((cause: unknown) => {
+      throw new MusixMatchRequestError('MusixMatch request failed', { cause });
     });
+    if (status < 200 || status >= 300) {
+      throw new MusixMatchRequestError(`MusixMatch HTTP ${status}`);
+    }
 
     const setCookie = Object.entries(headers).find(
       ([key]) => key.toLowerCase() === 'set-cookie',
@@ -226,8 +258,8 @@ class MusixMatchAPI {
       'status_code' in response.message.header && typeof response.message.header.status_code === 'number' &&
       response.message.header.status_code === 401
     ) {
-      await this.reinit();
-      return this.query(endpoint, params);
+      localStorage.removeItem(this.key);
+      throw new MusixMatchRequestError('MusixMatch token rejected');
     }
 
     const parsed = z
@@ -260,7 +292,7 @@ class MusixMatchAPI {
     const { token, expires } = this.savedTokenSchema.parse(
       JSON.parse(localStorage.getItem(this.key) ?? '{ "token": null }'),
     );
-    if (token && expires > Date.now()) {
+    if (token && !isUnavailableToken(token) && expires > Date.now()) {
       this.token = token;
       return;
     }
@@ -272,7 +304,7 @@ class MusixMatchAPI {
 
     localStorage.setItem(
       this.key,
-      JSON.stringify({ token: this.token, expires: Date.now() + (60 * 1000) }),
+      JSON.stringify({ token: this.token, expires: Date.now() + 60_000 }),
     );
   }
 
@@ -288,12 +320,15 @@ class MusixMatchAPI {
   private async getToken() {
     const endpoint = 'token.get';
     const params = new URLSearchParams({ app_id: this.app_id });
-    const [, json, headers] = await netFetch(
+    const [status, json, headers] = await netFetch(
       `${this.baseUrl}${endpoint}?${params}`,
       {
         headers: Object.assign({ Cookie: this.cookie }, this.headers),
       },
     );
+    if (status < 200 || status >= 300) {
+      throw new Error(`MusixMatch token request failed: HTTP ${status}`);
+    }
 
     const setCookie = Object.entries(headers).find(
       ([key]) => key.toLowerCase() === 'set-cookie',
@@ -307,7 +342,8 @@ class MusixMatchAPI {
     } = this.tokenSchema.parse(JSON.parse(json));
     const token = body?.user_token ?? '';
     // the anonymous desktop token is all zeroes now, and every lookup with it returns the same decoy lyrics
-    return /^0+$/.test(token) ? '' : token;
+    if (isUnavailableToken(token)) throw new AnonymousAccessUnavailable();
+    return token;
   }
 
   private readonly baseUrl = 'https://apic-desktop.musixmatch.com/ws/1.1/';

@@ -6,6 +6,7 @@ import {
   MusixMatchTokenRejected,
   MusixMatchUnavailable,
   retryRejectedToken,
+  shouldRefreshToken,
 } from './musixmatch-token';
 
 import { LRC } from '../parsers/lrc';
@@ -32,7 +33,8 @@ export class MusixMatch implements LyricProvider {
   }
 
   async search(info: SearchSongInfo): Promise<LyricResult | null> {
-    if (Date.now() < this.retryAt) throw new MusixMatchUnavailable();
+    if (Date.now() < this.retryAt)
+      throw new MusixMatchUnavailable(this.retryAt);
 
     // Late-init after IPC is available and share the result across songs.
     this.api ??= MusixMatchAPI.new().catch((error: unknown) => {
@@ -40,7 +42,7 @@ export class MusixMatch implements LyricProvider {
       return null;
     });
     const api = await this.api;
-    if (!api) throw new MusixMatchUnavailable();
+    if (!api) throw new MusixMatchUnavailable(this.retryAt);
     const data = await (async () => {
       await api.reinit();
       return retryRejectedToken(
@@ -53,7 +55,7 @@ export class MusixMatch implements LyricProvider {
             namespace: 'lyrics_richsynched',
             subtitle_format: 'lrc',
           }),
-        () => api.refresh(),
+        (token) => api.refresh(token),
       );
     })().catch((error: unknown) => {
       if (
@@ -63,7 +65,7 @@ export class MusixMatch implements LyricProvider {
       )
         throw error;
       this.fail(error);
-      throw new MusixMatchUnavailable();
+      throw new MusixMatchUnavailable(this.retryAt);
     });
 
     const { macro_calls: macroCalls } = data.body;
@@ -223,15 +225,18 @@ class MusixMatchAPI {
     }
   }
 
-  public async refresh() {
-    if (!this.refreshPromise) {
-      this.cookie = 'x-mxm-user-id=';
-      localStorage.removeItem(this.key);
-      this.refreshPromise = this.init().finally(() => {
-        this.refreshPromise = undefined;
-      });
-      this.initPromise = this.refreshPromise;
+  public async refresh(rejectedToken: string) {
+    if (this.refreshPromise) {
+      await this.refreshPromise;
+      return;
     }
+    if (!shouldRefreshToken(rejectedToken, this.token)) return;
+    this.cookie = 'x-mxm-user-id=';
+    localStorage.removeItem(this.key);
+    this.refreshPromise = this.init().finally(() => {
+      this.refreshPromise = undefined;
+    });
+    this.initPromise = this.refreshPromise;
     await this.refreshPromise;
   }
 
@@ -247,6 +252,7 @@ class MusixMatchAPI {
   >(endpoint: T, params: Params[T]): Promise<R> {
     await this.initPromise;
     if (!this.token) throw new Error('Token not initialized');
+    const token = this.token;
 
     const url = `${this.baseUrl}${endpoint}`;
 
@@ -255,7 +261,7 @@ class MusixMatchAPI {
         {
           app_id: this.app_id,
           format: 'json',
-          usertoken: this.token,
+          usertoken: token,
         },
         <Record<string, string>>params,
       ),
@@ -266,7 +272,7 @@ class MusixMatchAPI {
     }).catch((cause: unknown) => {
       throw new MusixMatchRequestError('MusixMatch request failed', { cause });
     });
-    if (status === 401) throw new MusixMatchTokenRejected();
+    if (status === 401) throw new MusixMatchTokenRejected(token);
     if (status < 200 || status >= 300) {
       throw new MusixMatchRequestError(`MusixMatch HTTP ${status}`);
     }
@@ -288,7 +294,7 @@ class MusixMatchAPI {
        ('hint' in response.message.header && typeof response.message.header.hint === 'string' &&
         /renew/i.test(response.message.header.hint)))
     ) {
-      throw new MusixMatchTokenRejected();
+      throw new MusixMatchTokenRejected(token);
     }
 
     const parsed = z

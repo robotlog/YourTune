@@ -17,6 +17,7 @@ Fixes:
 - Updated all dependencies to their latest versions, including Electron 45 (closes the remaining Dependabot alert).
 - Skip AI Music: the community list now comes from [Spot The AI](https://github.com/FabDevGit/spotai), since the old list stopped answering.
 - Synced Lyrics: Musixmatch stops erroring on every song now that it no longer hands out anonymous tokens; it tries again later.
+- Build with pnpm 12.
 
 #### v1.4.2
 

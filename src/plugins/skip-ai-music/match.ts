@@ -1,4 +1,8 @@
-import { COMMON_AI_KEYWORDS, type SkipAiMusicPluginConfig } from './types';
+import {
+  COMMON_AI_KEYWORDS,
+  COMMUNITY_CACHE_VERSION,
+  type SkipAiMusicPluginConfig,
+} from './types';
 
 export type SkipMatchInput = {
   artist: string;
@@ -199,8 +203,29 @@ export const parseCommunityArtists = (data: unknown) => {
     !Array.isArray(data.artists)
   )
     return [];
-  // Spot The AI supplies no scores; 100 keeps all names eligible at any configured threshold.
   return data.artists
     .filter((name): name is string => typeof name == 'string' && !!name.trim())
-    .map((name) => ({ name: name.trim(), score: 100 }));
+    .map((name) => name.trim());
+};
+
+export const parseCommunityCache = (data: unknown) => {
+  if (
+    !data ||
+    typeof data != 'object' ||
+    !('version' in data) ||
+    data.version !== COMMUNITY_CACHE_VERSION ||
+    !('artists' in data) ||
+    !Array.isArray(data.artists)
+  )
+    return [];
+  return data.artists
+    .filter(
+      (entry): entry is { name: string } =>
+        !!entry &&
+        typeof entry == 'object' &&
+        'name' in entry &&
+        typeof entry.name == 'string' &&
+        !!entry.name.trim(),
+    )
+    .map((entry) => entry.name.trim());
 };

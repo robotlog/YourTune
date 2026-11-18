@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
   hasWholePhrase,
   parseCommunityArtists,
+  parseCommunityCache,
   shouldSkipTrack,
   splitArtists,
 } from './match';
@@ -146,9 +147,12 @@ test('parses Spot The AI artist names', () => {
       artists: ['10mm', '  1950 SoulClub  ', '', null, 42],
       count: 2,
     }),
-  ).toEqual([
-    { name: '10mm', score: 100 },
-    { name: '1950 SoulClub', score: 100 },
-  ]);
+  ).toEqual(['10mm', '1950 SoulClub']);
   expect(parseCommunityArtists({ artists: 'invalid' })).toEqual([]);
+});
+
+test('loads only current-version community caches', () => {
+  const artists = [{ name: 'Artist', score: 100 }];
+  expect(parseCommunityCache({ version: 3, artists })).toEqual([]);
+  expect(parseCommunityCache({ version: 4, artists })).toEqual(['Artist']);
 });

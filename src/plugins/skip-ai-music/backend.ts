@@ -15,29 +15,23 @@ import { createBackend, LoggerPrefix } from '@/utils';
 import {
   buildCommunityArtistSet,
   parseCommunityArtists,
+  parseCommunityCache,
   shouldSkipTrack,
 } from './match';
 import {
   COMMUNITY_ARTISTS_URL,
   COMMUNITY_CACHE_VERSION,
   COMMUNITY_REFRESH_INTERVAL_MS,
-  clampCommunityMinScore,
   type SkipAiMusicPluginConfig,
 } from './types';
 
-type ScoredArtist = {
-  name: string;
-  score: number;
-};
-
 type CommunityCache = {
-  artists: ScoredArtist[];
+  artists: { name: string }[];
   fetchedAt: number;
-  version?: number;
+  version: number;
 };
 
 let pluginConfig: SkipAiMusicPluginConfig | null = null;
-let scoredArtists: ScoredArtist[] = [];
 let communityArtists: string[] = [];
 let communityArtistSet = new Set<string>();
 let communityFetchedAt = 0;
@@ -62,49 +56,16 @@ const cachePath = () =>
 export const getCommunityStatus = () => ({
   count: communityArtists.length,
   fetchedAt: communityFetchedAt,
-  minScore: clampCommunityMinScore(pluginConfig?.communityMinScore),
 });
-
-const minScoreFromConfig = () =>
-  clampCommunityMinScore(pluginConfig?.communityMinScore);
-
-const applyScoreFilter = () => {
-  const minScore = minScoreFromConfig();
-  communityArtists = scoredArtists
-    .filter((artist) => artist.score >= minScore)
-    .map((artist) => artist.name);
-  communityArtistSet = buildCommunityArtistSet(communityArtists);
-};
 
 const loadCachedArtists = async () => {
   try {
     const raw = await readFile(cachePath(), 'utf8');
     const parsed = JSON.parse(raw) as CommunityCache;
-    if (!Array.isArray(parsed.artists)) {
-      return;
-    }
-
-    const cached: ScoredArtist[] = [];
-    for (const entry of parsed.artists) {
-      if (!entry || typeof entry != 'object') {
-        continue;
-      }
-      if (typeof entry.name != 'string' || !entry.name.trim()) {
-        continue;
-      }
-      const score = Number(entry.score);
-      if (!Number.isFinite(score)) {
-        continue;
-      }
-      cached.push({ name: entry.name.trim(), score });
-    }
-
-    scoredArtists = cached;
-    applyScoreFilter();
+    communityArtists = parseCommunityCache(parsed);
+    communityArtistSet = buildCommunityArtistSet(communityArtists);
     communityFetchedAt =
-      Number(parsed.version) == COMMUNITY_CACHE_VERSION && cached.length > 0
-        ? Number(parsed.fetchedAt) || 0
-        : 0;
+      communityArtists.length > 0 ? Number(parsed.fetchedAt) || 0 : 0;
   } catch {
     // First run or a corrupt cache is fine; a network refresh follows.
   }
@@ -114,30 +75,19 @@ const saveCachedArtists = async () => {
   const file = cachePath();
   await mkdir(path.dirname(file), { recursive: true });
   const payload: CommunityCache = {
-    artists: scoredArtists,
+    artists: communityArtists.map((name) => ({ name })),
     fetchedAt: communityFetchedAt,
     version: COMMUNITY_CACHE_VERSION,
   };
   await writeFile(file, JSON.stringify(payload), 'utf8');
 };
 
-export const refreshCommunityArtists = async (
-  force = false,
-  minScoreOverride?: number,
-) => {
-  if (minScoreOverride != null && pluginConfig) {
-    pluginConfig = {
-      ...pluginConfig,
-      communityMinScore: clampCommunityMinScore(minScoreOverride),
-    };
-  }
-
+export const refreshCommunityArtists = async (force = false) => {
   if (
     !force &&
-    scoredArtists.length > 0 &&
+    communityArtists.length > 0 &&
     Date.now() - communityFetchedAt < COMMUNITY_REFRESH_INTERVAL_MS
   ) {
-    applyScoreFilter();
     return communityArtists;
   }
 
@@ -160,8 +110,8 @@ export const refreshCommunityArtists = async (
         throw new Error('Community list was empty');
       }
 
-      scoredArtists = artists;
-      applyScoreFilter();
+      communityArtists = artists;
+      communityArtistSet = buildCommunityArtistSet(communityArtists);
       communityFetchedAt = Date.now();
       communityRefreshWarned = false;
       await saveCachedArtists();
@@ -311,13 +261,8 @@ export const backend = createBackend<
   },
   SkipAiMusicPluginConfig
 >({
-  async start({ getConfig, setConfig, window }) {
+  async start({ getConfig, window }) {
     pluginConfig = await getConfig();
-    const clampedScore = clampCommunityMinScore(pluginConfig.communityMinScore);
-    if (clampedScore != pluginConfig.communityMinScore) {
-      await setConfig({ communityMinScore: clampedScore });
-      pluginConfig.communityMinScore = clampedScore;
-    }
     pluginWindow = window;
     await loadCachedArtists();
 
@@ -342,17 +287,7 @@ export const backend = createBackend<
   onConfigChange(newConfig) {
     const shouldStartCommunity =
       newConfig.useCommunityList && !pluginConfig?.useCommunityList;
-    const scoreChanged =
-      clampCommunityMinScore(newConfig.communityMinScore) !=
-      clampCommunityMinScore(pluginConfig?.communityMinScore);
-    pluginConfig = {
-      ...newConfig,
-      communityMinScore: clampCommunityMinScore(newConfig.communityMinScore),
-    };
-
-    if (scoreChanged) {
-      applyScoreFilter();
-    }
+    pluginConfig = newConfig;
 
     if (shouldStartCommunity) {
       startCommunityRefresh();

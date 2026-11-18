@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { type MenuTemplate } from '@/menu';
 import { moveVolumeHud as preciseVolumeMoveVolumeHud } from '@/plugins/precise-volume/renderer';
 import { type ThumbnailElement } from '@/types/get-player-response';
+import { type MusicPlayer } from '@/types/music-player';
 import { createPlugin } from '@/utils';
 
 import buttonSwitcherStyle from './button-switcher.css?inline';
@@ -18,6 +19,9 @@ export type VideoTogglePluginConfig = {
   forceHide: boolean;
   align: 'left' | 'middle' | 'right';
 };
+
+let playerApi: MusicPlayer | null = null;
+let onVideoDataChange: ((name: string) => void) | null = null;
 
 export default createPlugin({
   name: () => t('plugins.video-toggle.name'),
@@ -232,9 +236,19 @@ export default createPlugin({
         }
       };
 
+      if (playerApi && onVideoDataChange) {
+        playerApi.removeEventListener('videodatachange', onVideoDataChange);
+      }
+      playerApi = api;
+
+      let pendingVideoStarted = false;
       const videoStarted = () => {
         const videoDetails = api.getPlayerResponse()?.videoDetails;
-        if (!videoDetails) return;
+        if (!videoDetails) {
+          pendingVideoStarted = true;
+          return;
+        }
+        pendingVideoStarted = false;
         if (videoDetails.musicVideoType === 'MUSIC_VIDEO_TYPE_ATV') {
           // Video doesn't exist -> switch to song mode
           setVideoState(false);
@@ -263,6 +277,16 @@ export default createPlugin({
           }
         }
       };
+
+      onVideoDataChange = (name: string) => {
+        if (
+          pendingVideoStarted &&
+          (name === 'dataupdated' || name === 'dataloaded')
+        ) {
+          videoStarted();
+        }
+      };
+      api.addEventListener('videodatachange', onVideoDataChange);
 
       /**
        * On load, after a delay, the page overrides the playback-mode to 'OMV_PREFERRED' which causes weird aspect ratio in the image container
@@ -342,6 +366,13 @@ export default createPlugin({
             }
           }
         }, 0);
+      }
+    },
+    stop() {
+      if (playerApi && onVideoDataChange) {
+        playerApi.removeEventListener('videodatachange', onVideoDataChange);
+        onVideoDataChange = null;
+        playerApi = null;
       }
     },
     onConfigChange(newConfig) {

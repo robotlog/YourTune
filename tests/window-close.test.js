@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 
 import { setupCloseToHide } from '../src/providers/window-close';
 
-const createWindow = (fullscreen = false) => {
+const createWindow = (fullscreen = false, platform = 'linux') => {
   const app = new EventEmitter();
   const win = new EventEmitter();
   const calls = [];
@@ -15,7 +15,7 @@ const createWindow = (fullscreen = false) => {
     setFullScreen: (value) => calls.push(['setFullScreen', value]),
     hide: () => calls.push(['hide']),
   });
-  setupCloseToHide(app, win);
+  setupCloseToHide(app, win, platform);
 
   return {
     app,
@@ -55,10 +55,8 @@ test('quitting allows the window to close instead of hiding', () => {
 });
 
 test.describe('macOS fullscreen close', () => {
-  test.skip(process.platform !== 'darwin', 'Native macOS fullscreen behavior');
-
   test('waits for the fullscreen Space to close before hiding', () => {
-    const window = createWindow(true);
+    const window = createWindow(true, 'darwin');
     expect(window.close()).toBe(true);
     expect(window.calls).toEqual([['setFullScreen', false]]);
 
@@ -71,7 +69,7 @@ test.describe('macOS fullscreen close', () => {
   });
 
   test('repeated close requests do not hide during the transition', () => {
-    const window = createWindow(true);
+    const window = createWindow(true, 'darwin');
     expect(window.close()).toBe(true);
     expect(window.close()).toBe(true);
     expect(window.calls).toEqual([['setFullScreen', false]]);
@@ -82,7 +80,7 @@ test.describe('macOS fullscreen close', () => {
   });
 
   test('quitting during the fullscreen transition does not hide the window', () => {
-    const window = createWindow(true);
+    const window = createWindow(true, 'darwin');
     window.close();
     window.app.emit('before-quit');
     expect(window.close()).toBe(false);
@@ -91,7 +89,7 @@ test.describe('macOS fullscreen close', () => {
   });
 
   test('destroying the window cleans up pending transition handlers', () => {
-    const window = createWindow(true);
+    const window = createWindow(true, 'darwin');
     window.close();
     window.destroy();
     window.finishFullscreenExit();
@@ -102,8 +100,7 @@ test.describe('macOS fullscreen close', () => {
 });
 
 test('non-macOS tray close keeps its immediate hide behavior', () => {
-  test.skip(process.platform === 'darwin');
-  const window = createWindow(true);
+  const window = createWindow(true, 'linux');
   expect(window.close()).toBe(true);
   expect(window.calls).toEqual([['hide']]);
 });

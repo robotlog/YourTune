@@ -1,6 +1,10 @@
 import type { App, BrowserWindow } from 'electron';
 
-export const setupCloseToHide = (app: App, win: BrowserWindow) => {
+export const setupCloseToHide = (
+  app: App,
+  win: BrowserWindow,
+  platform: NodeJS.Platform = process.platform,
+) => {
   let forceQuit = false;
   let leavingFullscreen = false;
 
@@ -26,7 +30,7 @@ export const setupCloseToHide = (app: App, win: BrowserWindow) => {
     event.preventDefault();
     if (leavingFullscreen) return;
 
-    if (process.platform === 'darwin' && win.isFullScreen()) {
+    if (platform === 'darwin' && win.isFullScreen()) {
       leavingFullscreen = true;
       win.once('leave-full-screen', hideAfterFullscreen);
       win.setFullScreen(false);

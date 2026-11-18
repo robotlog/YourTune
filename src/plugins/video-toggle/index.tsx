@@ -23,6 +23,8 @@ export type VideoTogglePluginConfig = {
 let playerApi: MusicPlayer | null = null;
 let onVideoDataChange: ((name: string) => void) | null = null;
 let videoStartedHandler: (() => void) | null = null;
+let videoElement: HTMLVideoElement | null = null;
+let thumbnailObserver: MutationObserver | null = null;
 let startGeneration = 0;
 
 export default createPlugin({
@@ -158,6 +160,7 @@ export default createPlugin({
       }
     },
     async onPlayerApiReady(api, { getConfig }) {
+      this.stop();
       const currentGen = ++startGeneration;
       const [showButton, setShowButton] = createSignal(true);
 
@@ -317,7 +320,11 @@ export default createPlugin({
       };
 
       const observeThumbnail = () => {
-        const playbackModeObserver = new MutationObserver((mutations) => {
+        if (thumbnailObserver) {
+          thumbnailObserver.disconnect();
+          thumbnailObserver = null;
+        }
+        thumbnailObserver = new MutationObserver((mutations) => {
           if (!player?.videoMode) {
             return;
           }
@@ -333,7 +340,7 @@ export default createPlugin({
             }
           }
         });
-        playbackModeObserver.observe(
+        thumbnailObserver.observe(
           document.querySelector('#song-image #img.style-scope.yt-img-shadow')!,
           { attributeFilter: ['src'] },
         );
@@ -352,6 +359,7 @@ export default createPlugin({
           if (video) {
             video.style.height = 'auto';
           }
+          videoElement = video;
           videoStartedHandler = videoStarted;
           video?.addEventListener('peard:src-changed', videoStartedHandler);
           observeThumbnail();
@@ -382,11 +390,17 @@ export default createPlugin({
         onVideoDataChange = null;
         playerApi = null;
       }
-      if (videoStartedHandler) {
-        document
-          .querySelector('video')
-          ?.removeEventListener('peard:src-changed', videoStartedHandler);
+      if (videoElement && videoStartedHandler) {
+        videoElement.removeEventListener(
+          'peard:src-changed',
+          videoStartedHandler,
+        );
         videoStartedHandler = null;
+        videoElement = null;
+      }
+      if (thumbnailObserver) {
+        thumbnailObserver.disconnect();
+        thumbnailObserver = null;
       }
       document
         .getElementById('ytmd-video-toggle-switch-button-container')

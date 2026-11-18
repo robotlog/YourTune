@@ -4,12 +4,7 @@ import { refreshCommunityArtists, getCommunityStatus } from './backend';
 import { promptStringList } from './list-editor';
 import { uniqueNormalized } from './match';
 import { promptSongList } from './song-list-editor';
-import { promptThreshold } from './threshold-picker';
-import {
-  clampCommunityMinScore,
-  type BlockedSong,
-  type SkipAiMusicPluginConfig,
-} from './types';
+import { type BlockedSong, type SkipAiMusicPluginConfig } from './types';
 
 import type { MenuTemplate } from '@/menu';
 import type { MenuContext } from '@/types/contexts';
@@ -79,16 +74,15 @@ export const onMenu = async ({
   refresh,
 }: MenuContext<SkipAiMusicPluginConfig>): Promise<MenuTemplate> => {
   const config = await getConfig();
-  const minScore = clampCommunityMinScore(config.communityMinScore);
   const community = getCommunityStatus();
   const fetched =
     community.fetchedAt > 0
       ? new Date(community.fetchedAt).toLocaleString()
-      : t('plugins.skip-ai-music.menu.zoundhub.never');
+      : t('plugins.skip-ai-music.menu.spotai.never');
 
   return [
     {
-      label: t('plugins.skip-ai-music.menu.zoundhub.label'),
+      label: t('plugins.skip-ai-music.menu.spotai.label'),
       submenu: [
         {
           label: t('plugins.skip-ai-music.menu.use-community-list'),
@@ -100,38 +94,14 @@ export const onMenu = async ({
           },
         },
         {
-          label: t('plugins.skip-ai-music.menu.zoundhub.status', {
+          label: t('plugins.skip-ai-music.menu.spotai.status', {
             count: community.count,
             fetched,
-            score: minScore,
           }),
           enabled: false,
         },
         {
-          label: t('plugins.skip-ai-music.menu.zoundhub.threshold-value', {
-            score: minScore,
-          }),
-          async click() {
-            const current = await getConfig();
-            const output = await promptThreshold(window, {
-              title: t('plugins.skip-ai-music.prompt.threshold.title'),
-              description: t('plugins.skip-ai-music.prompt.threshold.description'),
-              value: clampCommunityMinScore(current.communityMinScore),
-              valueLabel: t('plugins.skip-ai-music.prompt.threshold.value'),
-              cancelLabel: t('plugins.skip-ai-music.prompt.list-editor.cancel'),
-              saveLabel: t('plugins.skip-ai-music.prompt.list-editor.save'),
-            });
-
-            if (output != null) {
-              const score = clampCommunityMinScore(output);
-              setConfig({ communityMinScore: score });
-              await refreshCommunityArtists(false, score);
-              await refresh();
-            }
-          },
-        },
-        {
-          label: t('plugins.skip-ai-music.menu.zoundhub.refresh'),
+          label: t('plugins.skip-ai-music.menu.spotai.refresh'),
           async click() {
             await refreshCommunityArtists(true);
             await refresh();
@@ -189,10 +159,7 @@ export const onMenu = async ({
       async click() {
         const current = await getConfig();
         setConfig({
-          blockedSongs: await promptBlockedSongs(
-            window,
-            current.blockedSongs,
-          ),
+          blockedSongs: await promptBlockedSongs(window, current.blockedSongs),
         });
         await refresh();
       },

@@ -12,7 +12,6 @@ export type SkipAiMusicPluginConfig = {
   enabled: boolean;
   skipCommonKeywords: boolean;
   useCommunityList: boolean;
-  communityMinScore: number;
 };
 
 export const COMMON_AI_KEYWORDS = [
@@ -26,8 +25,6 @@ export const COMMON_AI_KEYWORDS = [
   'udio',
 ];
 
-export const DEFAULT_COMMUNITY_MIN_SCORE = 90;
-
 export const defaultConfig: SkipAiMusicPluginConfig = {
   allowedArtists: [],
   blockedArtists: [],
@@ -37,25 +34,10 @@ export const defaultConfig: SkipAiMusicPluginConfig = {
   enabled: false,
   skipCommonKeywords: false,
   useCommunityList: true,
-  communityMinScore: DEFAULT_COMMUNITY_MIN_SCORE,
 };
 
-export const COMMUNITY_ARTISTS_URL = 'https://zoundhub.com/api/artists/all';
+export const COMMUNITY_ARTISTS_URL = 'https://spot-the-ai.com/api/list/';
 
-export const COMMUNITY_CACHE_VERSION = 3;
-
-export const clampCommunityMinScore = (value: unknown): number => {
-  const score = Math.round(Number(value));
-  if (!Number.isFinite(score)) {
-    return DEFAULT_COMMUNITY_MIN_SCORE;
-  }
-  if (score < 0) {
-    return 0;
-  }
-  if (score > 100) {
-    return 100;
-  }
-  return score;
-};
+export const COMMUNITY_CACHE_VERSION = 4;
 
 export const COMMUNITY_REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000;

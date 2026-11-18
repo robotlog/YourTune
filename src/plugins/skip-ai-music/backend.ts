@@ -12,7 +12,11 @@ import {
 } from '@/providers/song-info';
 import { createBackend, LoggerPrefix } from '@/utils';
 
-import { buildCommunityArtistSet, shouldSkipTrack } from './match';
+import {
+  buildCommunityArtistSet,
+  parseCommunityArtists,
+  shouldSkipTrack,
+} from './match';
 import {
   COMMUNITY_ARTISTS_URL,
   COMMUNITY_CACHE_VERSION,
@@ -30,12 +34,6 @@ type CommunityCache = {
   artists: ScoredArtist[];
   fetchedAt: number;
   version?: number;
-};
-
-type CommunityArtistEntry = {
-  name?: string;
-  removed?: boolean;
-  submithub_score?: unknown;
 };
 
 let pluginConfig: SkipAiMusicPluginConfig | null = null;
@@ -76,45 +74,6 @@ const applyScoreFilter = () => {
     .filter((artist) => artist.score >= minScore)
     .map((artist) => artist.name);
   communityArtistSet = buildCommunityArtistSet(communityArtists);
-};
-
-const parseCommunityArtists = (data: unknown): ScoredArtist[] => {
-  const artists: ScoredArtist[] = [];
-
-  const pushArtist = (name: unknown, score: unknown) => {
-    if (typeof name != 'string' || !name.trim()) {
-      return;
-    }
-    const value = Number(score);
-    if (!Number.isFinite(value)) {
-      return;
-    }
-    artists.push({ name: name.trim(), score: value });
-  };
-
-  if (Array.isArray(data)) {
-    for (const entry of data) {
-      if (!entry || typeof entry != 'object') {
-        continue;
-      }
-
-      const item = entry as CommunityArtistEntry;
-      if (item.removed) {
-        continue;
-      }
-      pushArtist(item.name, item.submithub_score);
-    }
-    return artists;
-  }
-
-  if (data && typeof data == 'object') {
-    const record = data as { artists?: unknown };
-    if (Array.isArray(record.artists)) {
-      return parseCommunityArtists(record.artists);
-    }
-  }
-
-  return artists;
 };
 
 const loadCachedArtists = async () => {
@@ -208,7 +167,7 @@ export const refreshCommunityArtists = async (
       await saveCachedArtists();
       console.log(
         LoggerPrefix,
-        `skip-ai-music: loaded ${communityArtists.length} community artists at ${minScoreFromConfig()}%+`,
+        `skip-ai-music: loaded ${communityArtists.length} community artists`,
       );
       return communityArtists;
     } finally {
@@ -354,9 +313,7 @@ export const backend = createBackend<
 >({
   async start({ getConfig, setConfig, window }) {
     pluginConfig = await getConfig();
-    const clampedScore = clampCommunityMinScore(
-      pluginConfig.communityMinScore,
-    );
+    const clampedScore = clampCommunityMinScore(pluginConfig.communityMinScore);
     if (clampedScore != pluginConfig.communityMinScore) {
       await setConfig({ communityMinScore: clampedScore });
       pluginConfig.communityMinScore = clampedScore;

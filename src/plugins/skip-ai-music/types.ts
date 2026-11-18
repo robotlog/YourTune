@@ -40,9 +40,9 @@ export const defaultConfig: SkipAiMusicPluginConfig = {
   communityMinScore: DEFAULT_COMMUNITY_MIN_SCORE,
 };
 
-export const COMMUNITY_ARTISTS_URL = 'https://zoundhub.com/api/artists/all';
+export const COMMUNITY_ARTISTS_URL = 'https://spot-the-ai.com/api/list/';
 
-export const COMMUNITY_CACHE_VERSION = 3;
+export const COMMUNITY_CACHE_VERSION = 4;
 
 export const clampCommunityMinScore = (value: unknown): number => {
   const score = Math.round(Number(value));

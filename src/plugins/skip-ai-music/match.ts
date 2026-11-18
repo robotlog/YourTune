@@ -102,9 +102,7 @@ export const shouldSkipTrack = (
 
   const blockedSongs = config.blockedSongs || [];
   const titleFolded = foldName(title);
-  const titleKeys = new Set(
-    foldedTokens.map((token) => songKey(title, token)),
-  );
+  const titleKeys = new Set(foldedTokens.map((token) => songKey(title, token)));
   titleKeys.add(songKey(title, artist));
   for (const song of blockedSongs) {
     if (!song || !song.title) {
@@ -191,4 +189,18 @@ export const uniqueNormalized = (values: string[]) => {
   }
 
   return result;
+};
+
+export const parseCommunityArtists = (data: unknown) => {
+  if (
+    !data ||
+    typeof data != 'object' ||
+    !('artists' in data) ||
+    !Array.isArray(data.artists)
+  )
+    return [];
+  // Spot The AI supplies no scores; 100 keeps all names eligible at any configured threshold.
+  return data.artists
+    .filter((name): name is string => typeof name == 'string' && !!name.trim())
+    .map((name) => ({ name: name.trim(), score: 100 }));
 };

@@ -25,6 +25,7 @@ let onVideoDataChange: ((name: string) => void) | null = null;
 let videoStartedHandler: (() => void) | null = null;
 let videoElement: HTMLVideoElement | null = null;
 let thumbnailObserver: MutationObserver | null = null;
+let playbackModeObserver: MutationObserver | null = null;
 let startGeneration = 0;
 
 export default createPlugin({
@@ -302,12 +303,17 @@ export default createPlugin({
        */
       const forcePlaybackMode = () => {
         if (player) {
-          const playbackModeObserver = new MutationObserver((mutations) => {
+          if (playbackModeObserver) {
+            playbackModeObserver.disconnect();
+            playbackModeObserver = null;
+          }
+          playbackModeObserver = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
               if (mutation.target instanceof HTMLElement) {
                 const target = mutation.target;
                 if (target.getAttribute('playback-mode') !== 'ATV_PREFERRED') {
-                  playbackModeObserver.disconnect();
+                  playbackModeObserver?.disconnect();
+                  playbackModeObserver = null;
                   target.setAttribute('playback-mode', 'ATV_PREFERRED');
                 }
               }
@@ -401,6 +407,10 @@ export default createPlugin({
       if (thumbnailObserver) {
         thumbnailObserver.disconnect();
         thumbnailObserver = null;
+      }
+      if (playbackModeObserver) {
+        playbackModeObserver.disconnect();
+        playbackModeObserver = null;
       }
       document
         .getElementById('ytmd-video-toggle-switch-button-container')

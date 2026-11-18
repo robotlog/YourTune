@@ -4,7 +4,6 @@ import {
   cooldownUntil,
   isUnavailableToken,
   MusixMatchTokenRejected,
-  MusixMatchUnavailable,
   retryRejectedToken,
   shouldRefreshToken,
 } from './musixmatch-token';
@@ -33,8 +32,7 @@ export class MusixMatch implements LyricProvider {
   }
 
   async search(info: SearchSongInfo): Promise<LyricResult | null> {
-    if (Date.now() < this.retryAt)
-      throw new MusixMatchUnavailable(this.retryAt);
+    if (Date.now() < this.retryAt) return null;
 
     // Late-init after IPC is available and share the result across songs.
     this.api ??= MusixMatchAPI.new().catch((error: unknown) => {
@@ -42,7 +40,7 @@ export class MusixMatch implements LyricProvider {
       return null;
     });
     const api = await this.api;
-    if (!api) throw new MusixMatchUnavailable(this.retryAt);
+    if (!api) return null;
     const data = await (async () => {
       await api.reinit();
       return retryRejectedToken(
@@ -65,9 +63,10 @@ export class MusixMatch implements LyricProvider {
       )
         throw error;
       this.fail(error);
-      throw new MusixMatchUnavailable(this.retryAt);
+      return null;
     });
 
+    if (!data) return null;
     const { macro_calls: macroCalls } = data.body;
 
     // prettier-ignore

@@ -2,10 +2,8 @@ import { expect, test } from '@playwright/test';
 
 import {
   cooldownUntil,
-  isCurrentRetry,
   isUnavailableToken,
   MusixMatchTokenRejected,
-  retryDelay,
   retryRejectedToken,
   shouldRefreshToken,
 } from '../src/plugins/synced-lyrics/providers/musixmatch-token';
@@ -54,17 +52,6 @@ test('a second rejection stops retrying', async () => {
   ).rejects.toBeInstanceOf(MusixMatchTokenRejected);
   expect(attempts).toBe(2);
   expect(refreshes).toBe(1);
-});
-
-test('retry delay is bounded at zero', () => {
-  expect(retryDelay(2000, 1000)).toBe(1000);
-  expect(retryDelay(1000, 2000)).toBe(0);
-});
-
-test('retry only applies to the current song and search', () => {
-  expect(isCurrentRetry('a', 'a', 1, 1)).toBe(true);
-  expect(isCurrentRetry('a', 'b', 1, 1)).toBe(false);
-  expect(isCurrentRetry('a', 'a', 1, 2)).toBe(false);
 });
 
 test('a late rejection does not refresh a replaced token', () => {

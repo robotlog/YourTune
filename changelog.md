@@ -12,6 +12,8 @@ Features:
 
 Fixes:
 
+- Video Toggle: guard against missing video metadata and use the current player videoMode property.
+- Window: cleanly exit fullscreen before hiding on macOS close ([#4810](https://github.com/pear-devs/pear-desktop/pull/4810)).
 - Updated dependencies with known vulnerabilities (Dependabot).
 - SponsorBlock clears the old segments when a track loads instead of on a late `emptied` event, so a slow one no longer wipes the next track's segments and stops skipping ([michei69/pear-desktop@34afb88](https://github.com/michei69/pear-desktop/commit/34afb888c2)).
 - Updated all dependencies to their latest versions, including Electron 45 (closes the remaining Dependabot alert).

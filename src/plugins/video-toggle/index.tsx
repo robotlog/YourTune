@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { type MenuTemplate } from '@/menu';
 import { moveVolumeHud as preciseVolumeMoveVolumeHud } from '@/plugins/precise-volume/renderer';
 import { type ThumbnailElement } from '@/types/get-player-response';
+import { type MusicPlayer } from '@/types/music-player';
 import { createPlugin } from '@/utils';
 
 import buttonSwitcherStyle from './button-switcher.css?inline';
@@ -18,6 +19,14 @@ export type VideoTogglePluginConfig = {
   forceHide: boolean;
   align: 'left' | 'middle' | 'right';
 };
+
+let playerApi: MusicPlayer | null = null;
+let onVideoDataChange: ((name: string) => void) | null = null;
+let videoStartedHandler: (() => void) | null = null;
+let videoElement: HTMLVideoElement | null = null;
+let thumbnailObserver: MutationObserver | null = null;
+let playbackModeObserver: MutationObserver | null = null;
+let startGeneration = 0;
 
 export default createPlugin({
   name: () => t('plugins.video-toggle.name'),
@@ -152,9 +161,12 @@ export default createPlugin({
       }
     },
     async onPlayerApiReady(api, { getConfig }) {
+      this.stop();
+      const currentGen = ++startGeneration;
       const [showButton, setShowButton] = createSignal(true);
 
       const config = await getConfig();
+      if (currentGen !== startGeneration) return;
       this.config = config;
 
       const moveVolumeHud = (await window.mainConfig.plugins.isEnabled(
@@ -162,9 +174,10 @@ export default createPlugin({
       ))
         ? (preciseVolumeMoveVolumeHud as (_: boolean) => void)
         : () => {};
+      if (currentGen !== startGeneration) return;
 
       const player = document.querySelector<
-        HTMLElement & { videoMode_: boolean }
+        HTMLElement & { videoMode: boolean }
       >('ytmusic-player');
       const video = document.querySelector<HTMLVideoElement>('video');
 
@@ -232,11 +245,20 @@ export default createPlugin({
         }
       };
 
+      if (playerApi && onVideoDataChange) {
+        playerApi.removeEventListener('videodatachange', onVideoDataChange);
+      }
+      playerApi = api;
+
+      let pendingVideoStarted = false;
       const videoStarted = () => {
-        if (
-          api.getPlayerResponse().videoDetails.musicVideoType ===
-          'MUSIC_VIDEO_TYPE_ATV'
-        ) {
+        const videoDetails = api.getPlayerResponse()?.videoDetails;
+        if (!videoDetails) {
+          pendingVideoStarted = true;
+          return;
+        }
+        pendingVideoStarted = false;
+        if (videoDetails.musicVideoType === 'MUSIC_VIDEO_TYPE_ATV') {
           // Video doesn't exist -> switch to song mode
           setVideoState(false);
           // Hide toggle button
@@ -265,18 +287,33 @@ export default createPlugin({
         }
       };
 
+      onVideoDataChange = (name: string) => {
+        if (
+          pendingVideoStarted &&
+          (name === 'dataupdated' || name === 'dataloaded')
+        ) {
+          videoStarted();
+        }
+      };
+      api.addEventListener('videodatachange', onVideoDataChange);
+
       /**
        * On load, after a delay, the page overrides the playback-mode to 'OMV_PREFERRED' which causes weird aspect ratio in the image container
        * this function fix the problem by overriding that override :)
        */
       const forcePlaybackMode = () => {
         if (player) {
-          const playbackModeObserver = new MutationObserver((mutations) => {
+          if (playbackModeObserver) {
+            playbackModeObserver.disconnect();
+            playbackModeObserver = null;
+          }
+          playbackModeObserver = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
               if (mutation.target instanceof HTMLElement) {
                 const target = mutation.target;
                 if (target.getAttribute('playback-mode') !== 'ATV_PREFERRED') {
-                  playbackModeObserver.disconnect();
+                  playbackModeObserver?.disconnect();
+                  playbackModeObserver = null;
                   target.setAttribute('playback-mode', 'ATV_PREFERRED');
                 }
               }
@@ -289,8 +326,12 @@ export default createPlugin({
       };
 
       const observeThumbnail = () => {
-        const playbackModeObserver = new MutationObserver((mutations) => {
-          if (!player?.videoMode_) {
+        if (thumbnailObserver) {
+          thumbnailObserver.disconnect();
+          thumbnailObserver = null;
+        }
+        thumbnailObserver = new MutationObserver((mutations) => {
+          if (!player?.videoMode) {
             return;
           }
 
@@ -305,7 +346,7 @@ export default createPlugin({
             }
           }
         });
-        playbackModeObserver.observe(
+        thumbnailObserver.observe(
           document.querySelector('#song-image #img.style-scope.yt-img-shadow')!,
           { attributeFilter: ['src'] },
         );
@@ -313,6 +354,7 @@ export default createPlugin({
 
       if (config.mode !== 'native' && config.mode != 'disabled') {
         setTimeout(() => {
+          if (currentGen !== startGeneration) return;
           const playerSelector =
             document.querySelector<HTMLVideoElement>('#player');
           if (!playerSelector) return;
@@ -323,7 +365,9 @@ export default createPlugin({
           if (video) {
             video.style.height = 'auto';
           }
-          video?.addEventListener('peard:src-changed', videoStarted);
+          videoElement = video;
+          videoStartedHandler = videoStarted;
+          video?.addEventListener('peard:src-changed', videoStartedHandler);
           observeThumbnail();
           videoStarted();
           switch (config.align) {
@@ -344,6 +388,33 @@ export default createPlugin({
           }
         }, 0);
       }
+    },
+    stop() {
+      startGeneration++;
+      if (playerApi && onVideoDataChange) {
+        playerApi.removeEventListener('videodatachange', onVideoDataChange);
+        onVideoDataChange = null;
+        playerApi = null;
+      }
+      if (videoElement && videoStartedHandler) {
+        videoElement.removeEventListener(
+          'peard:src-changed',
+          videoStartedHandler,
+        );
+        videoStartedHandler = null;
+        videoElement = null;
+      }
+      if (thumbnailObserver) {
+        thumbnailObserver.disconnect();
+        thumbnailObserver = null;
+      }
+      if (playbackModeObserver) {
+        playbackModeObserver.disconnect();
+        playbackModeObserver = null;
+      }
+      document
+        .getElementById('ytmd-video-toggle-switch-button-container')
+        ?.remove();
     },
     onConfigChange(newConfig) {
       this.config = newConfig;

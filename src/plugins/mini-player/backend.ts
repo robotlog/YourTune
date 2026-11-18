@@ -572,9 +572,9 @@ const createWindow = async (config: MiniPlayerPluginConfig) => {
     }
   };
 
-  win.webContents.on('will-navigate', (event, url) => {
+  win.webContents.on('will-navigate', (event) => {
     event.preventDefault();
-    handleAction(url);
+    handleAction(event.url);
   });
   win.webContents.setWindowOpenHandler(({ url }) => {
     handleAction(url);

@@ -14,6 +14,7 @@ Fixes:
 
 - Updated dependencies with known vulnerabilities (Dependabot).
 - SponsorBlock clears the old segments when a track loads instead of on a late `emptied` event, so a slow one no longer wipes the next track's segments and stops skipping ([michei69/pear-desktop@34afb88](https://github.com/michei69/pear-desktop/commit/34afb888c2)).
+- Updated all dependencies to their latest versions, including Electron 45 (closes the remaining Dependabot alert).
 
 #### v1.4.2
 

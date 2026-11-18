@@ -341,7 +341,6 @@ export const store = new Store({
   },
   clearInvalidConfig: false,
   // The migrations are keyed by pear-desktop's versions, so they keep its last version instead of YourTune's own numbering.
-  // @ts-expect-error electron-store's types leave projectVersion out, but it passes it on to conf
   projectVersion: '3.12.0',
   migrations,
 });

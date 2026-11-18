@@ -1,4 +1,8 @@
-import { COMMON_AI_KEYWORDS, type SkipAiMusicPluginConfig } from './types';
+import {
+  COMMON_AI_KEYWORDS,
+  COMMUNITY_CACHE_VERSION,
+  type SkipAiMusicPluginConfig,
+} from './types';
 
 export type SkipMatchInput = {
   artist: string;
@@ -102,9 +106,7 @@ export const shouldSkipTrack = (
 
   const blockedSongs = config.blockedSongs || [];
   const titleFolded = foldName(title);
-  const titleKeys = new Set(
-    foldedTokens.map((token) => songKey(title, token)),
-  );
+  const titleKeys = new Set(foldedTokens.map((token) => songKey(title, token)));
   titleKeys.add(songKey(title, artist));
   for (const song of blockedSongs) {
     if (!song || !song.title) {
@@ -191,4 +193,39 @@ export const uniqueNormalized = (values: string[]) => {
   }
 
   return result;
+};
+
+export const parseCommunityArtists = (data: unknown) => {
+  if (
+    !data ||
+    typeof data != 'object' ||
+    !('artists' in data) ||
+    !Array.isArray(data.artists)
+  )
+    return [];
+  return data.artists
+    .filter((name): name is string => typeof name == 'string' && !!name.trim())
+    .map((name) => name.trim());
+};
+
+export const parseCommunityCache = (data: unknown) => {
+  if (
+    !data ||
+    typeof data != 'object' ||
+    !('version' in data) ||
+    data.version !== COMMUNITY_CACHE_VERSION ||
+    !('artists' in data) ||
+    !Array.isArray(data.artists)
+  )
+    return [];
+  return data.artists
+    .filter(
+      (entry): entry is { name: string } =>
+        !!entry &&
+        typeof entry == 'object' &&
+        'name' in entry &&
+        typeof entry.name == 'string' &&
+        !!entry.name.trim(),
+    )
+    .map((entry) => entry.name.trim());
 };

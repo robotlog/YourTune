@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import { hasWholePhrase, shouldSkipTrack, splitArtists } from './match';
+import {
+  hasWholePhrase,
+  parseCommunityArtists,
+  parseCommunityCache,
+  shouldSkipTrack,
+  splitArtists,
+} from './match';
 import { defaultConfig, type SkipAiMusicPluginConfig } from './types';
 
 const config = (
@@ -133,4 +139,20 @@ test('splitArtists keeps the full byline and each credited name', () => {
     'b',
     'c',
   ]);
+});
+
+test('parses Spot The AI artist names', () => {
+  expect(
+    parseCommunityArtists({
+      artists: ['10mm', '  1950 SoulClub  ', '', null, 42],
+      count: 2,
+    }),
+  ).toEqual(['10mm', '1950 SoulClub']);
+  expect(parseCommunityArtists({ artists: 'invalid' })).toEqual([]);
+});
+
+test('loads only current-version community caches', () => {
+  const artists = [{ name: 'Artist', score: 100 }];
+  expect(parseCommunityCache({ version: 3, artists })).toEqual([]);
+  expect(parseCommunityCache({ version: 4, artists })).toEqual(['Artist']);
 });

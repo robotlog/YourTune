@@ -925,7 +925,7 @@
       }
     },
     "skip-ai-music": {
-      "description": "Skip AI-related artists and tracks using Zoundhub, custom block lists, and title keywords",
+      "description": "Skip AI-related artists and tracks using Spot The AI (https://github.com/FabDevGit/spotai), custom block lists, and title keywords",
       "menu": {
         "allowed-artists": {
           "label": "Allowed artists ({{count}})"
@@ -944,22 +944,16 @@
           "label": "Title keywords ({{count}})"
         },
         "skip-common-keywords": "Skip common AI title keywords",
-        "use-community-list": "Use Zoundhub artist list",
-        "zoundhub": {
-          "label": "Zoundhub",
+        "use-community-list": "Use Spot The AI artist list",
+        "spotai": {
+          "label": "Spot The AI",
           "never": "never",
           "refresh": "Refresh list",
-          "status": "{{count}} artists at {{score}}%+ (updated {{fetched}})",
-          "threshold-value": "SubmitHub threshold: {{score}}%"
+          "status": "{{count}} artists (updated {{fetched}})"
         }
       },
       "name": "Skip AI Music",
       "prompt": {
-        "threshold": {
-          "description": "Skip Zoundhub artists at or above this SubmitHub AI score.",
-          "title": "SubmitHub threshold",
-          "value": "{score}% or higher"
-        },
         "list-editor": {
           "add": "Add",
           "cancel": "Cancel",

@@ -839,7 +839,7 @@
       }
     },
     "skip-ai-music": {
-      "description": "Zoundhub listesi, kendi engel listelerin ve başlık kelimeleriyle yapay zekâ sanatçılarını ve şarkılarını atlar",
+      "description": "Spot The AI listesi (https://github.com/FabDevGit/spotai), kendi engel listelerin ve başlık kelimeleriyle yapay zekâ sanatçılarını ve şarkılarını atlar",
       "menu": {
         "allowed-artists": {
           "label": "İzin verilen sanatçılar ({{count}})"
@@ -858,22 +858,16 @@
           "label": "Başlık kelimeleri ({{count}})"
         },
         "skip-common-keywords": "Yaygın yapay zekâ başlık kelimelerini atla",
-        "use-community-list": "Zoundhub sanatçı listesini kullan",
-        "zoundhub": {
-          "label": "Zoundhub",
+        "use-community-list": "Spot The AI sanatçı listesini kullan",
+        "spotai": {
+          "label": "Spot The AI",
           "never": "hiç",
           "refresh": "Listeyi yenile",
-          "status": "%{{score}} ve üstü {{count}} sanatçı (güncelleme: {{fetched}})",
-          "threshold-value": "SubmitHub eşiği: %{{score}}"
+          "status": "{{count}} sanatçı (güncelleme: {{fetched}})"
         }
       },
       "name": "Yapay Zekâ Müziğini Atla",
       "prompt": {
-        "threshold": {
-          "description": "SubmitHub yapay zekâ puanı bu değerde ya da üstünde olan Zoundhub sanatçılarını atla.",
-          "title": "SubmitHub eşiği",
-          "value": "%{score} ve üstü"
-        },
         "list-editor": {
           "add": "Ekle",
           "cancel": "İptal",

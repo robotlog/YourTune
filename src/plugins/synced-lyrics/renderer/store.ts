@@ -10,6 +10,7 @@ import {
   providerNames,
   type ProviderState,
 } from '../providers';
+import { MusixMatchUnavailable } from '../providers/musixmatch-token';
 import { providers } from '../providers/renderer';
 
 import type { LyricProvider } from '../types';
@@ -51,6 +52,7 @@ type SearchCacheData = Record<ProviderName, ProviderState>;
 interface SearchCache {
   state: 'loading' | 'done';
   data: SearchCacheData;
+  unavailable: Set<ProviderName>;
 }
 
 // TODO: Maybe use localStorage for the cache.
@@ -79,13 +81,16 @@ export const fetchLyrics = (info: SongInfo) => {
       });
     }
 
-    return;
+    if (!cache.unavailable.size) return;
   }
 
-  const cache: SearchCache = {
+  const cache: SearchCache = searchCache.get(info.videoId) ?? {
     state: 'loading',
     data: initialData(),
+    unavailable: new Set(),
   };
+  const retrying = cache.unavailable.size > 0;
+  cache.state = 'loading';
 
   searchCache.set(info.videoId, cache);
   if (getSongInfo().videoId === info.videoId) {
@@ -104,12 +109,14 @@ export const fetchLyrics = (info: SongInfo) => {
     LyricProvider,
   ][]
     ) {
+    if (retrying && !cache.unavailable.has(providerName)) continue;
     const pCache = cache.data[providerName];
 
     tasks.push(
       provider
         .search(info)
         .then((res) => {
+          cache.unavailable.delete(providerName);
           pCache.state = 'done';
           pCache.data = res;
 
@@ -127,6 +134,17 @@ export const fetchLyrics = (info: SongInfo) => {
           }
         })
         .catch((error: Error) => {
+          if (error instanceof MusixMatchUnavailable) {
+            cache.unavailable.add(providerName);
+            pCache.state = 'done';
+            if (getSongInfo().videoId === info.videoId) {
+              setLyricsStore('lyrics', providerName, {
+                state: 'done', data: null, error: null,
+              });
+            }
+            return;
+          }
+          cache.unavailable.delete(providerName);
           pCache.state = 'error';
           pCache.error = error;
 
@@ -175,6 +193,14 @@ export const retrySearch = (provider: ProviderName, info: SongInfo) => {
       });
     })
     .catch((error) => {
+      if (error instanceof MusixMatchUnavailable) {
+        setLyricsStore('lyrics', provider, {
+          state: 'done',
+          data: null,
+          error: null,
+        });
+        return;
+      }
       setLyricsStore('lyrics', (old) => {
         return {
           ...old,

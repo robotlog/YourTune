@@ -1,6 +1,12 @@
 import * as z from 'zod';
 
-import { isUnavailableToken } from './musixmatch-token';
+import {
+  cooldownUntil,
+  isUnavailableToken,
+  MusixMatchTokenRejected,
+  MusixMatchUnavailable,
+  retryRejectedToken,
+} from './musixmatch-token';
 
 import { LRC } from '../parsers/lrc';
 import { netFetch } from '../renderer';
@@ -20,13 +26,13 @@ export class MusixMatch implements LyricProvider {
   private fail(error: unknown) {
     if (Date.now() < this.retryAt) return;
     const unavailable = error instanceof AnonymousAccessUnavailable;
-    this.retryAt = Date.now() + (unavailable ? 3_600_000 : 600_000);
+    this.retryAt = cooldownUntil(Date.now(), unavailable);
     this.api = undefined;
     console.warn('MusixMatch request failed; retrying after cooldown');
   }
 
   async search(info: SearchSongInfo): Promise<LyricResult | null> {
-    if (Date.now() < this.retryAt) return null;
+    if (Date.now() < this.retryAt) throw new MusixMatchUnavailable();
 
     // Late-init after IPC is available and share the result across songs.
     this.api ??= MusixMatchAPI.new().catch((error: unknown) => {
@@ -34,24 +40,31 @@ export class MusixMatch implements LyricProvider {
       return null;
     });
     const api = await this.api;
-    if (!api) return null;
-    await api.reinit();
-
-    const data = await api
-      .query(Endpoint.getMacroSubtitles, {
-        q_track: info.alternativeTitle || info.title,
-        q_artist: info.artist,
-        q_duration: info.songDuration.toString(),
-        ...(info.album ? { q_album: info.album } : {}),
-        namespace: 'lyrics_richsynched',
-        subtitle_format: 'lrc',
-      })
-      .catch((error: unknown) => {
-        if (!(error instanceof MusixMatchRequestError)) throw error;
-        this.fail(error);
-        return null;
-      });
-    if (!data) return null;
+    if (!api) throw new MusixMatchUnavailable();
+    const data = await (async () => {
+      await api.reinit();
+      return retryRejectedToken(
+        () =>
+          api.query(Endpoint.getMacroSubtitles, {
+            q_track: info.alternativeTitle || info.title,
+            q_artist: info.artist,
+            q_duration: info.songDuration.toString(),
+            ...(info.album ? { q_album: info.album } : {}),
+            namespace: 'lyrics_richsynched',
+            subtitle_format: 'lrc',
+          }),
+        () => api.refresh(),
+      );
+    })().catch((error: unknown) => {
+      if (
+        !(error instanceof MusixMatchRequestError) &&
+        !(error instanceof MusixMatchTokenRejected) &&
+        !(error instanceof AnonymousAccessUnavailable)
+      )
+        throw error;
+      this.fail(error);
+      throw new MusixMatchUnavailable();
+    });
 
     const { macro_calls: macroCalls } = data.body;
 
@@ -186,6 +199,8 @@ class MusixMatchAPI {
   private initPromise: Promise<void>;
   private cookie = 'x-mxm-user-id=';
   private token: string | null = null;
+  private expires = 0;
+  private refreshPromise: Promise<void> | undefined;
 
   private constructor() {
     this.initPromise = this.init();
@@ -199,12 +214,25 @@ class MusixMatchAPI {
 
   public async reinit() {
     const [{ status }] = await Promise.allSettled([this.initPromise]);
-    if (status === 'rejected') {
+    if (status === 'rejected' || this.expires <= Date.now()) {
+      this.refreshPromise ??= this.init().finally(() => {
+        this.refreshPromise = undefined;
+      });
+      this.initPromise = this.refreshPromise;
+      await this.refreshPromise;
+    }
+  }
+
+  public async refresh() {
+    if (!this.refreshPromise) {
       this.cookie = 'x-mxm-user-id=';
       localStorage.removeItem(this.key);
-      this.initPromise = this.init();
-      await this.initPromise;
+      this.refreshPromise = this.init().finally(() => {
+        this.refreshPromise = undefined;
+      });
+      this.initPromise = this.refreshPromise;
     }
+    await this.refreshPromise;
   }
 
   // god I love typescript generics, they're so useful
@@ -238,6 +266,7 @@ class MusixMatchAPI {
     }).catch((cause: unknown) => {
       throw new MusixMatchRequestError('MusixMatch request failed', { cause });
     });
+    if (status === 401) throw new MusixMatchTokenRejected();
     if (status < 200 || status >= 300) {
       throw new MusixMatchRequestError(`MusixMatch HTTP ${status}`);
     }
@@ -255,11 +284,11 @@ class MusixMatchAPI {
       response && typeof response === 'object' &&
       'message' in response && response.message && typeof response.message === 'object' &&
       'header' in response.message && response.message.header && typeof response.message.header === 'object' &&
-      'status_code' in response.message.header && typeof response.message.header.status_code === 'number' &&
-      response.message.header.status_code === 401
+      (('status_code' in response.message.header && response.message.header.status_code === 401) ||
+       ('hint' in response.message.header && typeof response.message.header.hint === 'string' &&
+        /renew/i.test(response.message.header.hint)))
     ) {
-      localStorage.removeItem(this.key);
-      throw new MusixMatchRequestError('MusixMatch token rejected');
+      throw new MusixMatchTokenRejected();
     }
 
     const parsed = z
@@ -294,17 +323,24 @@ class MusixMatchAPI {
     );
     if (token && !isUnavailableToken(token) && expires > Date.now()) {
       this.token = token;
+      this.expires = expires;
       return;
     }
 
     localStorage.removeItem(this.key);
 
-    this.token = await this.getToken();
-    if (!this.token) throw new Error('Failed to get token');
+    this.token = await this.getToken().catch((error: unknown) => {
+      if (error instanceof AnonymousAccessUnavailable) throw error;
+      throw new MusixMatchRequestError('MusixMatch token request failed', {
+        cause: error,
+      });
+    });
+    if (!this.token) throw new MusixMatchRequestError('Failed to get token');
 
+    this.expires = Date.now() + 60_000;
     localStorage.setItem(
       this.key,
-      JSON.stringify({ token: this.token, expires: Date.now() + 60_000 }),
+      JSON.stringify({ token: this.token, expires: this.expires }),
     );
   }
 

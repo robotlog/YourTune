@@ -7,18 +7,21 @@ allowBuilds:
   unrs-resolver: true
   utf-8-validate: true
 overrides:
-  vite: 8.1.6
-  node-gyp: 13.0.0
+  vite: 8.3.8
+  node-gyp: 13.1.0
   xml2js: 0.6.2
   node-fetch: 3.3.2
   '@electron/universal': 3.0.4
   '@babel/runtime': 8.0.0
   '@xmldom/xmldom@<0.8.12': 0.8.15
-  'seroval@<1.6.11': 1.6.11
+  'seroval@<1.6.12': 1.6.12
   'tinypool@<2.1.2': 2.1.2
   'compression@<1.8.2': 1.8.2
   'uuid@>=13 <13.0.1': 13.0.1
+  'minimatch@>=7 <11.0.1': 11.0.1
+  'mdui@2.1.4>@mdui/shared': 1.0.8
 patchedDependencies:
+  fflate@0.8.3: patches/fflate@0.8.3.patch
   vudio@2.1.1: patches/vudio@2.1.1.patch
   '@malept/flatpak-bundler@0.4.0': patches/@malept__flatpak-bundler@0.4.0.patch
   kuromoji@0.1.2: patches/kuromoji@0.1.2.patch
@@ -26,4 +29,4 @@ patchedDependencies:
   mdui@2.1.4: patches/mdui@2.1.4.patch
 engineStrict: true
 minimumReleaseAgeExclude:
-  - vite@8.1.6
+  - vite@8.3.8

@@ -22,6 +22,7 @@ export type VideoTogglePluginConfig = {
 
 let playerApi: MusicPlayer | null = null;
 let onVideoDataChange: ((name: string) => void) | null = null;
+let isStopped = false;
 
 export default createPlugin({
   name: () => t('plugins.video-toggle.name'),
@@ -156,9 +157,11 @@ export default createPlugin({
       }
     },
     async onPlayerApiReady(api, { getConfig }) {
+      isStopped = false;
       const [showButton, setShowButton] = createSignal(true);
 
       const config = await getConfig();
+      if (isStopped) return;
       this.config = config;
 
       const moveVolumeHud = (await window.mainConfig.plugins.isEnabled(
@@ -166,6 +169,7 @@ export default createPlugin({
       ))
         ? (preciseVolumeMoveVolumeHud as (_: boolean) => void)
         : () => {};
+      if (isStopped) return;
 
       const player = document.querySelector<
         HTMLElement & { videoMode: boolean }
@@ -369,6 +373,7 @@ export default createPlugin({
       }
     },
     stop() {
+      isStopped = true;
       if (playerApi && onVideoDataChange) {
         playerApi.removeEventListener('videodatachange', onVideoDataChange);
         onVideoDataChange = null;

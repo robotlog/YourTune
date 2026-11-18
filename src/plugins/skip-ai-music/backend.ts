@@ -43,6 +43,7 @@ let scoredArtists: ScoredArtist[] = [];
 let communityArtists: string[] = [];
 let communityArtistSet = new Set<string>();
 let communityFetchedAt = 0;
+let communityRefreshWarned = false;
 let refreshTimer: NodeJS.Timeout | null = null;
 let refreshInFlight: Promise<string[]> | null = null;
 let lastSongInfo: SongInfo | null = null;
@@ -203,6 +204,7 @@ export const refreshCommunityArtists = async (
       scoredArtists = artists;
       applyScoreFilter();
       communityFetchedAt = Date.now();
+      communityRefreshWarned = false;
       await saveCachedArtists();
       console.log(
         LoggerPrefix,
@@ -310,15 +312,21 @@ const onSongInfo: (
     maybeSkip(window, songInfo);
   };
 
+const warnCommunityRefresh = (error: unknown) => {
+  if (communityRefreshWarned) return;
+  communityRefreshWarned = true;
+  console.warn(
+    LoggerPrefix,
+    'skip-ai-music: failed to refresh community list',
+    error,
+  );
+};
+
 const startCommunityRefresh = async () => {
   try {
     await refreshCommunityArtists();
   } catch (error) {
-    console.warn(
-      LoggerPrefix,
-      'skip-ai-music: failed to refresh community list',
-      error,
-    );
+    warnCommunityRefresh(error);
   }
 
   if (refreshTimer) {
@@ -326,13 +334,7 @@ const startCommunityRefresh = async () => {
   }
 
   refreshTimer = setInterval(() => {
-    refreshCommunityArtists().catch((error: unknown) => {
-      console.warn(
-        LoggerPrefix,
-        'skip-ai-music: failed to refresh community list',
-        error,
-      );
-    });
+    refreshCommunityArtists().catch(warnCommunityRefresh);
   }, COMMUNITY_REFRESH_INTERVAL_MS);
   refreshTimer.unref?.();
 };

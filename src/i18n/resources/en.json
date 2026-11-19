@@ -71,7 +71,8 @@
         "buttons": {
           "disable": "Disable Updates",
           "download": "Download",
-          "ok": "OK"
+          "ok": "OK",
+          "release-notes": "Release notes"
         },
         "detail": "A new version is available and can be downloaded at {{downloadLink}}",
         "message": "A new version is available",

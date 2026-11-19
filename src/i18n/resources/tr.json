@@ -71,7 +71,8 @@
         "buttons": {
           "disable": "Güncellemeleri devre dışı bırak",
           "download": "İndir",
-          "ok": "Tamam"
+          "ok": "Tamam",
+          "release-notes": "Sürüm notları"
         },
         "detail": "Yeni bir sürüm mevcut. {{downloadLink}} adresi üzerinden indirebilirsin",
         "message": "Yeni bir sürüm mevcut",

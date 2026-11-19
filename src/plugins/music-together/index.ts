@@ -1,6 +1,7 @@
 import prompt from 'custom-electron-prompt';
 
 import { t } from '@/i18n';
+import { showToast } from '@/plugins/utils/renderer';
 import promptOptions from '@/providers/prompt-options';
 import { createPlugin } from '@/utils';
 import { waitForElement } from '@/utils/wait-for-element';
@@ -191,7 +192,7 @@ export default createPlugin<
 
       this.connection.onConnections((connection) => {
         if (!connection) {
-          this.api?.toastService?.show(
+          showToast(this.api,
             t('plugins.music-together.toast.disconnected'),
           );
           this.onStop();
@@ -199,7 +200,7 @@ export default createPlugin<
         }
 
         if (!connection.open) {
-          this.api?.toastService?.show(
+          showToast(this.api,
             t('plugins.music-together.toast.user-disconnected', {
               name: this.profiles[connection.peer]?.name,
             }),
@@ -301,7 +302,7 @@ export default createPlugin<
               break;
             }
 
-            this.api?.toastService?.show(
+            showToast(this.api,
               t('plugins.music-together.toast.user-connected', {
                 name: event.payload.profile.name,
               }),
@@ -403,7 +404,7 @@ export default createPlugin<
       if (!connection) return false;
       this.connection.onConnections((connection) => {
         if (!connection?.open) {
-          this.api?.toastService?.show(
+          showToast(this.api,
             t('plugins.music-together.toast.disconnected'),
           );
           this.onStop();
@@ -560,7 +561,7 @@ export default createPlugin<
               `plugins.music-together.menu.permission.${this.permission}`,
             );
 
-            this.api?.toastService?.show(
+            showToast(this.api,
               t('plugins.music-together.toast.permission-changed', {
                 permission: permissionLabel,
               }),
@@ -778,7 +779,7 @@ export default createPlugin<
         onItemClick: (id) => {
           if (id === 'music-together-close') {
             this.onStop();
-            this.api?.toastService?.show(
+            showToast(this.api,
               t('plugins.music-together.toast.closed'),
             );
             hostPopup.dismiss();
@@ -788,13 +789,13 @@ export default createPlugin<
             navigator.clipboard
               .writeText(this.connection?.id ?? '')
               .then(() => {
-                this.api?.toastService?.show(
+                showToast(this.api,
                   t('plugins.music-together.toast.id-copied'),
                 );
                 hostPopup.dismiss();
               })
               .catch(() => {
-                this.api?.toastService?.show(
+                showToast(this.api,
                   t('plugins.music-together.toast.id-copy-failed'),
                 );
                 hostPopup.dismiss();
@@ -815,7 +816,7 @@ export default createPlugin<
             const permissionLabel = t(
               `plugins.music-together.menu.permission.${this.permission}`,
             );
-            this.api?.toastService?.show(
+            showToast(this.api,
               t('plugins.music-together.toast.permission-changed', {
                 permission: permissionLabel,
               }),
@@ -831,7 +832,7 @@ export default createPlugin<
         onItemClick: (id) => {
           if (id === 'music-together-disconnect') {
             this.onStop();
-            this.api?.toastService?.show(
+            showToast(this.api,
               t('plugins.music-together.toast.disconnected'),
             );
             guestPopup.dismiss();
@@ -850,19 +851,19 @@ export default createPlugin<
               navigator.clipboard
                 .writeText(this.connection?.id ?? '')
                 .then(() => {
-                  this.api?.toastService?.show(
+                  showToast(this.api,
                     t('plugins.music-together.toast.id-copied'),
                   );
                   hostPopup.showAtAnchor(setting);
                 })
                 .catch(() => {
-                  this.api?.toastService?.show(
+                  showToast(this.api,
                     t('plugins.music-together.toast.id-copy-failed'),
                   );
                   hostPopup.showAtAnchor(setting);
                 });
             } else {
-              this.api?.toastService?.show(
+              showToast(this.api,
                 t('plugins.music-together.toast.host-failed'),
               );
             }
@@ -875,12 +876,12 @@ export default createPlugin<
             this.hideSpinner();
 
             if (result) {
-              this.api?.toastService?.show(
+              showToast(this.api,
                 t('plugins.music-together.toast.joined'),
               );
               guestPopup.showAtAnchor(setting);
             } else {
-              this.api?.toastService?.show(
+              showToast(this.api,
                 t('plugins.music-together.toast.join-failed'),
               );
             }

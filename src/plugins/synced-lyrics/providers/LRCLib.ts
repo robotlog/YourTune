@@ -5,12 +5,94 @@ import { config } from '../renderer/renderer';
 
 import type { LyricProvider, LyricResult, SearchSongInfo } from '../types';
 
-// lrclib.net answers 503 ServerOverloaded when it's busy, a retry usually goes through
-const fetchWithRetry = async (url: string) => {
+// Identifies the app as the LRCLIB API guidelines ask. The header is CORS-allowed by lrclib.net.
+const CLIENT_ID = 'YourTune (https://github.com/robotlog/YourTune)';
+// Transient: rate limit and server-side overload. Anything else (400, 404...) won't change on retry.
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+const MAX_ATTEMPTS = 4;
+// Covers the request and reading its body, per attempt
+const ATTEMPT_TIMEOUT_MS = 10_000;
+// Longest single wait, jitter included. A Retry-After above this means "come back later":
+// give up instead of retrying early or blocking the lyrics panel.
+const MAX_DELAY_MS = 10_000;
+// Total sleeping for one lookup, shared by all of its requests (fallback queries included)
+const MAX_TOTAL_WAIT_MS = 15_000;
+
+// Retry-After is either delta-seconds or an HTTP date. Zero, negative and past values give 0.
+const parseRetryAfter = (value: string | null | undefined) => {
+  const raw = value?.trim();
+  if (!raw) return undefined;
+  const ms = Number.isFinite(Number(raw))
+    ? Number(raw) * 1000
+    : Date.parse(raw) - Date.now();
+  return Number.isNaN(ms) ? undefined : Math.max(0, ms);
+};
+
+const discard = (response: Response) =>
+  response.body?.cancel().catch(() => {}) ?? Promise.resolve();
+
+class InvalidResponse extends Error {}
+
+type WaitBudget = { waited: number };
+
+// Retries transient failures (429/5xx, network errors, timeouts) within the attempt, delay and budget limits.
+// Gives up with the last status error, or the last network error if there never was a response.
+const fetchResults = async (url: string, budget: WaitBudget) => {
   for (let attempt = 1; ; attempt++) {
-    const response = await fetch(url);
-    if (response.status !== 503 || attempt === 3) return response;
-    await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
+    let failure: unknown;
+    let status: number | undefined;
+    let retryAfter: number | undefined;
+    try {
+      const response = await fetch(url, {
+        headers: { 'Lrclib-Client': CLIENT_ID },
+        signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+      });
+      if (response.ok) {
+        const text = await response.text();
+        let data: unknown;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new InvalidResponse('Invalid JSON response');
+        }
+        if (!Array.isArray(data)) {
+          throw new InvalidResponse(
+            `Expected an array, instead got ${typeof data}`,
+          );
+        }
+        return data as LRCLIBSearchResponse;
+      }
+
+      await discard(response);
+      status = response.status;
+      retryAfter = parseRetryAfter(response.headers.get('retry-after'));
+      if (!RETRYABLE_STATUSES.has(status)) {
+        throw new Error(`bad HTTPStatus(${status})`);
+      }
+    } catch (error) {
+      if (error instanceof InvalidResponse) throw error;
+      if (status !== undefined && !RETRYABLE_STATUSES.has(status)) throw error;
+      failure = error;
+    }
+
+    // A valid hint is a lower bound; zero, negative or past hints fall back to the backoff
+    const factor = 2 ** (attempt - 1);
+    const backoff = Math.min(factor * 1000, 8000);
+    const base = Math.max(backoff, retryAfter ?? 0);
+    const jitter = Math.random() * 0.3;
+    const delay = Math.min(Math.round(base * (1 + jitter)), MAX_DELAY_MS);
+    if (
+      attempt >= MAX_ATTEMPTS ||
+      base > MAX_DELAY_MS ||
+      budget.waited + delay > MAX_TOTAL_WAIT_MS
+    ) {
+      // statusText is empty over HTTP/2, so report the numeric status
+      if (status !== undefined) throw new Error(`bad HTTPStatus(${status})`);
+      throw failure;
+    }
+
+    budget.waited += delay;
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
 };
 
@@ -37,16 +119,9 @@ export class LRCLib implements LyricProvider {
     }
 
     let url = `${this.baseUrl}/api/search?${query.toString()}`;
-    let response = await fetchWithRetry(url);
-
-    if (!response.ok) {
-      throw new Error(`bad HTTPStatus(${response.statusText})`);
-    }
-
-    let data = (await response.json()) as LRCLIBSearchResponse;
-    if (!data || !Array.isArray(data)) {
-      throw new Error(`Expected an array, instead got ${typeof data}`);
-    }
+    // one lookup shares one sleeping budget across its fallback queries
+    const budget: WaitBudget = { waited: 0 };
+    let data = await fetchResults(url, budget);
 
     if (data.length === 0) {
       if (!config()?.showLyricsEvenIfInexact) {
@@ -57,31 +132,13 @@ export class LRCLib implements LyricProvider {
       const trackName = alternativeTitle || title;
       query = new URLSearchParams({ q: `${trackName}` });
       url = `${this.baseUrl}/api/search?${query.toString()}`;
-
-      response = await fetchWithRetry(url);
-      if (!response.ok) {
-        throw new Error(`bad HTTPStatus(${response.statusText})`);
-      }
-
-      data = (await response.json()) as LRCLIBSearchResponse;
-      if (!Array.isArray(data)) {
-        throw new Error(`Expected an array, instead got ${typeof data}`);
-      }
+      data = await fetchResults(url, budget);
 
       // If still no results, try with the original title as fallback
       if (data.length === 0 && alternativeTitle) {
         query = new URLSearchParams({ q: title });
         url = `${this.baseUrl}/api/search?${query.toString()}`;
-
-        response = await fetchWithRetry(url);
-        if (!response.ok) {
-          throw new Error(`bad HTTPStatus(${response.statusText})`);
-        }
-
-        data = (await response.json()) as LRCLIBSearchResponse;
-        if (!Array.isArray(data)) {
-          throw new Error(`Expected an array, instead got ${typeof data}`);
-        }
+        data = await fetchResults(url, budget);
       }
     }
 
@@ -179,7 +236,7 @@ export class LRCLib implements LyricProvider {
             status: 'upcoming' as const,
           }))
         : undefined,
-      lyrics: plain,
+      lyrics: plain ?? undefined,
     };
   }
 }
@@ -192,6 +249,6 @@ type LRCLIBSearchResponse = {
   albumName: string;
   duration: number;
   instrumental: boolean;
-  plainLyrics: string;
-  syncedLyrics: string;
+  plainLyrics: string | null;
+  syncedLyrics: string | null;
 }[];

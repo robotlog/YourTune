@@ -71,7 +71,8 @@
         "buttons": {
           "disable": "Güncellemeleri devre dışı bırak",
           "download": "İndir",
-          "ok": "Tamam"
+          "ok": "Tamam",
+          "release-notes": "Sürüm notları"
         },
         "detail": "Yeni bir sürüm mevcut. {{downloadLink}} adresi üzerinden indirebilirsin",
         "message": "Yeni bir sürüm mevcut",
@@ -917,6 +918,16 @@
     "skip-silences": {
       "description": "Şarkılardaki sessiz bölümleri otomatik olarak atlar",
       "name": "Sessizlikleri Atla"
+    },
+    "sleep-timer": {
+      "description": "Seçilen süre sonunda oynatmayı duraklatır",
+      "menu": {
+        "cancel": "Zamanlayıcıyı iptal et",
+        "inactive": "Çalışan zamanlayıcı yok",
+        "minutes": "{{minutes}} dakika",
+        "stops-at": "Durma saati: {{time}}"
+      },
+      "name": "Uyku Zamanlayıcısı"
     },
     "sponsorblock": {
       "description": "Giriş/Çıkış gibi müzik olmayan kısımları veya müzik videolarında şarkının çalmadığı kısımları otomatik olarak atlar",

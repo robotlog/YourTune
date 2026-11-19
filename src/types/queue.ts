@@ -50,12 +50,24 @@ export interface ToastService {
   show: (message: string) => void;
 }
 
+// Text-only toast envelope; unrelated to datahost's CommandElement.addToToastAction.
+export type TextToastAction = {
+  addToToastAction: {
+    item: {
+      notificationTextRenderer: {
+        successResponseText: { simpleText: string };
+      };
+    };
+  };
+};
+
 export type AppElement = HTMLElement & AppAPI;
 export type AppAPI = {
   queue: QueueAPI;
   playerApi: MusicPlayer;
 
-  toastService: ToastService;
+  toastService?: ToastService;
+  handleAddToToastAction?: (action: TextToastAction) => void;
 
   // TODO: Add more
 };

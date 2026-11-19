@@ -71,7 +71,8 @@
         "buttons": {
           "disable": "Disable Updates",
           "download": "Download",
-          "ok": "OK"
+          "ok": "OK",
+          "release-notes": "Release notes"
         },
         "detail": "A new version is available and can be downloaded at {{downloadLink}}",
         "message": "A new version is available",
@@ -1003,6 +1004,16 @@
     "skip-silences": {
       "description": "Automatically skip silences sections in songs",
       "name": "Skip Silences"
+    },
+    "sleep-timer": {
+      "description": "Pauses playback after a chosen amount of time",
+      "menu": {
+        "cancel": "Cancel timer",
+        "inactive": "No timer running",
+        "minutes": "{{minutes}} minutes",
+        "stops-at": "Stops at {{time}}"
+      },
+      "name": "Sleep Timer"
     },
     "sponsorblock": {
       "description": "Automatically Skips non-music parts like intro/outro or parts of music videos where the song isn't playing",

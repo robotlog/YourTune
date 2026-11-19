@@ -859,6 +859,12 @@
         }
       }
     },
+    "quick-add-to-playlist": {
+      "button": "Save to playlist",
+      "description": "Adds a player bar button that opens the native \"Save to playlist\" picker for the current song",
+      "name": "Quick Add to Playlist",
+      "unavailable": "Save to playlist is not available for this song"
+    },
     "resume-shuffle": {
       "description": "Bring the queue back shuffled when \"Resume last song when app starts\" is enabled",
       "name": "Resume Shuffle"

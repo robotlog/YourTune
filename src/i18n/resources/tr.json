@@ -781,6 +781,12 @@
         }
       }
     },
+    "quick-add-to-playlist": {
+      "button": "Çalma listesine kaydet",
+      "description": "Oynatıcı çubuğuna, geçerli şarkı için yerel \"Çalma listesine kaydet\" seçicisini açan bir düğme ekler",
+      "name": "Çalma Listesine Hızlı Ekle",
+      "unavailable": "Bu şarkı için çalma listesine kaydetme kullanılamıyor"
+    },
     "scrobbler": {
       "description": "Listeleme desteği ekler (lastfm, listenbrainz ve benzeri)",
       "dialog": {

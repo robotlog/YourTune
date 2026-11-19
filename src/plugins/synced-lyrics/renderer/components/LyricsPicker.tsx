@@ -23,6 +23,7 @@ import {
 } from 'solid-js';
 import * as z from 'zod';
 
+import { showToast } from '@/plugins/utils/renderer';
 import { getSongInfo } from '@/providers/song-info-front';
 import { LitElementWrapper } from '@/solit';
 
@@ -39,6 +40,7 @@ import { config } from '../renderer';
 import { currentLyrics, lyricsStore, setLyricsStore } from '../store';
 
 import type { PlayerAPIEvents } from '@/types/player-api-events';
+import type { AppElement } from '@/types/queue';
 
 const LocalStorageSchema = z.object({
   provider: ProviderNameSchema,
@@ -190,13 +192,8 @@ export const LyricsPicker = (props: {
     });
   };
 
-  const showToast = (message: string) => {
-    const app = document.querySelector('ytmusic-app') as {
-      toastService?: { show?: (msg: string) => void };
-    } | null;
-
-    app?.toastService?.show?.(message);
-  };
+  const toast = (message: string) =>
+    showToast(document.querySelector<AppElement>('ytmusic-app'), message);
 
   const handleSave = async () => {
     const lyrics = currentLyrics();
@@ -214,13 +211,13 @@ export const LyricsPicker = (props: {
 
       const filePath = typeof result === 'string' ? result : '';
       if (filePath) {
-        showToast(`Saved lyrics to ${filePath}`);
+        toast(`Saved lyrics to ${filePath}`);
       }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to save lyrics:', error);
-      showToast(
+      toast(
         message.toLowerCase().includes('cancel')
           ? 'Lyrics save cancelled.'
           : `Failed to save lyrics: ${message}`,

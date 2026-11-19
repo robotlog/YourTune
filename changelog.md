@@ -8,6 +8,7 @@ The history from before YourTune is in [pear-desktop's changelog](https://github
 
 Features:
 
+- New Quick add to playlist plugin: a player bar button that opens the native save to playlist picker for the current song.
 - The GNOME Shell mini player is on [extensions.gnome.org](https://extensions.gnome.org/extension/11617/yourtune-mini-player/) ([#23](https://github.com/robotlog/YourTune/issues/23)).
 - Sleep Timer: new plugin that pauses playback after 15, 30 or 60 minutes. It's off by default.
 - The update dialog has a "Release notes" button that opens the GitHub release page of the new version.

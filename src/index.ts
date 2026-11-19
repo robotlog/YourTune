@@ -55,6 +55,10 @@ import {
   setupProtocolHandler,
 } from '@/providers/protocol-handler';
 import { setupSongInfo } from '@/providers/song-info';
+import {
+  getReleaseNotesUrl,
+  handleUpdateResponse,
+} from '@/providers/update-dialog';
 import { setupCloseToHide } from '@/providers/window-close';
 import { setUpTray } from '@/tray';
 import { LoggerPrefix } from '@/utils';
@@ -835,7 +839,7 @@ app.whenReady().then(async () => {
       electronUpdater.autoUpdater.checkForUpdatesAndNotify();
       clearTimeout(updateTimeout);
     }, 2000);
-    electronUpdater.autoUpdater.on('update-available', () => {
+    electronUpdater.autoUpdater.on('update-available', (info) => {
       const downloadLink =
         'https://github.com/robotlog/YourTune/releases/latest';
       const dialogOptions: Electron.MessageBoxOptions = {
@@ -844,6 +848,9 @@ app.whenReady().then(async () => {
           t('main.dialog.update-available.buttons.ok'),
           t('main.dialog.update-available.buttons.download'),
           t('main.dialog.update-available.buttons.disable'),
+          ...(getReleaseNotesUrl(info?.version)
+            ? [t('main.dialog.update-available.buttons.release-notes')]
+            : []),
         ],
         title: t('main.dialog.update-available.title'),
         message: t('main.dialog.update-available.message'),
@@ -860,23 +867,11 @@ app.whenReady().then(async () => {
       }
 
       dialogPromise.then((dialogOutput) => {
-        switch (dialogOutput.response) {
-          // Download
-          case 1: {
-            shell.openExternal(downloadLink);
-            break;
-          }
-
-          // Disable updates
-          case 2: {
-            config.set('options.autoUpdates', false);
-            break;
-          }
-
-          case 0: {
-            break;
-          }
-        }
+        handleUpdateResponse(dialogOutput.response, info?.version, {
+          downloadLink,
+          openExternal: (target) => shell.openExternal(target),
+          disableUpdates: () => config.set('options.autoUpdates', false),
+        });
       });
     });
   }

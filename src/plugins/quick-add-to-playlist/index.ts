@@ -1,4 +1,5 @@
 import { t } from '@/i18n';
+import { showToast } from '@/plugins/utils/renderer';
 import { createPlugin } from '@/utils';
 
 import { createQuickAdd } from './quick-add';
@@ -21,9 +22,7 @@ export default createPlugin({
         label: t('plugins.quick-add-to-playlist.button'),
         unavailable: t('plugins.quick-add-to-playlist.unavailable'),
         notify: (message) =>
-          document
-            .querySelector<AppElement>('ytmusic-app')
-            ?.toastService?.show(message),
+          showToast(document.querySelector<AppElement>('ytmusic-app'), message),
       });
       quickAdd.mount();
     },

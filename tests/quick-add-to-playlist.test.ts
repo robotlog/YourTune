@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { Window } from 'happy-dom';
 
+import { showToast } from '../src/plugins/utils/renderer/toast';
 import {
   BUTTON_ID,
   createQuickAdd,
@@ -355,4 +356,32 @@ test('teardown removes the button and stops re-adding it', async () => {
     .append(f.document.createElement('i'));
   await settle(50);
   expect(f.document.getElementById(BUTTON_ID)).toBeNull();
+});
+
+test('failure toast goes through showToast on a build without toastService', async () => {
+  const f = setup('legacy', { hasSaveItem: false });
+  open.push(f);
+  const actions: unknown[] = [];
+  const app = { handleAddToToastAction: (a: unknown) => actions.push(a) };
+  const qa = createQuickAdd(f.document, {
+    label: 'Save',
+    unavailable: 'nope',
+    notify: (m) => showToast(app, m),
+    findTimeoutMs: 200,
+  });
+  qa.mount();
+  await click(f);
+  expect(f.state.saved).toEqual([]);
+  expect(actions).toEqual([
+    {
+      addToToastAction: {
+        item: {
+          notificationTextRenderer: {
+            successResponseText: { simpleText: 'nope' },
+          },
+        },
+      },
+    },
+  ]);
+  qa.unmount();
 });

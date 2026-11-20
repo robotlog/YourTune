@@ -15,6 +15,7 @@ Features:
 
 Fixes:
 
+- Apply the startup switches (Linux MediaSessionService, hardware acceleration and transparent visuals, plus the proxy server) before the app is ready, so Chromium no longer ignores them.
 - Video Toggle: guard against missing video metadata and use the current player videoMode property.
 - Window: cleanly exit fullscreen before hiding on macOS close ([#4810](https://github.com/pear-devs/pear-desktop/pull/4810)).
 - Updated dependencies with known vulnerabilities (Dependabot).

@@ -135,13 +135,24 @@ let disableHardwareAcceleration = config.get(
 
 // Linux specific fixes
 if (is.linux()) {
+  // Read the stored config synchronously (see the note below): a top-level
+  // `await` would let `ready` fire before these switches are applied.
+  // The shortcuts plugin is enabled by default, transparent-player is not.
+
   // Stops chromium from launching its own MPRIS service
-  if (await config.plugins.isEnabled('shortcuts')) {
+  if (
+    config.plugins.getOptions<{ enabled?: boolean }>('shortcuts')?.enabled ??
+    true
+  ) {
     disabledFeatures.push('MediaSessionService');
   }
 
   // https://github.com/electron/electron/issues/15947
-  if (await config.plugins.isEnabled('transparent-player')) {
+  if (
+    config.plugins.getOptions<{ enabled?: boolean }>('transparent-player')
+      ?.enabled ??
+    false
+  ) {
     disableHardwareAcceleration = true;
     app.commandLine.appendSwitch('enable-transparent-visuals');
     app.commandLine.appendSwitch('enable-unsafe-swiftshader');
@@ -179,7 +190,10 @@ if (disableHardwareAcceleration) {
 app.commandLine.appendSwitch('disable-features', disabledFeatures.join(','));
 
 if (config.get('options.proxy')) {
-  const authProxyEnabled = await config.plugins.isEnabled('auth-proxy-adapter');
+  // Sync read on purpose, see the note above about top-level await.
+  const authProxyEnabled =
+    config.plugins.getOptions<{ enabled?: boolean }>('auth-proxy-adapter')
+      ?.enabled ?? defaultAuthProxyConfig.enabled;
 
   let proxyToUse = '';
   if (authProxyEnabled) {

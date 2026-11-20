@@ -26,6 +26,15 @@ test('hides passwords that contain @ or :', () => {
   );
 });
 
+test('hides schemeless passwords that contain ://', () => {
+  expect(redactProxyUrl('user:a://b@host:1080')).toBe('***@host:1080');
+  expect(redactProxyUrl('://user:pass@host:1080')).toBe('***@host:1080');
+  expect(redactProxyUrl('1http://user:pass@host:1080')).toBe('***@host:1080');
+  expect(redactProxyUrl('http://user:a://b@host:1080')).toBe(
+    'http://***@host:1080',
+  );
+});
+
 test('leaves proxies without credentials unchanged', () => {
   for (const proxy of [
     '',
@@ -39,7 +48,7 @@ test('leaves proxies without credentials unchanged', () => {
 
 test('hides credentials of malformed values without throwing', () => {
   expect(redactProxyUrl('http//user:pass@host')).toBe('***@host');
-  expect(redactProxyUrl('://user:pass@')).toBe('://***@');
+  expect(redactProxyUrl('://user:pass@')).toBe('***@');
   expect(redactProxyUrl('user:pass@')).toBe('***@');
   expect(redactProxyUrl('not a url @ all')).toBe('***@ all');
 });

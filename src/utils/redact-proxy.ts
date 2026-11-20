@@ -7,7 +7,7 @@ export const redactProxyUrl = (proxy: string): string => {
   const at = proxy.lastIndexOf('@');
   if (at === -1) return proxy;
 
-  const schemeEnd = proxy.indexOf('://');
-  const start = schemeEnd !== -1 && schemeEnd < at ? schemeEnd + 3 : 0;
+  const scheme = /^[a-z][a-z0-9+.-]*:\/\//i.exec(proxy);
+  const start = scheme && scheme[0].length <= at ? scheme[0].length : 0;
   return `${proxy.slice(0, start)}***${proxy.slice(at)}`;
 };

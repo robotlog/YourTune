@@ -5,6 +5,7 @@ import { SocksClient, type SocksClientOptions } from 'socks';
 
 import * as config from '@/config';
 import { createBackend, LoggerPrefix } from '@/utils';
+import { redactProxyUrl } from '@/utils/redact-proxy';
 
 import { type AuthProxyConfig, defaultAuthProxyConfig } from '../config';
 
@@ -88,7 +89,7 @@ export const backend = createBackend<BackendType, AuthProxyConfig>({
       );
       console.log(
         LoggerPrefix,
-        `[Auth-Proxy-Adapter] Using upstream proxy: ${upstreamProxyUrl}`,
+        `[Auth-Proxy-Adapter] Using upstream proxy: ${redactProxyUrl(upstreamProxyUrl)}`,
       );
       console.log(LoggerPrefix, '===========================================');
     });
@@ -226,7 +227,13 @@ export const backend = createBackend<BackendType, AuthProxyConfig>({
         });
       })
       .catch((error) => {
-        console.error(LoggerPrefix, '[SOCKS5] Connection error:', error);
+        // SocksClientError keeps the upstream proxy credentials in `options`,
+        // so only log the message
+        console.error(
+          LoggerPrefix,
+          '[SOCKS5] Connection error:',
+          error instanceof Error ? error.message : error,
+        );
         // Send failure response to client
         clientSocket.write(
           Buffer.from([0x05, 0x05, 0x00, 0x01, 0, 0, 0, 0, 0, 0]),

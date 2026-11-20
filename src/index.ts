@@ -62,6 +62,7 @@ import {
 import { setupCloseToHide } from '@/providers/window-close';
 import { setUpTray } from '@/tray';
 import { LoggerPrefix } from '@/utils';
+import { redactProxyUrl } from '@/utils/redact-proxy';
 import { isTesting } from '@/utils/testing';
 
 import packageJson from '../package.json';
@@ -209,7 +210,7 @@ if (config.get('options.proxy')) {
     // Use global proxy settings
     proxyToUse = config.get('options.proxy');
   }
-  console.log(LoggerPrefix, `Using proxy: ${proxyToUse}`);
+  console.log(LoggerPrefix, `Using proxy: ${redactProxyUrl(proxyToUse)}`);
   app.commandLine.appendSwitch('proxy-server', proxyToUse);
 }
 

@@ -62,6 +62,7 @@ import {
 import { setupCloseToHide } from '@/providers/window-close';
 import { setUpTray } from '@/tray';
 import { LoggerPrefix } from '@/utils';
+import { restoreThrottlingOnFirstPlay } from '@/utils/background-throttling';
 import { redactProxyUrl } from '@/utils/redact-proxy';
 import { isTesting } from '@/utils/testing';
 
@@ -387,6 +388,10 @@ async function createMainWindow() {
     show: false,
     webPreferences: {
       contextIsolation: true,
+      // Off only for the first load: Chromium paints nothing and stalls the
+      // page while the window is minimized. It is turned back on below once
+      // the first track plays, as an unthrottled hidden page burns CPU.
+      backgroundThrottling: false,
       preload: path.join(__dirname, '..', 'preload', 'preload.cjs'),
       ...(isTesting()
         ? undefined
@@ -400,6 +405,25 @@ async function createMainWindow() {
   };
 
   const win = new BrowserWindow(electronWindowSettings);
+
+  // The window is created unthrottled, so this runs for every window created
+  // here, including one recreated on macOS activate. 'media-started-playing'
+  // needs no plugin or IPC, unlike the song-info time events.
+  restoreThrottlingOnFirstPlay({
+    win,
+    onPlay: (listener) => {
+      const contents = win.webContents;
+      contents.on('media-started-playing', listener);
+      return () => {
+        contents.removeListener('media-started-playing', listener);
+      };
+    },
+    onRestore: (trigger) => {
+      if (is.dev()) {
+        console.debug(LoggerPrefix, 'background throttling restored by', trigger);
+      }
+    },
+  });
 
   await initHook(win);
   initTheme(win);

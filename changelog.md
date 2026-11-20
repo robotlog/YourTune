@@ -29,6 +29,9 @@ Fixes:
 - Updated all dependencies to their latest versions, including Electron 45 (closes the remaining Dependabot alert).
 - Skip AI Music: the community list now comes from [Spot The AI](https://github.com/FabDevGit/spotai), since the old list stopped answering.
 - Synced Lyrics: Musixmatch stops erroring on every song now that it no longer hands out anonymous tokens; it tries again later.
+- Precise Volume: the mini player selector also matches the plain `player-ui-state` one ([michei69/pear-desktop@3f579a70d1](https://github.com/michei69/pear-desktop/commit/3f579a70d1)).
+- Picture in Picture: double click works on the new player layout too and falls back to the old handler ([michei69/pear-desktop@3f579a70d1](https://github.com/michei69/pear-desktop/commit/3f579a70d1)).
+- Album Color Theme: a slow artwork fetch for a previous track no longer paints over the current one ([michei69/pear-desktop@6446a48ee3](https://github.com/michei69/pear-desktop/commit/6446a48ee3)).
 - Build with pnpm 12.
 
 #### v1.4.2

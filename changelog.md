@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Dates are d
 
 The history from before YourTune is in [pear-desktop's changelog](https://github.com/pear-devs/pear-desktop/blob/master/changelog.md).
 
-#### Unreleased
+#### v1.5.0
+
+> 20 November 2026
 
 Features:
 
@@ -19,6 +21,8 @@ Fixes:
 - Hide the username and password of the proxy in the logs, including the Auth Proxy Adapter upstream proxy and its connection errors.
 - Window: the first page load now finishes while the window is minimized or hidden, so the first song starts and the window isn't left blank. Background throttling comes back once the first track plays.
 - Video Toggle: guard against missing video metadata and use the current player videoMode property.
+- Synced Lyrics: LRCLib retries are bounded and share one sleep budget, separate from the per-attempt timeout, so it respects the retry limits (ideas from [pear-desktop#4804](https://github.com/pear-devs/pear-desktop/pull/4804) by johnmbz).
+- Notifications show on both player layouts: plugins use the new toast API when the player has it and fall back to the old one otherwise ([pear-devs/pear-desktop@da1d943d](https://github.com/pear-devs/pear-desktop/commit/da1d943d)).
 - Window: cleanly exit fullscreen before hiding on macOS close ([#4810](https://github.com/pear-devs/pear-desktop/pull/4810)).
 - Updated dependencies with known vulnerabilities (Dependabot).
 - SponsorBlock clears the old segments when a track loads instead of on a late `emptied` event, so a slow one no longer wipes the next track's segments and stops skipping ([michei69/pear-desktop@34afb88](https://github.com/michei69/pear-desktop/commit/34afb888c2)).
